@@ -10,4 +10,7 @@ COPY . .
 # Validate the app can be imported (fails the build with a clear error if not)
 RUN python -c "import app.main; print('app.main imported successfully')"
 
-CMD ["sh", "-c", "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000"]
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+CMD ["/entrypoint.sh"]
