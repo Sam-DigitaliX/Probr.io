@@ -21,9 +21,7 @@ services:
     environment:
       DATABASE_URL: "postgresql+asyncpg://trackguard:trackguard@db:5432/trackguard"
       APP_ENV: "production"
-    env_file:
-      - path: .env
-        required: false
+    # Create a .env file on the server for optional overrides (Slack, SMTP, etc.)
     depends_on:
       db:
         condition: service_healthy
