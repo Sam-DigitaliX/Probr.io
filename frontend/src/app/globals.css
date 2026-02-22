@@ -1,0 +1,151 @@
+@import "tailwindcss";
+
+/* ── DigitaliX Design System — Light-mode adaptation ───────────── */
+
+@theme inline {
+  /* ── Colors ─────────────────────────────────────── */
+  --color-background:   hsl(220 20% 97%);
+  --color-foreground:   hsl(220 20% 10%);
+
+  --color-card:            hsl(0 0% 100%);
+  --color-card-foreground: hsl(220 20% 10%);
+
+  --color-popover:            hsl(0 0% 100%);
+  --color-popover-foreground: hsl(220 20% 10%);
+
+  --color-primary:            hsl(262 83% 58%);
+  --color-primary-foreground: hsl(0 0% 100%);
+
+  --color-secondary:            hsl(188 94% 43%);
+  --color-secondary-foreground: hsl(0 0% 100%);
+
+  --color-muted:            hsl(220 14% 94%);
+  --color-muted-foreground: hsl(220 10% 45%);
+
+  --color-accent:            hsl(262 83% 96%);
+  --color-accent-foreground: hsl(262 83% 40%);
+
+  --color-destructive:            hsl(0 84% 60%);
+  --color-destructive-foreground: hsl(0 0% 100%);
+
+  --color-success:            hsl(142 71% 45%);
+  --color-success-foreground: hsl(0 0% 100%);
+
+  --color-warning:            hsl(38 92% 50%);
+  --color-warning-foreground: hsl(0 0% 100%);
+
+  --color-border:   hsl(220 13% 90%);
+  --color-input:    hsl(220 13% 90%);
+  --color-ring:     hsl(262 83% 58%);
+
+  --color-sidebar:                  hsl(0 0% 100%);
+  --color-sidebar-foreground:       hsl(220 20% 25%);
+  --color-sidebar-primary:          hsl(262 83% 58%);
+  --color-sidebar-primary-foreground: hsl(0 0% 100%);
+  --color-sidebar-accent:           hsl(262 83% 96%);
+  --color-sidebar-accent-foreground: hsl(262 83% 40%);
+  --color-sidebar-border:           hsl(220 13% 92%);
+  --color-sidebar-ring:             hsl(262 83% 58%);
+
+  /* Glass — light mode: white glass on subtle bg */
+  --color-glass:           hsl(0 0% 100% / 0.70);
+  --color-glass-border:    hsl(220 13% 85%);
+  --color-glass-highlight: hsl(0 0% 100% / 0.90);
+
+  /* ── Typography ─────────────────────────────────── */
+  --font-sans:    "Inter", system-ui, -apple-system, sans-serif;
+  --font-display: "Inter", system-ui, -apple-system, sans-serif;
+  --font-mono:    ui-monospace, "Cascadia Code", "Fira Code", monospace;
+
+  /* ── Radius ─────────────────────────────────────── */
+  --radius-lg: 0.75rem;
+  --radius-md: calc(0.75rem - 2px);
+  --radius-sm: calc(0.75rem - 4px);
+
+  /* ── Shadows ────────────────────────────────────── */
+  --shadow-card:         0 1px 3px hsl(0 0% 0% / 0.06), 0 1px 2px hsl(0 0% 0% / 0.04);
+  --shadow-card-hover:   0 10px 25px hsl(0 0% 0% / 0.08), 0 4px 10px hsl(0 0% 0% / 0.04);
+  --shadow-glow-primary: 0 0 40px hsl(262 83% 58% / 0.15);
+  --shadow-glow-secondary: 0 0 30px hsl(188 94% 43% / 0.12);
+
+  /* ── Animations ─────────────────────────────────── */
+  --animate-fade-in-up: fade-in-up 0.6s ease-out both;
+  --animate-scale-in:   scale-in 0.4s ease-out both;
+  --animate-float:      float 6s ease-in-out infinite;
+  --animate-glow-pulse: glow-pulse 4s ease-in-out infinite;
+  --animate-shimmer:    shimmer 2s ease-in-out infinite;
+  --animate-spin-slow:  spin 8s linear infinite;
+}
+
+/* ── Keyframes ──────────────────────────────────────── */
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-12px); }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 20px hsl(262 83% 58% / 0.1); }
+  50%      { box-shadow: 0 0 40px hsl(262 83% 58% / 0.2); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* ── Base styles ────────────────────────────────────── */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Utility classes ────────────────────────────────── */
+.text-gradient-primary {
+  background: linear-gradient(to right, hsl(262 83% 58%), hsl(188 94% 43%));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.glass-card {
+  background: var(--color-glass);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--color-glass-border);
+  border-radius: 1rem;
+}
+
+.glass-card:hover {
+  border-color: hsl(262 83% 58% / 0.25);
+  box-shadow: 0 8px 32px hsl(262 83% 58% / 0.06), 0 0 0 1px hsl(262 83% 58% / 0.08);
+  transform: translateY(-2px);
+}
+
+.animate-delay-100 { animation-delay: 100ms; }
+.animate-delay-200 { animation-delay: 200ms; }
+.animate-delay-300 { animation-delay: 300ms; }
+.animate-delay-400 { animation-delay: 400ms; }
+.animate-delay-500 { animation-delay: 500ms; }
+.animate-delay-600 { animation-delay: 600ms; }
+
+/* ── Scrollbar ──────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: hsl(220 13% 82%); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: hsl(220 13% 70%); }
