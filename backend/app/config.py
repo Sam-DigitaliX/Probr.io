@@ -6,6 +6,9 @@ class Settings(BaseSettings):
     app_env: str = "development"
     secret_key: str = "change-me-in-production"
 
+    # CORS
+    allowed_origins: str = "http://localhost:3000"
+
     # Slack alerts
     slack_webhook_url: str = ""
 
