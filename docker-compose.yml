@@ -1,25 +1,10 @@
 services:
-  db:
-    image: postgres:16-alpine
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER:-trackguard}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-trackguard}
-      POSTGRES_DB: ${POSTGRES_DB:-trackguard}
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-trackguard}"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-    restart: unless-stopped
-
   backend:
     build: ./backend
     ports:
       - "8000:8000"
     environment:
-      DATABASE_URL: "postgresql+asyncpg://${POSTGRES_USER:-trackguard}:${POSTGRES_PASSWORD:-trackguard}@db:5432/${POSTGRES_DB:-trackguard}"
+      DATABASE_URL: "${DATABASE_URL}"
       PYTHONPATH: /app
       APP_ENV: "production"
       SECRET_KEY: "${SECRET_KEY:-change-me-in-production}"
@@ -30,9 +15,6 @@ services:
       SMTP_USER: "${SMTP_USER:-}"
       SMTP_PASSWORD: "${SMTP_PASSWORD:-}"
       SMTP_FROM: "${SMTP_FROM:-alerts@trackguard.local}"
-    depends_on:
-      db:
-        condition: service_healthy
     restart: unless-stopped
 
   frontend:
@@ -45,6 +27,3 @@ services:
     depends_on:
       - backend
     restart: unless-stopped
-
-volumes:
-  pgdata:
