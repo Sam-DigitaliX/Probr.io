@@ -27,7 +27,7 @@ export function AlertsFeed({ alerts, onResolve }: AlertsFeedProps) {
       {alerts.slice(0, 5).map((alert) => (
         <div
           key={alert.id}
-          className="flex items-start gap-3 rounded-lg border border-border p-3 transition-colors hover:bg-muted/30"
+          className="flex items-start gap-3 rounded-lg border border-white/40 bg-white/30 backdrop-blur-md p-3 transition-all hover:bg-white/50"
         >
           <div className="mt-0.5">
             <AlertTriangle

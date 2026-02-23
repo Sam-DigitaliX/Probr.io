@@ -56,7 +56,7 @@ export function StatsCards({ totalClients, totalSites, totalProbes, activeAlerts
         <div
           key={stat.label}
           className={cn(
-            "group rounded-xl border border-border bg-card p-5 shadow-card transition-all duration-200 hover:shadow-card-hover hover:-translate-y-0.5 animate-fade-in-up",
+            "group rounded-xl border border-white/50 bg-white/50 backdrop-blur-xl p-5 shadow-glass transition-all duration-200 hover:shadow-glass-hover hover:-translate-y-0.5 hover:bg-white/65 animate-fade-in-up",
             `animate-delay-${(i + 1) * 100}`
           )}
         >

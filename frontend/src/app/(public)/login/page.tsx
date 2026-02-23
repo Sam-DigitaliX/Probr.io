@@ -74,7 +74,7 @@ export default function LoginPage() {
       </div>
 
       {/* Right panel — login form */}
-      <div className="flex w-full lg:w-1/2 items-center justify-center px-6 py-12">
+      <div className="flex w-full lg:w-1/2 items-center justify-center px-6 py-12 bg-white/10 backdrop-blur-sm">
         <div className="w-full max-w-sm">
           {/* Mobile logo */}
           <div className="flex items-center gap-2.5 mb-10 lg:hidden">
@@ -105,7 +105,7 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@company.com"
-                  className="w-full rounded-lg border border-input bg-card pl-10 pr-4 py-2.5 text-sm placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-ring/30 focus:border-primary transition-colors"
+                  className="w-full rounded-lg border border-white/50 bg-white/40 backdrop-blur-md pl-10 pr-4 py-2.5 text-sm placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-ring/15 focus:border-primary/40 focus:bg-white/60 transition-all"
                   required
                 />
               </div>
@@ -120,7 +120,7 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter your password"
-                  className="w-full rounded-lg border border-input bg-card pl-10 pr-10 py-2.5 text-sm placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-ring/30 focus:border-primary transition-colors"
+                  className="w-full rounded-lg border border-white/50 bg-white/40 backdrop-blur-md pl-10 pr-10 py-2.5 text-sm placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-ring/15 focus:border-primary/40 focus:bg-white/60 transition-all"
                   required
                 />
                 <button
