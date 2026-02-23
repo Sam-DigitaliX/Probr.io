@@ -100,7 +100,7 @@ export function ClientStatusGrid({ clients }: ClientStatusGridProps) {
 
           {/* Footer */}
           <Link
-            href={`/clients`}
+            href="/dashboard/clients"
             className="flex items-center justify-center gap-1 mt-4 pt-3 border-t border-border text-xs font-medium text-primary hover:text-primary/80 transition-colors"
           >
             View details

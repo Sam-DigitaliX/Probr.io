@@ -16,11 +16,11 @@ import { cn } from "@/lib/utils";
 import { useState } from "react";
 
 const navItems = [
-  { href: "/", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/clients", label: "Clients", icon: Users },
-  { href: "/sites", label: "Sites", icon: Globe },
-  { href: "/probes", label: "Probes", icon: Activity },
-  { href: "/alerts", label: "Alerts", icon: Bell },
+  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/dashboard/clients", label: "Clients", icon: Users },
+  { href: "/dashboard/sites", label: "Sites", icon: Globe },
+  { href: "/dashboard/probes", label: "Probes", icon: Activity },
+  { href: "/dashboard/alerts", label: "Alerts", icon: Bell },
 ];
 
 export function Sidebar() {
@@ -55,7 +55,9 @@ export function Sidebar() {
       <nav className="flex-1 space-y-1 px-3 py-4">
         {navItems.map((item) => {
           const isActive =
-            item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
+            item.href === "/dashboard"
+              ? pathname === "/dashboard"
+              : pathname.startsWith(item.href);
           return (
             <Link
               key={item.href}

@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
-import { Sidebar } from "@/components/layout/sidebar";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "TrackGuard — Client Monitoring",
-  description: "Real-time monitoring dashboard for tracking infrastructure",
+  title: "TrackGuard — Monitoring Infrastructure",
+  description: "Real-time monitoring for your tracking infrastructure (sGTM, GTM, GA4, BigQuery, CMP)",
 };
 
 export default function RootLayout({
@@ -15,10 +14,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased bg-background text-foreground">
-        <Sidebar />
-        <main className="ml-[240px] min-h-screen transition-all duration-300">
-          {children}
-        </main>
+        {children}
       </body>
     </html>
   );
