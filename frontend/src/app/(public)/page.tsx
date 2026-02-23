@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import {
   Shield,
   Activity,
@@ -53,6 +54,11 @@ const features = [
       "Ensure consent banners load properly and consent signals are correctly propagated.",
   },
 ];
+
+const CardBeamSection = dynamic(
+  () => import("@/components/CardBeamSection"),
+  { ssr: false },
+);
 
 const stats = [
   { value: "99.9%", label: "Uptime monitoring" },
@@ -209,6 +215,11 @@ export default function LandingPage() {
             </div>
           </div>
         </section>
+      </div>
+
+      {/* ── Card Beam Carousel ──────────────────────────── */}
+      <div className="relative -mt-4 mb-4">
+        <CardBeamSection />
       </div>
 
       {/* ── Stats ─────────────────────────────────────── */}
