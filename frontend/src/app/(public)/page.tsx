@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import dynamic from "next/dynamic";
+import ProbrLogo from "@/components/ui/probr-logo";
 import {
-  Shield,
   Activity,
   Bell,
   Globe,
@@ -75,7 +75,7 @@ export default function LandingPage() {
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
           <Link href="/" className="flex items-center gap-2.5">
             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-secondary">
-              <Shield className="h-5 w-5 text-white" />
+              <ProbrLogo size={20} className="text-white" />
             </div>
             <span className="text-lg font-bold text-gradient-primary">
               Probr
@@ -381,7 +381,7 @@ export default function LandingPage() {
         <div className="mx-auto max-w-6xl px-6 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="flex h-7 w-7 items-center justify-center rounded-md bg-gradient-to-br from-primary to-secondary">
-              <Shield className="h-4 w-4 text-white" />
+              <ProbrLogo size={16} className="text-white" />
             </div>
             <span className="text-sm font-semibold text-gradient-primary">
               Probr

@@ -22,9 +22,19 @@ interface Particle {
   opacity: number;
   life: number;
   maxLife: number;
-  char: string; // "" = dot particle
+  char: string;
   rotation: number;
   rotSpeed: number;
+}
+
+interface AmbientDot {
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  size: number;
+  baseOpacity: number;
+  phase: number;
 }
 
 interface MetalTheme {
@@ -38,7 +48,7 @@ interface MetalTheme {
 }
 
 /* ═══════════════════════════════════════════════════════════════════
-   Constants — horizontal cards, 2-3 visible per screen
+   Constants
    ═══════════════════════════════════════════════════════════════════ */
 
 const CARD_W = 320;
@@ -46,14 +56,16 @@ const CARD_H = 180;
 const GAP = 260;
 const SCROLL_SPEED = 0.6;
 const MAX_PARTICLES = 400;
+const AMBIENT_COUNT = 70;
 
-/* Single particle colour — soft purple-white */
-const P_R = 200;
-const P_G = 190;
+/* Particle colour — soft purple-white */
+const P_R = 190;
+const P_G = 170;
 const P_B = 255;
 
 const SCATTER_CHARS =
-  "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#$!+=<>{}[]|@&*";
+  "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#$!=+<>{}[]|@&*";
+const GRID_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#$!=+.:·";
 
 /* ── Themes ───────────────────────────────────────────── */
 
@@ -164,27 +176,6 @@ const CARDS: ExpertiseCard[] = [
   },
 ];
 
-/* ── Code snippets for reveal ─────────────────────────── */
-
-const CODE_SNIPPETS = [
-  'const probe = await monitor.check("api");',
-  'if (res.status !== 200) alert.fire();',
-  "const ssl = cert.verify({ domain });",
-  'await webhook.send({ ch: "slack" });',
-  "const rtt = perf.measure('probe');",
-  "setInterval(() => ping(), 30_000);",
-  'const gtm = headless.verify("GTM");',
-  "if (delta > 0.25) anomaly.flag();",
-  'const cmp = consent.audit({ gdpr });',
-  "await pipeline.validate(events);",
-  "for (const s of sites) runProbe(s);",
-  'const h = { status: "ok", ms: 42 };',
-  "export const cfg = { interval: 60 };",
-  "db.alerts.insertOne({ severity });",
-  'if (!consent) log.warn("missing");',
-  "const ev = ga4.realtime.query();",
-];
-
 /* ═══════════════════════════════════════════════════════════════════
    Helpers
    ═══════════════════════════════════════════════════════════════════ */
@@ -193,51 +184,87 @@ function randomChar(): string {
   return SCATTER_CHARS[Math.floor(Math.random() * SCATTER_CHARS.length)];
 }
 
-function generateCodeLines(count: number): string[] {
-  const lines: string[] = [];
-  for (let i = 0; i < count; i++) {
-    lines.push(CODE_SNIPPETS[i % CODE_SNIPPETS.length]);
-  }
-  return lines;
+/* Seeded RNG for deterministic grids per card */
+function seededRng(seed: number): () => number {
+  let s = seed;
+  return () => {
+    s = (s * 16807) % 2147483647;
+    return (s - 1) / 2147483646;
+  };
 }
 
+interface GridCell {
+  char: string;
+  bold: boolean;
+}
+
+function generateGrid(
+  seed: number,
+  rows: number,
+  cols: number,
+): GridCell[][] {
+  const rng = seededRng(seed + 17);
+  return Array.from({ length: rows }, () =>
+    Array.from({ length: cols }, () => ({
+      char: GRID_CHARS[Math.floor(rng() * GRID_CHARS.length)],
+      bold: rng() < 0.07,
+    })),
+  );
+}
+
+/* Pre-generate 8 unique grids (one per card) */
+const GRIDS = CARDS.map((_, i) => generateGrid(i * 137, 17, 28));
+
 /* ═══════════════════════════════════════════════════════════════════
-   CodeReveal — Horizontal layout of dense code
+   AsciiReveal — Random character grid (Evervault-style)
    ═══════════════════════════════════════════════════════════════════ */
 
-const codeLines = generateCodeLines(16);
+function AsciiReveal({ gridIndex }: { gridIndex: number }) {
+  const grid = GRIDS[gridIndex % GRIDS.length];
 
-function CodeReveal() {
   return (
     <div
       style={{
         position: "absolute",
         inset: 0,
-        background: "#08081a",
+        background: "#06060f",
         borderRadius: 14,
         overflow: "hidden",
-        padding: "10px 12px",
+        padding: "8px 6px",
         display: "flex",
         flexDirection: "column",
+        justifyContent: "center",
         gap: 0,
       }}
     >
-      {codeLines.map((line, i) => (
+      {grid.map((row, r) => (
         <div
-          key={i}
+          key={r}
           style={{
             fontFamily: "monospace",
-            fontSize: 9,
-            lineHeight: "10.5px",
-            color: `hsl(${160 + ((i * 7) % 80)} 55% ${50 + ((i * 3) % 20)}%)`,
+            fontSize: 10,
+            lineHeight: "10.2px",
+            letterSpacing: "0.14em",
             whiteSpace: "nowrap",
-            opacity: 0.8,
+            color: `rgba(${P_R},${P_G},${P_B},${0.25 + (r % 3) * 0.08})`,
           }}
         >
-          <span style={{ color: "rgba(200,190,255,0.35)", marginRight: 6 }}>
-            {String(i + 1).padStart(2, "0")}
-          </span>
-          {line}
+          {row.map((cell, c) => (
+            <span
+              key={c}
+              style={
+                cell.bold
+                  ? {
+                      fontSize: 14,
+                      fontWeight: 700,
+                      color: `rgba(255,255,255,0.6)`,
+                    }
+                  : undefined
+              }
+            >
+              {cell.char}
+            </span>
+          ))}
         </div>
       ))}
     </div>
@@ -277,7 +304,7 @@ function MetalCard({
         gap: 20,
       }}
     >
-      {/* Metallic sheen overlay */}
+      {/* Metallic sheen */}
       <div
         style={{
           position: "absolute",
@@ -287,7 +314,6 @@ function MetalCard({
           pointerEvents: "none",
         }}
       />
-
       {/* Accent bar top */}
       <div
         style={{
@@ -400,12 +426,6 @@ function MetalCard({
 
 /* ═══════════════════════════════════════════════════════════════════
    Main — CardBeamSection
-
-   Behaviour:
-   - Horizontal cards scroll left. Large gaps = 2-3 cards on screen.
-   - Beam breathes: idle = very subtle, scanning = intensifies.
-   - Cards disintegrate permanently when crossing the beam.
-   - Decoded cards fade out with edge blur as they scroll further left.
    ═══════════════════════════════════════════════════════════════════ */
 
 export default function CardBeamSection() {
@@ -420,60 +440,121 @@ export default function CardBeamSection() {
   const dragStartXRef = useRef(0);
   const dragScrollRef = useRef(0);
   const particlesRef = useRef<Particle[]>([]);
-
-  /* Beam breathing intensity: 0 = idle, 1 = actively scanning */
+  const ambientRef = useRef<AmbientDot[]>([]);
   const beamIntensityRef = useRef(0);
 
-  /* DOM refs per card layer */
   const metalLayerRefs = useRef<(HTMLDivElement | null)[]>([]);
   const codeLayerRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-  /* Triple cards for seamless loop */
   const tripled = [...CARDS, ...CARDS, ...CARDS];
   const singleWidth = CARDS.length * (CARD_W + GAP);
 
-  /* ── Draw beam + particles on canvas ────────────────── */
+  /* ── Draw everything on canvas ──────────────────────── */
 
   const drawCanvas = useCallback(
-    (beamX: number, sectionH: number, intensity: number) => {
+    (beamX: number, sectionW: number, sectionH: number, intensity: number) => {
       const canvas = canvasRef.current;
       if (!canvas) return;
       const ctx = canvas.getContext("2d");
       if (!ctx) return;
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const now = Date.now();
 
-      /* ─ Idle breathing base (always visible, very subtle) ─ */
-      const idleAlpha = 0.06 + 0.04 * Math.sin(Date.now() / 2000);
+      /* ── 1. Ambient floating particles ─────────────── */
 
-      /* ─ Active alpha ramps with intensity ─ */
-      const coreAlpha = idleAlpha + intensity * 0.85;
-      const glowAlpha = 0.02 + intensity * 0.12;
+      /* Lazy init */
+      if (ambientRef.current.length === 0 && sectionW > 0) {
+        ambientRef.current = Array.from({ length: AMBIENT_COUNT }, () => ({
+          x: Math.random() * sectionW,
+          y: Math.random() * sectionH,
+          vx: 0.4 + Math.random() * 1.8,
+          vy: (Math.random() - 0.5) * 0.25,
+          size: 0.8 + Math.random() * 2.2,
+          baseOpacity: 0.12 + Math.random() * 0.28,
+          phase: Math.random() * Math.PI * 2,
+        }));
+      }
 
-      /* ─ Beam core line ─ */
-      const grad = ctx.createLinearGradient(0, 0, 0, sectionH);
-      grad.addColorStop(0, `rgba(${P_R},${P_G},${P_B},0)`);
-      grad.addColorStop(0.2, `rgba(${P_R},${P_G},${P_B},${coreAlpha * 0.6})`);
-      grad.addColorStop(0.4, `rgba(255,255,255,${coreAlpha})`);
-      grad.addColorStop(0.6, `rgba(255,255,255,${coreAlpha})`);
-      grad.addColorStop(0.8, `rgba(${P_R},${P_G},${P_B},${coreAlpha * 0.6})`);
-      grad.addColorStop(1, `rgba(${P_R},${P_G},${P_B},0)`);
+      for (const dot of ambientRef.current) {
+        dot.x += dot.vx;
+        dot.y += dot.vy;
 
-      ctx.strokeStyle = grad;
-      ctx.lineWidth = 1.5 + intensity * 1;
+        /* Wrap */
+        if (dot.x > sectionW + 30) {
+          dot.x = -30;
+          dot.y = Math.random() * sectionH;
+        }
+        if (dot.y < -10) dot.y = sectionH + 10;
+        if (dot.y > sectionH + 10) dot.y = -10;
+
+        /* Brighter near beam */
+        const distFromBeam = Math.abs(dot.x - beamX);
+        const beamProximity = Math.max(0, 1 - distFromBeam / 300);
+        const pulse = 0.6 + 0.4 * Math.sin(now / 1800 + dot.phase);
+        const alpha = dot.baseOpacity * pulse + beamProximity * 0.15;
+
+        ctx.fillStyle = `rgba(${P_R},${P_G},${P_B},${alpha})`;
+        ctx.beginPath();
+        ctx.arc(dot.x, dot.y, dot.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      /* ── 2. Beam — Elliptical purple glow ──────────── */
+
+      const idlePulse = 0.5 + 0.5 * Math.sin(now / 2200);
+
+      /* Deep violet radial glow (elliptical, wider in middle) */
+      ctx.save();
+      ctx.translate(beamX, sectionH / 2);
+      /* Scale Y to stretch a circular gradient into a vertical ellipse */
+      ctx.scale(1, (sectionH * 0.6) / 100);
+      const glowR = 60 + intensity * 50;
+      const glowGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, glowR);
+      const glowBase = 0.04 + idlePulse * 0.02;
+      glowGrad.addColorStop(
+        0,
+        `rgba(100,50,220,${glowBase + intensity * 0.30})`,
+      );
+      glowGrad.addColorStop(
+        0.35,
+        `rgba(80,30,200,${glowBase * 0.6 + intensity * 0.15})`,
+      );
+      glowGrad.addColorStop(
+        0.7,
+        `rgba(60,20,180,${glowBase * 0.2 + intensity * 0.06})`,
+      );
+      glowGrad.addColorStop(1, "transparent");
+      ctx.fillStyle = glowGrad;
+      ctx.fillRect(-glowR, -glowR, glowR * 2, glowR * 2);
+      ctx.restore();
+
+      /* ── 3. Beam — Core line (tapered opacity) ─────── */
+
+      const coreAlpha = 0.12 + idlePulse * 0.08 + intensity * 0.8;
+      const lineGrad = ctx.createLinearGradient(0, 0, 0, sectionH);
+      lineGrad.addColorStop(0, "rgba(255,255,255,0)");
+      lineGrad.addColorStop(0.15, `rgba(255,255,255,${coreAlpha * 0.4})`);
+      lineGrad.addColorStop(0.35, `rgba(255,255,255,${coreAlpha})`);
+      lineGrad.addColorStop(0.65, `rgba(255,255,255,${coreAlpha})`);
+      lineGrad.addColorStop(0.85, `rgba(255,255,255,${coreAlpha * 0.4})`);
+      lineGrad.addColorStop(1, "rgba(255,255,255,0)");
+
+      ctx.strokeStyle = lineGrad;
+      ctx.lineWidth = 1.2 + intensity * 0.8;
       ctx.beginPath();
       ctx.moveTo(beamX, 0);
       ctx.lineTo(beamX, sectionH);
       ctx.stroke();
 
-      /* ─ Glow (only when scanning) ─ */
-      if (intensity > 0.05) {
+      /* Extra glow line during scanning */
+      if (intensity > 0.1) {
         ctx.save();
         ctx.globalCompositeOperation = "lighter";
-        ctx.shadowColor = `rgba(${P_R},${P_G},${P_B},${intensity * 0.7})`;
-        ctx.shadowBlur = 30 + intensity * 40;
-        ctx.strokeStyle = `rgba(${P_R},${P_G},${P_B},${glowAlpha})`;
-        ctx.lineWidth = 10 + intensity * 14;
+        ctx.shadowColor = `rgba(${P_R},${P_G},${P_B},${intensity * 0.5})`;
+        ctx.shadowBlur = 20 + intensity * 30;
+        ctx.strokeStyle = `rgba(${P_R},${P_G},${P_B},${intensity * 0.08})`;
+        ctx.lineWidth = 8 + intensity * 10;
         ctx.beginPath();
         ctx.moveTo(beamX, 0);
         ctx.lineTo(beamX, sectionH);
@@ -481,7 +562,8 @@ export default function CardBeamSection() {
         ctx.restore();
       }
 
-      /* ─ Particles ─ */
+      /* ── 4. Scan particles + char particles ────────── */
+
       const pool = particlesRef.current;
       for (let i = 0; i < pool.length; i++) {
         const p = pool[i];
@@ -489,13 +571,14 @@ export default function CardBeamSection() {
 
         p.x += p.vx;
         p.y += p.vy;
-        p.vy += 0.01;
-        p.vx *= 0.995; // slight drag
+        p.vy += 0.008;
+        p.vx *= 0.997;
         p.life -= 1;
+
         /* Smooth fade in + fade out */
         const t = p.life / p.maxLife;
-        p.opacity = t < 0.2 ? t / 0.2 : t > 0.8 ? (1 - t) / 0.2 : 1;
-        p.opacity *= 0.7;
+        p.opacity = t > 0.85 ? (1 - t) / 0.15 : t < 0.25 ? t / 0.25 : 1;
+        p.opacity *= 0.65;
         p.rotation += p.rotSpeed;
 
         if (p.char) {
@@ -525,17 +608,17 @@ export default function CardBeamSection() {
     (x: number, yMin: number, yMax: number) => {
       const pool = particlesRef.current;
       let emitted = 0;
-      for (let i = 0; i < pool.length && emitted < 6; i++) {
+      for (let i = 0; i < pool.length && emitted < 7; i++) {
         if (pool[i].life > 0) continue;
 
         const isChar = Math.random() < 0.5;
-        const maxLife = 35 + Math.random() * 55;
+        const maxLife = 30 + Math.random() * 55;
         pool[i] = {
           x: x + (Math.random() - 0.5) * 6,
           y: yMin + Math.random() * (yMax - yMin),
-          vx: -0.5 + Math.random() * 3, // mostly drift right
+          vx: -0.5 + Math.random() * 3,
           vy: (Math.random() - 0.5) * 2,
-          size: isChar ? 8 + Math.random() * 12 : 1 + Math.random() * 2,
+          size: isChar ? 8 + Math.random() * 14 : 1 + Math.random() * 2.5,
           opacity: 0,
           life: maxLife,
           maxLife,
@@ -556,7 +639,6 @@ export default function CardBeamSection() {
       rafRef.current = requestAnimationFrame(animate);
       return;
     }
-
     if (!isVisibleRef.current) {
       rafRef.current = requestAnimationFrame(animate);
       return;
@@ -571,19 +653,18 @@ export default function CardBeamSection() {
     if (scrollXRef.current >= singleWidth) scrollXRef.current -= singleWidth;
     if (scrollXRef.current < 0) scrollXRef.current += singleWidth;
 
-    /* Move track */
     trackRef.current.style.transform = `translateX(${-scrollXRef.current}px)`;
 
-    /* Section metrics */
     const sectionRect = sectionRef.current.getBoundingClientRect();
     const beamX = sectionRect.width / 2;
+    const sectionW = sectionRect.width;
     const sectionH = sectionRect.height;
 
-    /* Canvas size */
+    /* Canvas resize */
     const canvas = canvasRef.current;
     if (canvas) {
-      const w = Math.round(sectionRect.width);
-      const h = Math.round(sectionRect.height);
+      const w = Math.round(sectionW);
+      const h = Math.round(sectionH);
       if (canvas.width !== w || canvas.height !== h) {
         canvas.width = w;
         canvas.height = h;
@@ -592,11 +673,9 @@ export default function CardBeamSection() {
 
     const trackLeft = -scrollXRef.current;
     const cardTop = (sectionH - CARD_H) / 2;
-
-    /* Track whether any card is actively being scanned */
     let isScanning = false;
 
-    /* ── Per-card scan progress ─────────────────────────── */
+    /* ── Per-card scan ─────────────────────────────────── */
 
     for (let i = 0; i < tripled.length; i++) {
       const metalLayer = metalLayerRefs.current[i];
@@ -604,68 +683,53 @@ export default function CardBeamSection() {
       if (!metalLayer || !codeLayer) continue;
 
       const cardLeft = trackLeft + i * (CARD_W + GAP);
-
-      /* scanProgress: 0 = unscanned, 0-1 = scanning, 1 = decoded */
       const raw = (beamX - cardLeft) / CARD_W;
       const scanProgress = Math.max(0, Math.min(1, raw));
 
-      /*
-       * Fade factor: once decoded, card fades as it moves further left.
-       * distancePastBeam = how far the card's right edge is past beam (in px)
-       */
+      /* Fade out decoded cards */
       const cardRight = cardLeft + CARD_W;
-      const distancePastBeam = beamX - cardRight; // positive when card is fully left of beam
-      const FADE_START = 80; // px past beam before fade starts
-      const FADE_DIST = 350; // px over which to fully fade
-      let fadeFactor = 1;
-      if (distancePastBeam > FADE_START) {
-        fadeFactor = Math.max(
-          0,
-          1 - (distancePastBeam - FADE_START) / FADE_DIST,
-        );
+      const pastBeam = beamX - cardRight;
+      const FADE_START = 60;
+      const FADE_DIST = 300;
+      let fade = 1;
+      if (pastBeam > FADE_START) {
+        fade = Math.max(0, 1 - (pastBeam - FADE_START) / FADE_DIST);
       }
 
       if (scanProgress <= 0) {
-        /* Not yet scanned — full metal */
         metalLayer.style.clipPath = "none";
         metalLayer.style.opacity = "1";
         codeLayer.style.clipPath = "inset(0 100% 0 0)";
         codeLayer.style.opacity = "0";
       } else if (scanProgress >= 1) {
-        /* Fully decoded — code only, fading out over distance */
         metalLayer.style.clipPath = "inset(0 0 0 100%)";
         metalLayer.style.opacity = "0";
         codeLayer.style.clipPath = "none";
-        codeLayer.style.opacity = String(fadeFactor);
+        codeLayer.style.opacity = String(fade);
       } else {
-        /* Actively scanning — progressive reveal */
         isScanning = true;
         const pct = scanProgress * 100;
         metalLayer.style.clipPath = `inset(0 0 0 ${pct}%)`;
         metalLayer.style.opacity = "1";
         codeLayer.style.clipPath = `inset(0 ${100 - pct}% 0 0)`;
         codeLayer.style.opacity = "1";
-
-        /* Emit particles at scan edge */
         emitParticles(beamX, cardTop, cardTop + CARD_H);
       }
     }
 
-    /* ── Beam breathing ─────────────────────────────────── */
+    /* Beam intensity lerp */
     const target = isScanning ? 1 : 0;
-    const speed = isScanning ? 0.08 : 0.03; // quick ramp up, slow fade down
-    beamIntensityRef.current += (target - beamIntensityRef.current) * speed;
+    const speed = isScanning ? 0.08 : 0.025;
+    beamIntensityRef.current +=
+      (target - beamIntensityRef.current) * speed;
 
-    /* Draw beam + particles */
-    drawCanvas(beamX, sectionH, beamIntensityRef.current);
-
+    drawCanvas(beamX, sectionW, sectionH, beamIntensityRef.current);
     rafRef.current = requestAnimationFrame(animate);
   }, [singleWidth, tripled.length, drawCanvas, emitParticles]);
 
   /* ── Lifecycle ──────────────────────────────────────── */
 
   useEffect(() => {
-    /* Init particle pool */
     particlesRef.current = Array.from({ length: MAX_PARTICLES }, () => ({
       x: 0,
       y: 0,
@@ -680,7 +744,6 @@ export default function CardBeamSection() {
       rotSpeed: 0,
     }));
 
-    /* IntersectionObserver */
     const observer = new IntersectionObserver(
       ([entry]) => {
         isVisibleRef.current = entry.isIntersecting;
@@ -688,8 +751,6 @@ export default function CardBeamSection() {
       { threshold: 0.1 },
     );
     if (sectionRef.current) observer.observe(sectionRef.current);
-
-    /* Start RAF */
     rafRef.current = requestAnimationFrame(animate);
 
     return () => {
@@ -698,7 +759,7 @@ export default function CardBeamSection() {
     };
   }, [animate]);
 
-  /* ── Pointer events for drag ────────────────────────── */
+  /* ── Pointer drag ───────────────────────────────────── */
 
   const onPointerDown = useCallback((e: React.PointerEvent) => {
     isDraggingRef.current = true;
@@ -709,17 +770,16 @@ export default function CardBeamSection() {
 
   const onPointerMove = useCallback((e: React.PointerEvent) => {
     if (!isDraggingRef.current) return;
-    const dx = e.clientX - dragStartXRef.current;
-    scrollXRef.current = dragScrollRef.current - dx;
+    scrollXRef.current = dragScrollRef.current - (e.clientX - dragStartXRef.current);
   }, []);
 
   const onPointerUp = useCallback(() => {
     isDraggingRef.current = false;
   }, []);
 
-  /* ═══════════════════════════════════════════════════════════════
+  /* ═══════════════════════════════════════════════════════
      Render
-     ═══════════════════════════════════════════════════════════════ */
+     ═══════════════════════════════════════════════════════ */
 
   return (
     <section
@@ -731,30 +791,30 @@ export default function CardBeamSection() {
       onPointerUp={onPointerUp}
       onPointerCancel={onPointerUp}
     >
-      {/* Canvas — beam + particles (topmost) */}
+      {/* Canvas — beam + all particles */}
       <canvas
         ref={canvasRef}
         className="absolute inset-0 pointer-events-none"
         style={{ zIndex: 20 }}
       />
 
-      {/* Edge fades — wide, so decoded cards dissolve into bg */}
+      {/* Edge fades */}
       <div
         className="absolute inset-y-0 left-0 pointer-events-none"
         style={{
           zIndex: 15,
-          width: "20%",
+          width: "22%",
           background:
-            "linear-gradient(90deg, hsl(240 15% 6%) 0%, hsl(240 15% 6% / 0.6) 40%, transparent 100%)",
+            "linear-gradient(90deg, hsl(240 15% 6%) 0%, hsl(240 15% 6% / 0.7) 35%, transparent 100%)",
         }}
       />
       <div
         className="absolute inset-y-0 right-0 pointer-events-none"
         style={{
           zIndex: 15,
-          width: "20%",
+          width: "22%",
           background:
-            "linear-gradient(270deg, hsl(240 15% 6%) 0%, hsl(240 15% 6% / 0.6) 40%, transparent 100%)",
+            "linear-gradient(270deg, hsl(240 15% 6%) 0%, hsl(240 15% 6% / 0.7) 35%, transparent 100%)",
         }}
       />
 
@@ -770,13 +830,9 @@ export default function CardBeamSection() {
             <div
               key={i}
               className="relative shrink-0"
-              style={{
-                width: CARD_W,
-                height: CARD_H,
-                willChange: "transform",
-              }}
+              style={{ width: CARD_W, height: CARD_H, willChange: "transform" }}
             >
-              {/* Layer 1 — Code (underneath, revealed by scan) */}
+              {/* Code layer */}
               <div
                 ref={(el) => {
                   codeLayerRefs.current[i] = el;
@@ -791,8 +847,7 @@ export default function CardBeamSection() {
                   overflow: "hidden",
                 }}
               >
-                <CodeReveal />
-                {/* Scan-edge line */}
+                <AsciiReveal gridIndex={i % CARDS.length} />
                 <div
                   style={{
                     position: "absolute",
@@ -800,23 +855,19 @@ export default function CardBeamSection() {
                     right: 0,
                     bottom: 0,
                     width: 1,
-                    background: `rgba(${P_R},${P_G},${P_B},0.4)`,
-                    boxShadow: `0 0 8px rgba(${P_R},${P_G},${P_B},0.2)`,
+                    background: `rgba(${P_R},${P_G},${P_B},0.35)`,
+                    boxShadow: `0 0 6px rgba(${P_R},${P_G},${P_B},0.2)`,
                     pointerEvents: "none",
                   }}
                 />
               </div>
 
-              {/* Layer 2 — Metal (on top, clipped away by scan) */}
+              {/* Metal layer */}
               <div
                 ref={(el) => {
                   metalLayerRefs.current[i] = el;
                 }}
-                style={{
-                  position: "absolute",
-                  inset: 0,
-                  zIndex: 2,
-                }}
+                style={{ position: "absolute", inset: 0, zIndex: 2 }}
               >
                 <MetalCard
                   card={card}
