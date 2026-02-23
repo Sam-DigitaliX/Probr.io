@@ -382,6 +382,42 @@ body {
   to { --orbit-angle: 360deg; }
 }
 
+/* ── Logo Scroll Track ─────────────────────────────── */
+.logo-scroll-track {
+  display: inline-flex;
+  animation: scroll-left 60s linear infinite;
+  will-change: transform;
+}
+
+@keyframes scroll-left {
+  0%   { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(-50%, 0, 0); }
+}
+
+/* ── Client Logos ──────────────────────────────────── */
+.client-logo {
+  filter: grayscale(100%) brightness(0);
+  opacity: 0.35;
+  transition: opacity 0.3s ease, filter 0.3s ease;
+}
+
+.client-logo-wrapper:hover .client-logo {
+  opacity: 0.7;
+  filter: grayscale(100%) brightness(0) drop-shadow(0 0 6px hsl(262 83% 58% / 0.2));
+}
+
+/* ── Orbit Ring — Group Hover Activation ───────────── */
+.group:hover .orbit-ring {
+  opacity: 1;
+  animation: orbit-fill 3s linear infinite;
+}
+.group:hover .orbit-ring:nth-child(even) {
+  animation-direction: reverse;
+}
+.group:hover .orbit-ring:nth-child(2) { animation-delay: -0.75s; }
+.group:hover .orbit-ring:nth-child(3) { animation-delay: -1.5s; }
+.group:hover .orbit-ring:nth-child(4) { animation-delay: -2.25s; }
+
 /* ── Scrollbar ──────────────────────────────────────── */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }

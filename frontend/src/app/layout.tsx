@@ -16,7 +16,9 @@ export default function RootLayout({
     <html lang="en">
       <body className="antialiased bg-background text-foreground">
         <EvervaultGlow />
-        {children}
+        <div className="relative z-[1]">
+          {children}
+        </div>
       </body>
     </html>
   );

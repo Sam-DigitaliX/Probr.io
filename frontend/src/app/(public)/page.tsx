@@ -6,13 +6,13 @@ import {
   Activity,
   Bell,
   Globe,
-  Zap,
   BarChart3,
-  CheckCircle2,
   ArrowRight,
   Server,
   Eye,
   Lock,
+  Star,
+  BadgeCheck,
 } from "lucide-react";
 
 const features = [
@@ -65,7 +65,7 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen">
       {/* ── Navbar ────────────────────────────────────── */}
-      <nav className="fixed top-0 inset-x-0 z-50 border-b border-glass-border bg-glass backdrop-blur-xl">
+      <nav className="fixed top-0 inset-x-0 z-50 backdrop-blur-xl border-b border-black/[0.06]">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
           <Link href="/" className="flex items-center gap-2.5">
             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-secondary">
@@ -75,6 +75,29 @@ export default function LandingPage() {
               TrackGuard
             </span>
           </Link>
+
+          {/* Nav pill (desktop) */}
+          <div className="hidden md:flex items-center rounded-full border border-black/[0.08] bg-black/[0.04] px-1 py-1">
+            <Link
+              href="/"
+              className="px-4 py-2 rounded-full text-sm font-medium text-foreground/70 hover:text-foreground transition-colors"
+            >
+              Home
+            </Link>
+            <Link
+              href="#features"
+              className="px-4 py-2 rounded-full text-sm font-medium text-foreground/70 hover:text-foreground transition-colors"
+            >
+              Features
+            </Link>
+            <Link
+              href="#how-it-works"
+              className="px-4 py-2 rounded-full text-sm font-medium text-foreground/70 hover:text-foreground transition-colors"
+            >
+              How it works
+            </Link>
+          </div>
+
           <div className="flex items-center gap-3">
             <Link
               href="/login"
@@ -93,53 +116,104 @@ export default function LandingPage() {
         </div>
       </nav>
 
-      {/* ── Hero ──────────────────────────────────────── */}
-      <section className="relative pt-32 pb-20 overflow-hidden">
-        {/* Background decoration */}
-        <div className="absolute inset-0 -z-10">
-          <div className="absolute top-20 left-1/4 h-72 w-72 rounded-full bg-[hsl(262_83%_80%/0.12)] blur-3xl" />
-          <div className="absolute top-40 right-1/4 h-64 w-64 rounded-full bg-[hsl(188_94%_80%/0.08)] blur-3xl" />
-        </div>
+      {/* ── Hero — Glass Panel Bottom ──────────────────── */}
+      <div className="mx-3 md:mx-6">
+        <section className="relative pt-32 pb-20 md:pt-44 md:pb-32 overflow-hidden rounded-b-[40px] bg-white/70 backdrop-blur-xl border border-black/[0.06] border-t-0">
+          {/* Internal gradient overlay */}
+          <div
+            className="absolute inset-0 rounded-b-[40px]"
+            style={{
+              background:
+                "linear-gradient(180deg, hsl(262 83% 58% / 0.06) 0%, hsl(262 83% 58% / 0.025) 40%, transparent 70%)",
+            }}
+          />
 
-        <div className="mx-auto max-w-4xl px-6 text-center">
-          <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-white/80 shadow-sm px-4 py-1.5 text-xs font-medium text-primary mb-8 animate-fade-in-up">
-            <Zap className="h-3.5 w-3.5" />
-            Monitoring for tracking infrastructure
+          {/* Luminous liseré bottom */}
+          <div
+            className="absolute inset-x-0 bottom-0 h-px"
+            style={{
+              background:
+                "linear-gradient(90deg, transparent, hsl(262 83% 58% / 0.15) 30%, hsl(188 94% 43% / 0.15) 70%, transparent)",
+            }}
+          />
+
+          {/* Content */}
+          <div className="relative z-10 mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
+            {/* Animated badge with pulsing dot */}
+            <div className="relative inline-flex mb-8 animate-fade-in-up">
+              <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-full blur-md" />
+              <div className="relative inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 shadow-sm border border-primary/20 backdrop-blur-sm">
+                <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                <span className="text-sm font-medium text-gradient-primary">
+                  Monitoring for tracking infrastructure
+                </span>
+              </div>
+            </div>
+
+            {/* Headline with gradient */}
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.1] mb-6 animate-fade-in-up animate-delay-100">
+              Never miss a{" "}
+              <span className="text-gradient-primary">tracking failure</span>{" "}
+              again
+            </h1>
+
+            <p className="mt-6 text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed animate-fade-in-up animate-delay-200">
+              TrackGuard monitors your entire tracking stack — sGTM, GTM, GA4,
+              BigQuery, CMP — and alerts you instantly when something breaks.
+              Built for agencies managing multiple client setups.
+            </p>
+
+            <div className="flex items-center justify-center gap-4 mt-10 animate-fade-in-up animate-delay-300">
+              <Link
+                href="/signup"
+                className="ev-btn-primary inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold shadow-lg shadow-primary/25"
+              >
+                Start Monitoring
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+              <Link
+                href="/login"
+                className="inline-flex items-center gap-2 rounded-xl border border-black/[0.08] bg-white px-6 py-3 text-sm font-semibold text-foreground shadow-sm hover:bg-muted/50 transition-all"
+              >
+                Log in to Dashboard
+              </Link>
+            </div>
+
+            {/* Social proof — stars + verified badge */}
+            <div className="flex items-center justify-center gap-3 mt-8 animate-fade-in-up animate-delay-400">
+              <div className="flex items-center gap-1">
+                <span className="text-sm font-semibold text-foreground">
+                  4.75/5
+                </span>
+                <div className="flex items-center gap-0.5">
+                  {[1, 2, 3, 4, 5].map((i) => (
+                    <Star
+                      key={i}
+                      className={`w-3.5 h-3.5 ${
+                        i <= 4
+                          ? "fill-amber-400 text-amber-400"
+                          : "fill-amber-400/70 text-amber-400/70"
+                      }`}
+                    />
+                  ))}
+                </div>
+              </div>
+              <span className="text-sm text-muted-foreground">–</span>
+              <span className="text-sm text-muted-foreground">32 avis</span>
+              <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/25">
+                <BadgeCheck className="w-3.5 h-3.5 text-emerald-500" />
+                <span className="text-xs font-medium text-emerald-600">
+                  Verified
+                </span>
+              </div>
+            </div>
           </div>
-
-          <h1 className="text-5xl sm:text-6xl font-bold tracking-tight leading-[1.1] animate-fade-in-up animate-delay-100">
-            Never miss a{" "}
-            <span className="text-gradient-primary">tracking failure</span>{" "}
-            again
-          </h1>
-
-          <p className="mt-6 text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed animate-fade-in-up animate-delay-200">
-            TrackGuard monitors your entire tracking stack — sGTM, GTM, GA4,
-            BigQuery, CMP — and alerts you instantly when something breaks.
-            Built for agencies managing multiple client setups.
-          </p>
-
-          <div className="flex items-center justify-center gap-4 mt-10 animate-fade-in-up animate-delay-300">
-            <Link
-              href="/signup"
-              className="ev-btn-primary inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold shadow-lg shadow-primary/25"
-            >
-              Start Monitoring
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-            <Link
-              href="/login"
-              className="inline-flex items-center gap-2 rounded-xl border border-black/[0.08] bg-white px-6 py-3 text-sm font-semibold text-foreground shadow-sm hover:bg-muted/50 transition-all"
-            >
-              Log in to Dashboard
-            </Link>
-          </div>
-        </div>
-      </section>
+        </section>
+      </div>
 
       {/* ── Stats ─────────────────────────────────────── */}
-      <section className="border-y border-border bg-glass backdrop-blur-lg">
-        <div className="mx-auto max-w-4xl px-6 py-12">
+      <section className="relative py-16 md:py-20">
+        <div className="mx-auto max-w-4xl px-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {stats.map((stat) => (
               <div key={stat.label} className="text-center">
@@ -156,10 +230,15 @@ export default function LandingPage() {
       </section>
 
       {/* ── Features ──────────────────────────────────── */}
-      <section className="py-24">
+      <section id="features" className="py-24">
         <div className="mx-auto max-w-6xl px-6">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold tracking-tight">
+            <div className="flex justify-center mb-6">
+              <span className="glass-badge px-4 py-1.5">
+                <span className="text-gradient-primary">Features</span>
+              </span>
+            </div>
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight">
               Everything you need to{" "}
               <span className="text-gradient-primary">monitor tracking</span>
             </h2>
@@ -173,10 +252,13 @@ export default function LandingPage() {
             {features.map((feature, i) => (
               <div
                 key={feature.title}
-                className={`glass-card p-6 transition-all duration-300 animate-fade-in-up animate-delay-${((i % 6) + 1) * 100}`}
+                className={`group glass-card-interactive p-6 animate-fade-in-up animate-delay-${
+                  ((i % 6) + 1) * 100
+                }`}
               >
-                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary/[0.06] border border-primary/[0.08] mb-4">
-                  <feature.icon className="h-5.5 w-5.5 text-primary" />
+                {/* Icon container — gradient stroke → solid gradient fill on group hover */}
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/[0.06] border border-primary/[0.08] mb-4 transition-all duration-300 group-hover:bg-gradient-to-br group-hover:from-primary group-hover:to-secondary group-hover:border-transparent group-hover:scale-110">
+                  <feature.icon className="h-7 w-7 text-primary group-hover:text-white transition-colors duration-300" />
                 </div>
                 <h3 className="font-semibold mb-2">{feature.title}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">
@@ -189,10 +271,15 @@ export default function LandingPage() {
       </section>
 
       {/* ── How it works ──────────────────────────────── */}
-      <section className="py-24 bg-muted/30">
+      <section id="how-it-works" className="py-24">
         <div className="mx-auto max-w-4xl px-6">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold tracking-tight">
+            <div className="flex justify-center mb-6">
+              <span className="glass-badge px-4 py-1.5">
+                <span className="text-gradient-primary">Getting Started</span>
+              </span>
+            </div>
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight">
               Up and running in{" "}
               <span className="text-gradient-primary">minutes</span>
             </h2>
@@ -218,9 +305,14 @@ export default function LandingPage() {
                 description:
                   "Receive instant Slack or email notifications when issues are detected.",
               },
-            ].map((item) => (
-              <div key={item.step} className="text-center">
-                <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary/80 text-primary-foreground font-bold text-lg mb-4 shadow-glow-primary">
+            ].map((item, i) => (
+              <div
+                key={item.step}
+                className={`text-center animate-fade-in-up animate-delay-${
+                  (i + 1) * 100
+                }`}
+              >
+                <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-primary to-secondary text-primary-foreground font-bold text-lg mb-4 shadow-lg shadow-primary/20">
                   {item.step}
                 </div>
                 <h3 className="font-semibold mb-2">{item.title}</h3>
@@ -233,12 +325,29 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── CTA ───────────────────────────────────────── */}
-      <section className="py-24">
-        <div className="mx-auto max-w-3xl px-6 text-center">
-          <div className="glass-card p-12">
+      {/* ── CTA — Glass Panel Top + Fade-to-Footer ────── */}
+      <div className="relative mx-4 md:mx-8 mt-16">
+        <div
+          className="relative rounded-t-[40px] pt-16 md:pt-24 px-4 md:px-8 lg:px-20 pb-20 md:pb-28 bg-white/70 backdrop-blur-xl border border-black/[0.06] border-b-0"
+          style={{
+            maskImage:
+              "linear-gradient(to bottom, black calc(100% - 60px), transparent)",
+            WebkitMaskImage:
+              "linear-gradient(to bottom, black calc(100% - 60px), transparent)",
+          }}
+        >
+          {/* Luminous liseré top */}
+          <div
+            className="absolute inset-x-0 top-0 h-px rounded-t-[40px]"
+            style={{
+              background:
+                "linear-gradient(90deg, transparent, hsl(262 83% 58% / 0.15) 30%, hsl(262 83% 58% / 0.20) 50%, hsl(262 83% 58% / 0.15) 70%, transparent)",
+            }}
+          />
+
+          <div className="relative z-10 max-w-3xl mx-auto text-center">
             <Globe className="h-10 w-10 text-primary mx-auto mb-6" />
-            <h2 className="text-3xl font-bold tracking-tight mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
               Ready to protect your tracking?
             </h2>
             <p className="text-muted-foreground mb-8 max-w-lg mx-auto">
@@ -254,10 +363,10 @@ export default function LandingPage() {
             </Link>
           </div>
         </div>
-      </section>
+      </div>
 
-      {/* ── Footer ────────────────────────────────────── */}
-      <footer className="border-t border-border py-8">
+      {/* ── Footer (no top border — receives CTA fade) ── */}
+      <footer className="py-8">
         <div className="mx-auto max-w-6xl px-6 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="flex h-7 w-7 items-center justify-center rounded-md bg-gradient-to-br from-primary to-secondary">
@@ -267,9 +376,7 @@ export default function LandingPage() {
               TrackGuard
             </span>
           </div>
-          <p className="text-xs text-muted-foreground">
-            Built by DigitaliX
-          </p>
+          <p className="text-xs text-muted-foreground">Built by DigitaliX</p>
         </div>
       </footer>
     </div>
