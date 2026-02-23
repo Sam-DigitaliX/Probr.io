@@ -8,7 +8,7 @@ from app.database import async_session
 from app.models import ProbeConfig
 from app.probes.runner import run_probe
 
-logger = logging.getLogger("trackguard.scheduler")
+logger = logging.getLogger("probr.scheduler")
 
 scheduler = AsyncIOScheduler()
 

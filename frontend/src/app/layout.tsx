@@ -3,7 +3,7 @@ import "./globals.css";
 import { EvervaultGlow } from "@/components/ui/evervault-glow";
 
 export const metadata: Metadata = {
-  title: "TrackGuard — Monitoring Infrastructure",
+  title: "Probr — Monitoring Infrastructure",
   description: "Real-time monitoring for your tracking infrastructure (sGTM, GTM, GA4, BigQuery, CMP)",
 };
 
