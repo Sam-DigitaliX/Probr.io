@@ -189,14 +189,41 @@ font-weight:     600;
 - Hover: `background-position` shifts to 100%, creating a color-sweep animation
 - Hover glow: combined purple + red shadows
 
-### Secondary (ghost)
+### Glass (`.ev-btn-glass`)
 
 ```css
-border:     1px solid white/0.08;
-background: white/0.05;
+background:      hsl(0 0% 100% / 0.05);
+border:          1px solid hsl(0 0% 100% / 0.10);
+backdrop-filter: blur(12px);
+border-radius:   12px;
+font-family:     var(--font-display);
 ```
 
-- Hover: `bg-white/0.08`
+- Hover: bg increases to 8%, border to 15%, subtle lift
+
+### Outline (`.ev-btn-outline`)
+
+```css
+background: transparent;
+border:     1px solid hsl(276 51% 47% / 0.4);
+color:      hsl(276 51% 57%);
+border-radius: 12px;
+font-family: var(--font-display);
+```
+
+- Hover: border 60%, bg primary/8%, purple glow
+
+### Secondary (`.ev-btn-secondary`)
+
+```css
+background: hsl(0 0% 100% / 0.08);
+border:     1px solid hsl(0 0% 100% / 0.08);
+color:      hsl(0 0% 95%);
+border-radius: 12px;
+font-family: var(--font-display);
+```
+
+- Hover: bg increases to 12%, subtle lift
 
 ---
 
@@ -263,6 +290,9 @@ Special: Hero panel `rounded-b-[40px]`, CTA panel `rounded-t-[40px]`, Nav pill `
 | `.ev-card`               | Animated    | Card with spinning conic-gradient border          |
 | `.ev-card-static`        | Interactive | Card with hover glow (no spin)                    |
 | `.ev-btn-primary`        | Interactive | Gradient button with color-sweep hover            |
+| `.ev-btn-glass`          | Interactive | Glass button with blur backdrop                    |
+| `.ev-btn-outline`        | Interactive | Transparent button with primary border             |
+| `.ev-btn-secondary`      | Interactive | Subtle filled button for dashboard actions         |
 | `.text-gradient-primary` | Static      | Text with brand gradient fill                     |
 | `.ev-dot-grid`           | Static      | 24px dot grid background pattern                  |
 | `.ev-table-row`          | Interactive | Table row with hover highlight                    |
@@ -280,5 +310,6 @@ Special: Hero panel `rounded-b-[40px]`, CTA panel `rounded-t-[40px]`, Nav pill `
 | `frontend/src/app/(public)/page.tsx`        | Landing page (hero, features, CTA)      |
 | `frontend/src/app/(public)/login/page.tsx`  | Login page                              |
 | `frontend/src/app/(public)/signup/page.tsx` | Signup page                             |
+| `frontend/src/app/(public)/brand/page.tsx`  | Brand kit page (internal, /brand)       |
 | `frontend/src/app/layout.tsx`               | Root layout (z-layering, metadata)      |
-| `frontend/DESIGN_SYSTEM.md`                | This file                               |
+| `frontend/DESIGN_SYSTEM.md`                | This file (markdown reference)          |

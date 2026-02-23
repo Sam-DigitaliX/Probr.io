@@ -318,6 +318,61 @@ h1, h2, h3, h4 {
   box-shadow: 0 4px 20px hsl(276 51% 47% / 0.25), 0 0 30px hsl(0 98% 55% / 0.15);
 }
 
+/* ── Button Glass ──────────────────────────────────── */
+.ev-btn-glass {
+  background: hsl(0 0% 100% / 0.05);
+  border: 1px solid hsl(0 0% 100% / 0.10);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: hsl(0 0% 95%);
+  border-radius: 12px;
+  font-weight: 500;
+  font-family: var(--font-display);
+  transition: transform 0.15s ease, box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.ev-btn-glass:hover:not(:disabled) {
+  transform: translateY(-1px);
+  background: hsl(0 0% 100% / 0.08);
+  border-color: hsl(0 0% 100% / 0.15);
+  box-shadow: 0 4px 16px hsl(0 0% 0% / 0.20);
+}
+
+/* ── Button Outline ────────────────────────────────── */
+.ev-btn-outline {
+  background: transparent;
+  border: 1px solid hsl(276 51% 47% / 0.4);
+  color: hsl(276 51% 57%);
+  border-radius: 12px;
+  font-weight: 500;
+  font-family: var(--font-display);
+  transition: transform 0.15s ease, box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.ev-btn-outline:hover:not(:disabled) {
+  transform: translateY(-1px);
+  border-color: hsl(276 51% 47% / 0.6);
+  background: hsl(276 51% 47% / 0.08);
+  box-shadow: 0 0 20px hsl(276 51% 47% / 0.10);
+}
+
+/* ── Button Secondary ──────────────────────────────── */
+.ev-btn-secondary {
+  background: hsl(0 0% 100% / 0.08);
+  border: 1px solid hsl(0 0% 100% / 0.08);
+  color: hsl(0 0% 95%);
+  border-radius: 12px;
+  font-weight: 500;
+  font-family: var(--font-display);
+  transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.ev-btn-secondary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  background: hsl(0 0% 100% / 0.12);
+  box-shadow: 0 4px 16px hsl(0 0% 0% / 0.15);
+}
+
 /* ── Text Gradient (brand) ─────────────────────────── */
 .text-gradient-primary {
   background: linear-gradient(135deg, hsl(276 51% 47%), hsl(0 98% 55%), hsl(35 97% 63%));
