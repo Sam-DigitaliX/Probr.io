@@ -1,8 +1,8 @@
 services:
   backend:
     build: ./backend
-    ports:
-      - "8000:8000"
+    expose:
+      - "8000"
     environment:
       DATABASE_URL: "${DATABASE_URL}"
       PYTHONPATH: /app
@@ -15,15 +15,4 @@ services:
       SMTP_USER: "${SMTP_USER:-}"
       SMTP_PASSWORD: "${SMTP_PASSWORD:-}"
       SMTP_FROM: "${SMTP_FROM:-alerts@trackguard.local}"
-    restart: unless-stopped
-
-  frontend:
-    build:
-      context: ./frontend
-      args:
-        NEXT_PUBLIC_API_URL: "${NEXT_PUBLIC_API_URL:-http://backend:8000/api}"
-    ports:
-      - "3000:3000"
-    depends_on:
-      - backend
     restart: unless-stopped
