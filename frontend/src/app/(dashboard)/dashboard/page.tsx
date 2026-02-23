@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { dashboard, alerts as alertsApi } from "@/lib/api";
 import type { DashboardOverview, Alert } from "@/lib/types";
 import { RefreshCw } from "lucide-react";
+import { OrbitLoader } from "@/components/ui/orbit-loader";
 
 export default function DashboardPage() {
   const [data, setData] = useState<DashboardOverview | null>(null);
@@ -54,11 +55,7 @@ export default function DashboardPage() {
   };
 
   if (loading && !data) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <RefreshCw className="h-6 w-6 animate-spin text-primary" />
-      </div>
-    );
+    return <OrbitLoader />;
   }
 
   if (error && !data) {

@@ -13,7 +13,8 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { alerts as alertsApi, sites as sitesApi } from "@/lib/api";
 import type { Alert, Site } from "@/lib/types";
-import { Bell, CheckCircle2, RefreshCw, AlertTriangle } from "lucide-react";
+import { Bell, CheckCircle2, AlertTriangle } from "lucide-react";
+import { OrbitLoader } from "@/components/ui/orbit-loader";
 import { formatRelative } from "@/lib/utils";
 
 export default function AlertsPage() {
@@ -62,11 +63,7 @@ export default function AlertsPage() {
   });
 
   if (loading && alerts.length === 0) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <RefreshCw className="h-6 w-6 animate-spin text-primary" />
-      </div>
-    );
+    return <OrbitLoader />;
   }
 
   return (

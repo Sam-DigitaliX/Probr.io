@@ -144,31 +144,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* ── Mesh background ────────────────────────────────── */
-.ev-mesh-bg {
-  position: relative;
-}
-
-.ev-mesh-bg::before {
-  content: '';
-  position: fixed;
-  top: -20%; left: -10%;
-  width: 60%; height: 60%;
-  background: radial-gradient(ellipse, hsl(262 83% 80% / 0.12) 0%, transparent 70%);
-  pointer-events: none;
-  z-index: -1;
-}
-
-.ev-mesh-bg::after {
-  content: '';
-  position: fixed;
-  bottom: -20%; right: -10%;
-  width: 50%; height: 50%;
-  background: radial-gradient(ellipse, hsl(188 94% 80% / 0.08) 0%, transparent 70%);
-  pointer-events: none;
-  z-index: -1;
-}
-
 /* ── Glass Card ─────────────────────────────────────── */
 .glass-card {
   position: relative;
@@ -372,6 +347,40 @@ body {
 .animate-delay-400 { animation-delay: 400ms; }
 .animate-delay-500 { animation-delay: 500ms; }
 .animate-delay-600 { animation-delay: 600ms; }
+
+/* ── Orbit Loader ───────────────────────────────────── */
+.orbit-ring {
+  border-radius: 9999px;
+  --orbit-angle: 0deg;
+  background: conic-gradient(
+    from var(--orbit-angle),
+    hsl(262 83% 58% / 0.5),
+    hsl(188 94% 43% / 0.35) 40%,
+    transparent 70%
+  );
+  mask: radial-gradient(farthest-side, transparent calc(100% - 1.5px), black calc(100% - 1.5px));
+  opacity: 0.35;
+  transition: opacity 0.5s ease;
+}
+
+.orbit-loader .orbit-ring {
+  opacity: 1;
+  animation: orbit-fill 3s linear infinite;
+}
+.orbit-loader .orbit-ring:nth-child(even) { animation-direction: reverse; }
+.orbit-loader .orbit-ring:nth-child(2) { animation-delay: -0.75s; }
+.orbit-loader .orbit-ring:nth-child(3) { animation-delay: -1.5s; }
+.orbit-loader .orbit-ring:nth-child(4) { animation-delay: -2.25s; }
+
+@property --orbit-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes orbit-fill {
+  to { --orbit-angle: 360deg; }
+}
 
 /* ── Scrollbar ──────────────────────────────────────── */
 ::-webkit-scrollbar { width: 6px; height: 6px; }

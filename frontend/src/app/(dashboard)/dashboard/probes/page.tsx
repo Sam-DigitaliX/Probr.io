@@ -15,6 +15,7 @@ import type { ProbeConfig, ProbeCreate, ProbeResult, Site, ProbeType } from "@/l
 import {
   Plus, Activity, Play, Trash2, RefreshCw, Clock, Zap, ChevronDown, ChevronUp,
 } from "lucide-react";
+import { OrbitLoader } from "@/components/ui/orbit-loader";
 import { formatRelative, statusBg } from "@/lib/utils";
 
 const PROBE_TYPES: { value: ProbeType; label: string }[] = [
@@ -119,11 +120,7 @@ export default function ProbesPage() {
     PROBE_TYPES.find((t) => t.value === type)?.label ?? type;
 
   if (loading && probes.length === 0) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <RefreshCw className="h-6 w-6 animate-spin text-primary" />
-      </div>
-    );
+    return <OrbitLoader />;
   }
 
   return (
