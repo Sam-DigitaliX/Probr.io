@@ -41,8 +41,8 @@ export default function SignupPage() {
     <div className="flex min-h-screen">
       {/* Left panel — branding */}
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-gradient-to-br from-primary via-primary/90 to-secondary">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,hsl(262_83%_68%/0.4),transparent_70%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,hsl(188_94%_43%/0.3),transparent_60%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,hsl(276_51%_57%/0.4),transparent_70%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,hsl(35_97%_63%/0.3),transparent_60%)]" />
 
         <div className="relative z-10 flex flex-col justify-center px-16">
           <div className="flex items-center gap-3 mb-12">

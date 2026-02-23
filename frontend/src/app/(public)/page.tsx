@@ -124,7 +124,7 @@ export default function LandingPage() {
             className="absolute inset-0 rounded-b-[40px]"
             style={{
               background:
-                "linear-gradient(180deg, hsl(262 83% 58% / 0.12) 0%, hsl(262 83% 58% / 0.05) 40%, transparent 70%)",
+                "linear-gradient(180deg, hsl(276 51% 47% / 0.12) 0%, hsl(0 98% 55% / 0.05) 40%, transparent 70%)",
             }}
           />
 
@@ -133,7 +133,7 @@ export default function LandingPage() {
             className="absolute inset-x-0 bottom-0 h-px"
             style={{
               background:
-                "linear-gradient(90deg, transparent, hsl(262 83% 58% / 0.30) 30%, hsl(188 94% 43% / 0.30) 70%, transparent)",
+                "linear-gradient(90deg, transparent, hsl(276 51% 47% / 0.30) 20%, hsl(0 98% 55% / 0.25) 50%, hsl(35 97% 63% / 0.30) 80%, transparent)",
             }}
           />
 
@@ -341,7 +341,7 @@ export default function LandingPage() {
             className="absolute inset-x-0 top-0 h-px rounded-t-[40px]"
             style={{
               background:
-                "linear-gradient(90deg, transparent, hsl(262 83% 58% / 0.3) 30%, hsl(262 83% 58% / 0.4) 50%, hsl(262 83% 58% / 0.3) 70%, transparent)",
+                "linear-gradient(90deg, transparent, hsl(276 51% 47% / 0.3) 20%, hsl(0 98% 55% / 0.35) 50%, hsl(35 97% 63% / 0.3) 80%, transparent)",
             }}
           />
 
