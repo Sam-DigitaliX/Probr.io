@@ -3,7 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Shield, ArrowRight, Mail, Lock, User, Eye, EyeOff } from "lucide-react";
+import Image from "next/image";
+import { ArrowRight, Mail, Lock, User, Eye, EyeOff } from "lucide-react";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -45,14 +46,15 @@ export default function SignupPage() {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,hsl(35_97%_63%/0.3),transparent_60%)]" />
 
         <div className="relative z-10 flex flex-col justify-center px-16">
-          <div className="flex items-center gap-3 mb-12">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/20 backdrop-blur-sm">
-              <Shield className="h-7 w-7 text-white" />
-            </div>
-            <div>
-              <span className="text-2xl font-bold text-white">Probr</span>
-              <p className="text-sm text-white/60">Monitoring</p>
-            </div>
+          <div className="mb-12">
+            <Image
+              src="/images/Probr_logo.png"
+              alt="Probr"
+              width={160}
+              height={53}
+              className="h-12 w-auto"
+              priority
+            />
           </div>
 
           <h2 className="text-3xl font-bold text-white leading-tight mb-4">
@@ -83,11 +85,14 @@ export default function SignupPage() {
       <div className="flex w-full lg:w-1/2 items-center justify-center px-6 py-12">
         <div className="w-full max-w-sm">
           {/* Mobile logo */}
-          <div className="flex items-center gap-2.5 mb-10 lg:hidden">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-secondary">
-              <Shield className="h-5 w-5 text-white" />
-            </div>
-            <span className="text-lg font-bold text-gradient-primary">Probr</span>
+          <div className="mb-10 lg:hidden">
+            <Image
+              src="/images/Probr_logo.png"
+              alt="Probr"
+              width={120}
+              height={40}
+              className="h-8 w-auto"
+            />
           </div>
 
           <h1 className="text-2xl font-bold tracking-tight mb-1">Create your account</h1>

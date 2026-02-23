@@ -1,5 +1,5 @@
+import Image from "next/image";
 import {
-  Shield,
   ArrowRight,
   Activity,
   Bell,
@@ -56,16 +56,16 @@ export default function BrandPage() {
 
         {/* ── Header ──────────────────────────────────────── */}
         <header className="pt-16 pb-12 border-b border-white/[0.06]">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-primary via-accent to-secondary">
-              <Shield className="h-7 w-7 text-white" />
-            </div>
-            <div>
-              <h1 className="text-3xl md:text-4xl font-bold text-gradient-primary">
-                Probr
-              </h1>
-              <p className="text-sm text-muted-foreground">Brand Kit — Internal</p>
-            </div>
+          <div className="flex items-center gap-4 mb-6">
+            <Image
+              src="/images/Probr_logo.png"
+              alt="Probr"
+              width={160}
+              height={53}
+              className="h-12 w-auto"
+              priority
+            />
+            <p className="text-sm text-muted-foreground">Brand Kit — Internal</p>
           </div>
           <p className="text-muted-foreground max-w-xl leading-relaxed">
             Design system reference for Probr. This page is not indexed or linked.
