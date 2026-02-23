@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import ProbrLogo from "@/components/ui/probr-logo";
+import Image from "next/image";
 import {
   Activity,
   Bell,
@@ -73,13 +73,15 @@ export default function LandingPage() {
       {/* ── Navbar ────────────────────────────────────── */}
       <nav className="fixed top-0 inset-x-0 z-50 backdrop-blur-xl border-b border-white/[0.06]">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-          <Link href="/" className="flex items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-secondary">
-              <ProbrLogo size={20} className="text-white" />
-            </div>
-            <span className="text-lg font-bold text-gradient-primary">
-              Probr
-            </span>
+          <Link href="/" className="flex items-center">
+            <Image
+              src="/images/Probr_logo.png"
+              alt="Probr"
+              width={120}
+              height={40}
+              className="h-8 w-auto"
+              priority
+            />
           </Link>
 
           {/* Nav pill (desktop) */}
@@ -379,13 +381,14 @@ export default function LandingPage() {
       {/* ── Footer (no top border — receives CTA fade) ── */}
       <footer className="py-8">
         <div className="mx-auto max-w-6xl px-6 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="flex h-7 w-7 items-center justify-center rounded-md bg-gradient-to-br from-primary to-secondary">
-              <ProbrLogo size={16} className="text-white" />
-            </div>
-            <span className="text-sm font-semibold text-gradient-primary">
-              Probr
-            </span>
+          <div className="flex items-center">
+            <Image
+              src="/images/Probr_logo.png"
+              alt="Probr"
+              width={90}
+              height={30}
+              className="h-6 w-auto"
+            />
           </div>
           <p className="text-xs text-muted-foreground">Built by DigitaliX</p>
         </div>
