@@ -50,7 +50,7 @@ export default function SignupPage() {
               <Shield className="h-7 w-7 text-white" />
             </div>
             <div>
-              <span className="text-2xl font-bold text-white">TrackGuard</span>
+              <span className="text-2xl font-bold text-white">Probr</span>
               <p className="text-sm text-white/60">Monitoring</p>
             </div>
           </div>
@@ -87,12 +87,12 @@ export default function SignupPage() {
             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-secondary">
               <Shield className="h-5 w-5 text-white" />
             </div>
-            <span className="text-lg font-bold text-gradient-primary">TrackGuard</span>
+            <span className="text-lg font-bold text-gradient-primary">Probr</span>
           </div>
 
           <h1 className="text-2xl font-bold tracking-tight mb-1">Create your account</h1>
           <p className="text-sm text-muted-foreground mb-8">
-            Get started with TrackGuard in seconds.
+            Get started with Probr in seconds.
           </p>
 
           {error && (

@@ -7,7 +7,7 @@ import httpx
 
 from app.config import settings
 
-logger = logging.getLogger("trackguard.alerts")
+logger = logging.getLogger("probr.alerts")
 
 
 async def send_slack_notification(webhook_url: str, title: str, message: str, severity: str) -> bool:
@@ -53,7 +53,7 @@ async def send_email_notification(to_email: str, title: str, message: str, sever
         return False
 
     msg = MIMEText(f"Severity: {severity.upper()}\n\n{message}", "plain", "utf-8")
-    msg["Subject"] = f"[TrackGuard] {title}"
+    msg["Subject"] = f"[Probr] {title}"
     msg["From"] = settings.smtp_from
     msg["To"] = to_email
 

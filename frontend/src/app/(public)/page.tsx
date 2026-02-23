@@ -72,7 +72,7 @@ export default function LandingPage() {
               <Shield className="h-5 w-5 text-white" />
             </div>
             <span className="text-lg font-bold text-gradient-primary">
-              TrackGuard
+              Probr
             </span>
           </Link>
 
@@ -158,7 +158,7 @@ export default function LandingPage() {
             </h1>
 
             <p className="mt-6 text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed animate-fade-in-up animate-delay-200">
-              TrackGuard monitors your entire tracking stack — sGTM, GTM, GA4,
+              Probr monitors your entire tracking stack — sGTM, GTM, GA4,
               BigQuery, CMP — and alerts you instantly when something breaks.
               Built for agencies managing multiple client setups.
             </p>
@@ -243,7 +243,7 @@ export default function LandingPage() {
               <span className="text-gradient-primary">monitor tracking</span>
             </h2>
             <p className="mt-4 text-muted-foreground max-w-xl mx-auto">
-              From health checks to consent verification, TrackGuard covers
+              From health checks to consent verification, Probr covers
               every layer of your client tracking infrastructure.
             </p>
           </div>
@@ -352,7 +352,7 @@ export default function LandingPage() {
             </h2>
             <p className="text-muted-foreground mb-8 max-w-lg mx-auto">
               Stop discovering tracking failures from angry clients. Start
-              monitoring proactively with TrackGuard.
+              monitoring proactively with Probr.
             </p>
             <Link
               href="/signup"
@@ -373,7 +373,7 @@ export default function LandingPage() {
               <Shield className="h-4 w-4 text-white" />
             </div>
             <span className="text-sm font-semibold text-gradient-primary">
-              TrackGuard
+              Probr
             </span>
           </div>
           <p className="text-xs text-muted-foreground">Built by DigitaliX</p>

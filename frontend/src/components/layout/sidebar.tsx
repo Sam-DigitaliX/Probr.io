@@ -44,7 +44,7 @@ export function Sidebar() {
         {!collapsed && (
           <div className="flex flex-col">
             <span className="text-sm font-bold tracking-tight text-gradient-primary">
-              TrackGuard
+              Probr
             </span>
             <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-widest">
               Monitoring

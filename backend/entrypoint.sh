@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-echo "=== TrackGuard Backend Starting ==="
+echo "=== Probr Backend Starting ==="
 echo "Working directory: $(pwd)"
 echo "Contents of /app/app/:"
 ls -la /app/app/ || echo "ERROR: /app/app/ not found!"

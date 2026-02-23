@@ -12,24 +12,24 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(name)s] %(levelname)s: %(message)s",
 )
-logger = logging.getLogger("trackguard")
+logger = logging.getLogger("probr")
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup
-    logger.info("TrackGuard starting up...")
+    logger.info("Probr starting up...")
     start_scheduler()
     await load_all_probes()
-    logger.info("TrackGuard ready")
+    logger.info("Probr ready")
     yield
     # Shutdown
-    logger.info("TrackGuard shutting down...")
+    logger.info("Probr shutting down...")
     stop_scheduler()
 
 
 app = FastAPI(
-    title="TrackGuard",
+    title="Probr",
     description="Monitoring & alerting for client tracking infrastructure",
     version="0.1.0",
     lifespan=lifespan,
@@ -55,4 +55,4 @@ app.include_router(dashboard.router, prefix="/api")
 
 @app.get("/health")
 async def health_check():
-    return {"status": "ok", "service": "trackguard"}
+    return {"status": "ok", "service": "probr"}

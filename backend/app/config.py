@@ -2,7 +2,7 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    database_url: str = "postgresql+asyncpg://trackguard:trackguard@localhost:5432/trackguard"
+    database_url: str = "postgresql+asyncpg://probr:probr@localhost:5432/probr"
     app_env: str = "development"
     secret_key: str = "change-me-in-production"
 
@@ -17,7 +17,7 @@ class Settings(BaseSettings):
     smtp_port: int = 587
     smtp_user: str = ""
     smtp_password: str = ""
-    smtp_from: str = "alerts@trackguard.local"
+    smtp_from: str = "alerts@probr.local"
 
     model_config = {"env_file": ".env", "extra": "ignore"}
 

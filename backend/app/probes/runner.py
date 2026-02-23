@@ -7,7 +7,7 @@ from app.models import Alert, AlertSeverity, ProbeConfig, ProbeResult, ProbeStat
 from app.probes.base import BaseProbe, ProbeResultData
 from app.probes.http_health import HttpHealthProbe
 
-logger = logging.getLogger("trackguard.runner")
+logger = logging.getLogger("probr.runner")
 
 # Registry mapping probe types to their implementation
 PROBE_REGISTRY: dict[ProbeType, BaseProbe] = {
