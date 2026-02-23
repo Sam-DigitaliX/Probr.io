@@ -14,7 +14,8 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { sites as sitesApi, clients as clientsApi } from "@/lib/api";
 import type { Site, SiteCreate, Client } from "@/lib/types";
-import { Plus, Globe, Pencil, Trash2, RefreshCw, ExternalLink } from "lucide-react";
+import { Plus, Globe, Pencil, Trash2, ExternalLink } from "lucide-react";
+import { OrbitLoader } from "@/components/ui/orbit-loader";
 import { formatDate } from "@/lib/utils";
 
 export default function SitesPage() {
@@ -86,11 +87,7 @@ export default function SitesPage() {
   };
 
   if (loading && sites.length === 0) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <RefreshCw className="h-6 w-6 animate-spin text-primary" />
-      </div>
-    );
+    return <OrbitLoader />;
   }
 
   return (

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { EvervaultGlow } from "@/components/ui/evervault-glow";
 
 export const metadata: Metadata = {
   title: "TrackGuard — Monitoring Infrastructure",
@@ -14,7 +15,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased bg-background text-foreground">
-        {children}
+        <EvervaultGlow />
+        <div className="relative z-[1]">
+          {children}
+        </div>
       </body>
     </html>
   );
