@@ -118,13 +118,13 @@ export default function LandingPage() {
 
       {/* ── Hero — Glass Panel Bottom ──────────────────── */}
       <div className="mx-3 md:mx-6">
-        <section className="relative pt-32 pb-20 md:pt-44 md:pb-32 overflow-hidden rounded-b-[40px] bg-white/70 backdrop-blur-xl border border-black/[0.06] border-t-0">
+        <section className="relative pt-32 pb-20 md:pt-44 md:pb-32 overflow-hidden rounded-b-[40px] bg-white/40 backdrop-blur-xl border border-[hsl(262_40%_50%/0.10)] border-t-0 shadow-[0_4px_40px_hsl(262_40%_30%/0.06)]">
           {/* Internal gradient overlay */}
           <div
             className="absolute inset-0 rounded-b-[40px]"
             style={{
               background:
-                "linear-gradient(180deg, hsl(262 83% 58% / 0.06) 0%, hsl(262 83% 58% / 0.025) 40%, transparent 70%)",
+                "linear-gradient(180deg, hsl(262 83% 58% / 0.10) 0%, hsl(262 83% 58% / 0.04) 40%, transparent 70%)",
             }}
           />
 
@@ -133,7 +133,7 @@ export default function LandingPage() {
             className="absolute inset-x-0 bottom-0 h-px"
             style={{
               background:
-                "linear-gradient(90deg, transparent, hsl(262 83% 58% / 0.15) 30%, hsl(188 94% 43% / 0.15) 70%, transparent)",
+                "linear-gradient(90deg, transparent, hsl(262 83% 58% / 0.30) 30%, hsl(188 94% 43% / 0.30) 70%, transparent)",
             }}
           />
 
@@ -328,7 +328,7 @@ export default function LandingPage() {
       {/* ── CTA — Glass Panel Top + Fade-to-Footer ────── */}
       <div className="relative mx-4 md:mx-8 mt-16">
         <div
-          className="relative rounded-t-[40px] pt-16 md:pt-24 px-4 md:px-8 lg:px-20 pb-20 md:pb-28 bg-white/70 backdrop-blur-xl border border-black/[0.06] border-b-0"
+          className="relative rounded-t-[40px] pt-16 md:pt-24 px-4 md:px-8 lg:px-20 pb-20 md:pb-28 bg-white/40 backdrop-blur-xl border border-[hsl(262_40%_50%/0.10)] border-b-0 shadow-[0_-4px_40px_hsl(262_40%_30%/0.06)]"
           style={{
             maskImage:
               "linear-gradient(to bottom, black calc(100% - 60px), transparent)",
@@ -341,7 +341,7 @@ export default function LandingPage() {
             className="absolute inset-x-0 top-0 h-px rounded-t-[40px]"
             style={{
               background:
-                "linear-gradient(90deg, transparent, hsl(262 83% 58% / 0.15) 30%, hsl(262 83% 58% / 0.20) 50%, hsl(262 83% 58% / 0.15) 70%, transparent)",
+                "linear-gradient(90deg, transparent, hsl(262 83% 58% / 0.30) 30%, hsl(262 83% 58% / 0.40) 50%, hsl(262 83% 58% / 0.30) 70%, transparent)",
             }}
           />
 

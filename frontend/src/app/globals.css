@@ -8,14 +8,14 @@
 
 @theme inline {
   /* ── Surfaces ───────────────────────────────────── */
-  --color-background:        hsl(0 0% 99%);
-  --color-foreground:        hsl(0 0% 9%);
+  --color-background:        hsl(252 20% 95%);
+  --color-foreground:        hsl(252 10% 10%);
 
-  --color-card:              hsl(0 0% 100%);
-  --color-card-foreground:   hsl(0 0% 9%);
+  --color-card:              hsl(0 0% 100% / 0.55);
+  --color-card-foreground:   hsl(252 10% 10%);
 
-  --color-popover:           hsl(0 0% 100%);
-  --color-popover-foreground:hsl(0 0% 9%);
+  --color-popover:           hsl(0 0% 100% / 0.80);
+  --color-popover-foreground:hsl(252 10% 10%);
 
   /* ── Brand ──────────────────────────────────────── */
   --color-primary:            hsl(262 83% 58%);
@@ -25,8 +25,8 @@
   --color-secondary-foreground: hsl(0 0% 100%);
 
   /* ── Semantic ───────────────────────────────────── */
-  --color-muted:              hsl(0 0% 96%);
-  --color-muted-foreground:   hsl(0 0% 40%);
+  --color-muted:              hsl(252 15% 92%);
+  --color-muted-foreground:   hsl(252 5% 40%);
 
   --color-accent:             hsl(262 83% 58%);
   --color-accent-foreground:  hsl(0 0% 100%);
@@ -41,23 +41,23 @@
   --color-warning-foreground: hsl(0 0% 100%);
 
   /* ── Borders & Inputs ───────────────────────────── */
-  --color-border: hsl(0 0% 90%);
-  --color-input:  hsl(0 0% 90%);
+  --color-border: hsl(252 15% 87%);
+  --color-input:  hsl(252 15% 87%);
   --color-ring:   hsl(262 83% 58%);
 
   /* ── Glass ──────────────────────────────────────── */
-  --color-glass:           hsl(0 0% 100% / 0.70);
-  --color-glass-border:    hsl(0 0% 0% / 0.08);
-  --color-glass-highlight: hsl(0 0% 100% / 0.90);
+  --color-glass:           hsl(0 0% 100% / 0.45);
+  --color-glass-border:    hsl(262 40% 50% / 0.12);
+  --color-glass-highlight: hsl(0 0% 100% / 0.65);
 
   /* ── Sidebar ────────────────────────────────────── */
-  --color-sidebar:                    hsl(0 0% 98%);
-  --color-sidebar-foreground:         hsl(0 0% 15%);
+  --color-sidebar:                    hsl(252 18% 96%);
+  --color-sidebar-foreground:         hsl(252 10% 15%);
   --color-sidebar-primary:            hsl(262 83% 58%);
   --color-sidebar-primary-foreground: hsl(0 0% 100%);
-  --color-sidebar-accent:             hsl(0 0% 95%);
-  --color-sidebar-accent-foreground:  hsl(0 0% 15%);
-  --color-sidebar-border:             hsl(0 0% 90%);
+  --color-sidebar-accent:             hsl(252 15% 92%);
+  --color-sidebar-accent-foreground:  hsl(252 10% 15%);
+  --color-sidebar-border:             hsl(252 15% 87%);
   --color-sidebar-ring:               hsl(262 83% 58%);
 
   /* ── Typography ─────────────────────────────────── */
@@ -71,10 +71,10 @@
   --radius-sm: calc(0.75rem - 4px);
 
   /* ── Shadows ────────────────────────────────────── */
-  --shadow-card:           0 4px 24px hsl(0 0% 0% / 0.06), 0 1px 3px hsl(0 0% 0% / 0.04);
-  --shadow-card-hover:     0 12px 40px hsl(0 0% 0% / 0.10), 0 2px 6px hsl(0 0% 0% / 0.05);
-  --shadow-glow-primary:   0 0 60px hsl(262 83% 58% / 0.15);
-  --shadow-glow-secondary: 0 0 40px hsl(188 94% 43% / 0.12);
+  --shadow-card:           0 4px 24px hsl(262 40% 30% / 0.08), 0 1px 3px hsl(262 40% 30% / 0.05);
+  --shadow-card-hover:     0 12px 40px hsl(262 40% 30% / 0.12), 0 2px 6px hsl(262 40% 30% / 0.06);
+  --shadow-glow-primary:   0 0 60px hsl(262 83% 58% / 0.25);
+  --shadow-glow-secondary: 0 0 40px hsl(188 94% 43% / 0.20);
 
   /* ── Animations ─────────────────────────────────── */
   --animate-fade-in-up: fade-in-up 0.8s ease-out both;
@@ -88,9 +88,9 @@
 /* ── Non-color custom properties ────────────────────── */
 :root {
   --gradient-primary: linear-gradient(135deg, hsl(262 83% 58%), hsl(262 83% 50%));
-  --gradient-hero: linear-gradient(180deg, hsl(262 83% 97%) 0%, hsl(262 83% 95%) 50%, hsl(0 0% 99%) 100%);
-  --gradient-cta: linear-gradient(135deg, hsl(262 83% 95%) 0%, hsl(0 0% 100%) 100%);
-  --gradient-card: linear-gradient(135deg, hsl(262 83% 58% / 0.04), hsl(262 83% 58% / 0.01));
+  --gradient-hero: linear-gradient(180deg, hsl(262 40% 92%) 0%, hsl(252 20% 95%) 100%);
+  --gradient-cta: linear-gradient(135deg, hsl(262 30% 92%) 0%, hsl(252 20% 95%) 100%);
+  --gradient-card: linear-gradient(135deg, hsl(262 83% 58% / 0.06), hsl(188 94% 43% / 0.03));
   --primary-glow: hsl(262 83% 68%);
   --secondary-glow: hsl(188 94% 53%);
 }
@@ -112,8 +112,8 @@
 }
 
 @keyframes glow-pulse {
-  0%, 100% { box-shadow: 0 0 30px hsl(262 83% 58% / 0.08); }
-  50%      { box-shadow: 0 0 60px hsl(262 83% 58% / 0.18); }
+  0%, 100% { box-shadow: 0 0 30px hsl(262 83% 58% / 0.15); }
+  50%      { box-shadow: 0 0 60px hsl(262 83% 58% / 0.30); }
 }
 
 @keyframes shimmer {
@@ -149,13 +149,14 @@ body {
   position: relative;
   overflow: hidden;
   border-radius: 1rem;
-  background: hsl(0 0% 100% / 0.70);
-  border: 1px solid hsl(0 0% 0% / 0.08);
+  background: hsl(0 0% 100% / 0.40);
+  border: 1px solid hsl(262 40% 50% / 0.10);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   box-shadow:
-    0 1px 3px hsl(0 0% 0% / 0.04),
-    0 4px 16px hsl(0 0% 0% / 0.03);
+    0 1px 3px hsl(262 40% 30% / 0.06),
+    0 4px 16px hsl(262 40% 30% / 0.04),
+    0 0 0 1px hsl(0 0% 100% / 0.60) inset;
   transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
 }
 
@@ -164,7 +165,7 @@ body {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: linear-gradient(135deg, hsl(0 0% 100% / 0.5), transparent);
+  background: linear-gradient(135deg, hsl(0 0% 100% / 0.35), transparent);
 }
 
 /* ── Glass Card Interactive ─────────────────────────── */
@@ -172,11 +173,13 @@ body {
   position: relative;
   overflow: hidden;
   border-radius: 1rem;
-  background: hsl(0 0% 100% / 0.70);
-  border: 1px solid hsl(0 0% 0% / 0.08);
+  background: hsl(0 0% 100% / 0.40);
+  border: 1px solid hsl(262 40% 50% / 0.10);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  box-shadow: 0 1px 3px hsl(0 0% 0% / 0.04);
+  box-shadow:
+    0 1px 3px hsl(262 40% 30% / 0.06),
+    0 0 0 1px hsl(0 0% 100% / 0.60) inset;
   transition: border-color 0.4s ease, box-shadow 0.4s ease, transform 0.4s ease;
 }
 
@@ -185,16 +188,16 @@ body {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: linear-gradient(135deg, hsl(0 0% 100% / 0.5), transparent);
+  background: linear-gradient(135deg, hsl(0 0% 100% / 0.35), transparent);
   transition: opacity 0.4s ease;
 }
 
 .glass-card-interactive:hover {
-  border-color: hsl(262 83% 58% / 0.25);
+  border-color: hsl(262 83% 58% / 0.30);
   box-shadow:
-    0 8px 32px hsl(262 83% 58% / 0.06),
-    0 0 0 1px hsl(262 83% 58% / 0.08),
-    0 4px 16px hsl(0 0% 0% / 0.04);
+    0 8px 32px hsl(262 83% 58% / 0.12),
+    0 0 0 1px hsl(262 83% 58% / 0.15),
+    0 0 40px hsl(262 83% 58% / 0.06);
   transform: translateY(-4px);
 }
 
@@ -207,21 +210,21 @@ body {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  background: linear-gradient(135deg, hsl(262 83% 58% / 0.08), hsl(262 83% 58% / 0.03));
-  border: 1px solid hsl(262 83% 58% / 0.15);
+  background: linear-gradient(135deg, hsl(262 83% 58% / 0.12), hsl(262 83% 58% / 0.05));
+  border: 1px solid hsl(262 83% 58% / 0.20);
   backdrop-filter: blur(8px);
   box-shadow:
-    inset 0 1px 0 0 hsl(0 0% 100% / 0.5),
-    0 0 12px hsl(262 83% 58% / 0.06);
+    inset 0 1px 0 0 hsl(0 0% 100% / 0.40),
+    0 0 16px hsl(262 83% 58% / 0.10);
 }
 
 /* ── Evervault Input ────────────────────────────────── */
 .ev-input {
-  background: hsl(0 0% 100%);
+  background: hsl(0 0% 100% / 0.60);
   backdrop-filter: blur(12px);
-  border: 1px solid hsl(0 0% 0% / 0.1);
+  border: 1px solid hsl(262 40% 50% / 0.12);
   border-radius: 12px;
-  color: hsl(0 0% 9%);
+  color: hsl(252 10% 10%);
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -241,7 +244,7 @@ body {
 .ev-card {
   position: relative;
   border-radius: 16px;
-  background: hsl(0 0% 100% / 0.80);
+  background: hsl(0 0% 100% / 0.50);
   backdrop-filter: blur(24px);
   overflow: hidden;
 }
@@ -280,16 +283,16 @@ body {
 .ev-card-static {
   position: relative;
   border-radius: 16px;
-  background: hsl(0 0% 100% / 0.80);
+  background: hsl(0 0% 100% / 0.50);
   backdrop-filter: blur(24px);
-  border: 1px solid hsl(0 0% 0% / 0.08);
+  border: 1px solid hsl(262 40% 50% / 0.10);
   overflow: hidden;
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .ev-card-static:hover {
-  border-color: hsl(262 83% 58% / 0.2);
-  box-shadow: 0 0 40px hsl(262 83% 58% / 0.04);
+  border-color: hsl(262 83% 58% / 0.25);
+  box-shadow: 0 0 40px hsl(262 83% 58% / 0.10);
 }
 
 /* ── Evervault Button Primary ───────────────────────── */
@@ -317,13 +320,13 @@ body {
 
 /* ── Glow utilities ─────────────────────────────────── */
 .glow-primary {
-  box-shadow: 0 0 60px hsl(262 83% 58% / 0.15);
+  box-shadow: 0 0 60px hsl(262 83% 58% / 0.25);
 }
 .glow-secondary {
-  box-shadow: 0 0 40px hsl(188 94% 43% / 0.12);
+  box-shadow: 0 0 40px hsl(188 94% 43% / 0.20);
 }
 .glow-static {
-  box-shadow: 0 0 34px hsl(262 83% 58% / 0.2), 0 0 68px hsl(262 83% 58% / 0.08);
+  box-shadow: 0 0 34px hsl(262 83% 58% / 0.3), 0 0 68px hsl(262 83% 58% / 0.12);
 }
 
 /* ── Dot Grid ───────────────────────────────────────── */
