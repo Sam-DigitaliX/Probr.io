@@ -171,7 +171,7 @@ export default function ProbesPage() {
             {probes.map((probe) => (
               <Card key={probe.id} className="overflow-hidden">
                 <div
-                  className="flex items-center gap-4 p-5 cursor-pointer hover:bg-muted/30 transition-colors"
+                  className="flex items-center gap-4 p-5 cursor-pointer hover:bg-white/40 transition-all"
                   onClick={() => toggleExpand(probe.id)}
                 >
                   <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
@@ -226,7 +226,7 @@ export default function ProbesPage() {
 
                 {/* Expanded results */}
                 {expandedProbe === probe.id && (
-                  <div className="border-t border-border bg-muted/20 p-5">
+                  <div className="border-t border-white/40 bg-white/20 backdrop-blur-sm p-5">
                     <h4 className="text-sm font-medium mb-3">Recent Results</h4>
                     {(results[probe.id] ?? []).length === 0 ? (
                       <p className="text-sm text-muted-foreground">No results yet. Run the probe to see results.</p>
@@ -235,7 +235,7 @@ export default function ProbesPage() {
                         {(results[probe.id] ?? []).slice(0, 10).map((result) => (
                           <div
                             key={result.id}
-                            className="flex items-center gap-3 rounded-lg border border-border bg-card p-3 text-sm"
+                            className="flex items-center gap-3 rounded-lg border border-white/40 bg-white/35 backdrop-blur-sm p-3 text-sm"
                           >
                             <StatusDot status={result.status} size="sm" pulse={false} />
                             <Badge className={statusBg(result.status)} variant="outline">

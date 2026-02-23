@@ -76,19 +76,19 @@ export default function AlertsPage() {
       <div className="p-8 space-y-6">
         {/* Summary badges */}
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-2">
+          <div className="flex items-center gap-2 rounded-lg border border-white/50 bg-white/40 backdrop-blur-md px-4 py-2">
             <AlertTriangle className="h-4 w-4 text-destructive" />
             <span className="text-sm font-medium">
               {alerts.filter((a) => !a.is_resolved && a.severity === "critical").length} critical
             </span>
           </div>
-          <div className="flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-2">
+          <div className="flex items-center gap-2 rounded-lg border border-white/50 bg-white/40 backdrop-blur-md px-4 py-2">
             <AlertTriangle className="h-4 w-4 text-warning" />
             <span className="text-sm font-medium">
               {alerts.filter((a) => !a.is_resolved && a.severity === "warning").length} warnings
             </span>
           </div>
-          <div className="flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-2">
+          <div className="flex items-center gap-2 rounded-lg border border-white/50 bg-white/40 backdrop-blur-md px-4 py-2">
             <CheckCircle2 className="h-4 w-4 text-success" />
             <span className="text-sm font-medium">
               {alerts.filter((a) => a.is_resolved).length} resolved

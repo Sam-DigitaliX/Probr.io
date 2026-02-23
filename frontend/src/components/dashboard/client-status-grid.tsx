@@ -43,7 +43,7 @@ export function ClientStatusGrid({ clients }: ClientStatusGridProps) {
         <div
           key={client.client_id}
           className={cn(
-            "group rounded-xl border border-border bg-card p-5 shadow-card transition-all duration-200 hover:shadow-card-hover hover:-translate-y-0.5 animate-fade-in-up",
+            "group rounded-xl border border-white/50 bg-white/50 backdrop-blur-xl p-5 shadow-glass transition-all duration-200 hover:shadow-glass-hover hover:-translate-y-0.5 hover:bg-white/65 animate-fade-in-up",
             `animate-delay-${((i % 6) + 1) * 100}`
           )}
         >
@@ -68,7 +68,7 @@ export function ClientStatusGrid({ clients }: ClientStatusGridProps) {
             {client.sites.slice(0, 3).map((site) => (
               <div
                 key={site.site_id}
-                className="flex items-center justify-between rounded-lg bg-muted/40 px-3 py-2 text-xs"
+                className="flex items-center justify-between rounded-lg bg-white/30 backdrop-blur-sm border border-white/30 px-3 py-2 text-xs"
               >
                 <div className="flex items-center gap-2 min-w-0">
                   <StatusDot status={site.worst_status} size="sm" pulse={false} />
@@ -101,7 +101,7 @@ export function ClientStatusGrid({ clients }: ClientStatusGridProps) {
           {/* Footer */}
           <Link
             href="/dashboard/clients"
-            className="flex items-center justify-center gap-1 mt-4 pt-3 border-t border-border text-xs font-medium text-primary hover:text-primary/80 transition-colors"
+            className="flex items-center justify-center gap-1 mt-4 pt-3 border-t border-white/40 text-xs font-medium text-primary hover:text-primary/80 transition-colors"
           >
             View details
             <ChevronRight className="h-3 w-3" />

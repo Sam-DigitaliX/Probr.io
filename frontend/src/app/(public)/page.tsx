@@ -65,7 +65,7 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen">
       {/* ── Navbar ────────────────────────────────────── */}
-      <nav className="fixed top-0 inset-x-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-lg">
+      <nav className="fixed top-0 inset-x-0 z-50 border-b border-white/40 bg-white/40 backdrop-blur-xl shadow-[inset_0_-1px_0_hsl(0_0%_100%/0.2)]">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
           <Link href="/" className="flex items-center gap-2.5">
             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-secondary">
@@ -129,7 +129,7 @@ export default function LandingPage() {
             </Link>
             <Link
               href="/login"
-              className="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-6 py-3 text-sm font-semibold text-foreground shadow-sm hover:bg-muted/50 transition-all"
+              className="inline-flex items-center gap-2 rounded-xl border border-white/50 bg-white/50 backdrop-blur-md px-6 py-3 text-sm font-semibold text-foreground shadow-glass hover:bg-white/70 transition-all"
             >
               Log in to Dashboard
             </Link>
@@ -138,7 +138,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── Stats ─────────────────────────────────────── */}
-      <section className="border-y border-border bg-card/50">
+      <section className="border-y border-white/40 bg-white/30 backdrop-blur-lg">
         <div className="mx-auto max-w-4xl px-6 py-12">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {stats.map((stat) => (
@@ -189,7 +189,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── How it works ──────────────────────────────── */}
-      <section className="py-24 bg-muted/30">
+      <section className="py-24 bg-white/20 backdrop-blur-sm">
         <div className="mx-auto max-w-4xl px-6">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold tracking-tight">
@@ -236,7 +236,7 @@ export default function LandingPage() {
       {/* ── CTA ───────────────────────────────────────── */}
       <section className="py-24">
         <div className="mx-auto max-w-3xl px-6 text-center">
-          <div className="rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/5 via-background to-secondary/5 p-12">
+          <div className="rounded-2xl border border-white/50 bg-white/40 backdrop-blur-xl p-12 shadow-glass">
             <Globe className="h-10 w-10 text-primary mx-auto mb-6" />
             <h2 className="text-3xl font-bold tracking-tight mb-4">
               Ready to protect your tracking?
@@ -257,7 +257,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── Footer ────────────────────────────────────── */}
-      <footer className="border-t border-border py-8">
+      <footer className="border-t border-white/40 py-8">
         <div className="mx-auto max-w-6xl px-6 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="flex h-7 w-7 items-center justify-center rounded-md bg-gradient-to-br from-primary to-secondary">
