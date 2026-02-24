@@ -158,6 +158,23 @@ select, textarea {
   border-radius: var(--radius-md) !important;
 }
 
+/* Reset — keep header/toolbar/mobile buttons square */
+header button,
+header .button,
+.header button,
+.header .button,
+.toolbar button,
+.mobile-menu-toggle,
+.tri-layout-mobile-tabs button,
+.tri-layout-mobile-tabs .tab-item,
+.icon-button,
+.setting-list button,
+.entity-actions button,
+[refs="header-mobile-toggle"],
+.breadcrumb-listing-toggle {
+  border-radius: 0 !important;
+}
+
 .dropdown-menu,
 .popup-body,
 [class*="dropdown"] ul {
