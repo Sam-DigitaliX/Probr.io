@@ -64,12 +64,15 @@ if [[ "$LANG_OPT" != "fr" && "$LANG_OPT" != "en" ]]; then
   exit 1
 fi
 
+echo "[DEBUG] LANG_OPT='${LANG_OPT}' | args after shift: $*"
+
 # Remove trailing slash
 BOOKSTACK_URL="${BOOKSTACK_URL%/}"
 AUTH="Token ${TOKEN_ID}:${TOKEN_SECRET}"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 DOCS_DIR="${SCRIPT_DIR}/${LANG_OPT}"
+echo "[DEBUG] DOCS_DIR='${DOCS_DIR}'"
 
 # Verify docs directory exists
 if [[ ! -d "$DOCS_DIR/getting-started" ]]; then
