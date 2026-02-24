@@ -17,6 +17,9 @@ Usage:
     # Apply changes
     python3 scripts/fix-bookstack-links.py --apply
 
+    # Verbose mode — show full page mapping
+    python3 scripts/fix-bookstack-links.py --verbose
+
 Environment variables:
     BOOKSTACK_URL            Base URL (e.g. https://docs.probr.io)
     BOOKSTACK_TOKEN_ID       API Token ID
@@ -138,49 +141,37 @@ def fetch_all_pages(api):
 def detect_shelf_language(shelf_name):
     """Determine language from shelf name."""
     name = shelf_name.lower()
-    if any(w in name for w in ["en", "english", "user guide"]):
+    # Check explicit language markers (word boundaries to avoid false matches)
+    if re.search(r'\ben\b', name) or "english" in name or "user guide" in name:
         return "en"
-    if any(w in name for w in ["fr", "utilisateur", "french"]):
+    if re.search(r'\bfr\b', name) or "french" in name or "utilisateur" in name:
         return "fr"
     return None
 
 
-def build_book_lang_map(api):
+def build_book_lang_map(api, verbose=False):
     """Map book_id → language by inspecting shelves."""
     book_lang = {}
     shelves = api.get("shelves")["data"]
     for shelf in shelves:
         detail = api.get(f"shelves/{shelf['id']}")
         lang = detect_shelf_language(shelf["name"])
+        if verbose:
+            book_names = [b["name"] for b in detail.get("books", [])]
+            print(f"      Shelf '{shelf['name']}' -> lang={lang or 'SHARED'} ({len(book_names)} books)")
         for book in detail.get("books", []):
             book_lang[book["id"]] = lang
     return book_lang
 
 
 def resolve_relative_link(href, source_filepath):
-    """Resolve a relative .md link based on the source file's directory.
-
-    Examples:
-        resolve("./prerequisites.md", "getting-started/introduction.md")
-        → "getting-started/prerequisites.md"
-
-        resolve("../monitoring/alerts.md", "administration/probes.md")
-        → "monitoring/alerts.md"
-
-        resolve("authentication.md", "api-reference/endpoints-overview.md")
-        → "api-reference/authentication.md"
-    """
+    """Resolve a relative .md link based on the source file's directory."""
     source_dir = posixpath.dirname(source_filepath)
     resolved = posixpath.normpath(posixpath.join(source_dir, href))
     return resolved
 
 
-def find_md_links_in_html(html):
-    """Find all href="...*.md" patterns in HTML content."""
-    return re.findall(r'href="([^"]*\.md)"', html)
-
-
-def process_page(html, source_title, lang, title_to_page_id, base_url):
+def process_page(html, source_title, lang, page_id_by_title, base_url):
     """Scan a page's HTML for .md links and replace them with BookStack URLs.
 
     Returns (fixed_html, changes_list).
@@ -196,8 +187,8 @@ def process_page(html, source_title, lang, title_to_page_id, base_url):
         target_path = resolve_relative_link(href, source_filepath)
         target_title = FILENAME_TO_TITLE.get(lang, {}).get(target_path)
 
-        if target_title and target_title in title_to_page_id:
-            page_id = title_to_page_id[target_title]
+        if target_title and target_title in page_id_by_title:
+            page_id = page_id_by_title[target_title]
             new_url = f"{base_url}/link/{page_id}"
             changes.append({"old": href, "new": new_url, "target": target_title})
             return f'href="{new_url}"'
@@ -221,6 +212,10 @@ def main():
     parser.add_argument(
         "--apply", action="store_true",
         help="Apply changes (default is dry-run)",
+    )
+    parser.add_argument(
+        "--verbose", "-v", action="store_true",
+        help="Show detailed mapping info",
     )
     parser.add_argument("--url", default=os.environ.get("BOOKSTACK_URL", ""))
     parser.add_argument("--token-id", default=os.environ.get("BOOKSTACK_TOKEN_ID", ""))
@@ -250,44 +245,70 @@ def main():
 
     # ── Step 1: Map books to languages ────────────────────────────────
     print("[1/4] Mapping shelves and books to languages...")
-    book_lang = build_book_lang_map(api)
+    book_lang = build_book_lang_map(api, verbose=args.verbose)
     print(f"      {len(book_lang)} books mapped")
+    print()
 
-    # ── Step 2: Fetch all pages ───────────────────────────────────────
+    # ── Step 2: Fetch all pages and build GLOBAL title → page_id map ─
     print("[2/4] Fetching all pages...")
     all_pages = fetch_all_pages(api)
     print(f"      {len(all_pages)} pages found")
 
-    # Build title → page_id mapping per language
-    # Also identify which pages to inspect (those with known titles)
-    title_to_page_id = {"en": {}, "fr": {}}
+    # Global map: title → page_id (no language split)
+    # This handles shared shelves (e.g., API docs used by both EN and FR)
+    page_id_by_title = {}
+    for page in all_pages:
+        page_id_by_title[page["name"]] = page["id"]
+
+    # Determine which pages to scan and their language context
     pages_to_inspect = []
+    matched_en = set()
+    matched_fr = set()
 
     for page in all_pages:
         lang = book_lang.get(page.get("book_id"))
-        if lang is None:
-            # Try to infer language from page title
+
+        if lang:
+            # Book belongs to a language-specific shelf
+            if lang == "en":
+                matched_en.add(page["name"])
+            else:
+                matched_fr.add(page["name"])
+            if page["name"] in TITLE_TO_FILENAME.get(lang, {}):
+                pages_to_inspect.append({
+                    "id": page["id"],
+                    "name": page["name"],
+                    "lang": lang,
+                })
+        else:
+            # Shared shelf (e.g., API docs) — check BOTH languages
             for l in ["en", "fr"]:
                 if page["name"] in TITLE_TO_FILENAME.get(l, {}):
-                    lang = l
-                    break
-        if lang is None:
-            continue
+                    if l == "en":
+                        matched_en.add(page["name"])
+                    else:
+                        matched_fr.add(page["name"])
+                    pages_to_inspect.append({
+                        "id": page["id"],
+                        "name": page["name"],
+                        "lang": l,
+                    })
 
-        title_to_page_id[lang][page["name"]] = page["id"]
+    print(f"      Matched: {len(matched_en)} EN, {len(matched_fr)} FR")
 
-        # Check if this page's source file is known to have .md links
-        source_filepath = TITLE_TO_FILENAME.get(lang, {}).get(page["name"], "")
-        if source_filepath:
-            pages_to_inspect.append({
-                "id": page["id"],
-                "name": page["name"],
-                "lang": lang,
-            })
-
-    en_count = len(title_to_page_id["en"])
-    fr_count = len(title_to_page_id["fr"])
-    print(f"      Matched: {en_count} EN, {fr_count} FR")
+    if args.verbose:
+        # Show what's missing
+        all_en_titles = set(FILENAME_TO_TITLE["en"].values())
+        all_fr_titles = set(FILENAME_TO_TITLE["fr"].values())
+        missing_en = all_en_titles - set(page_id_by_title.keys())
+        missing_fr = all_fr_titles - set(page_id_by_title.keys())
+        if missing_en:
+            print(f"      Missing EN pages: {missing_en}")
+        if missing_fr:
+            print(f"      Missing FR pages: {missing_fr}")
+        unmatched = set(p["name"] for p in all_pages) - matched_en - matched_fr
+        if unmatched:
+            print(f"      Unmatched pages: {unmatched}")
     print()
 
     # ── Step 3: Scan pages for broken links ───────────────────────────
@@ -304,7 +325,7 @@ def main():
 
         fixed_html, changes = process_page(
             html, page_info["name"], page_info["lang"],
-            title_to_page_id[page_info["lang"]], base_url,
+            page_id_by_title, base_url,
         )
 
         if changes:
