@@ -26,14 +26,7 @@ No. The Probr Listener tag is designed exclusively for **server-side** container
 
 ### How many sites can I monitor?
 
-This depends on your plan:
-
-| Plan | Number of sites |
-|---|---|
-| Free | 1 |
-| Pro | 5 |
-| Business | 20 |
-| Enterprise | Unlimited |
+Since Probr is self-hosted, there is **no built-in limit** on the number of sites. You can monitor as many sites as your server resources allow. Each site has its own ingest key and probe configurations.
 
 ---
 
@@ -82,17 +75,12 @@ Yes. The "Probr Ingest Endpoint" and "Probr Ingest Key" fields accept GTM variab
 
 ### Can I configure alerts?
 
-Yes. In Probr dashboard > **Alerts**, you can configure email or webhook notifications when:
-- A tag drops below a success threshold (e.g., <95%)
-- Email presence rate drops (e.g., <50%)
-- Event volume drops abnormally (anomaly detection)
-- A tag starts timing out regularly
+Yes. Probr automatically creates alerts when probes detect issues (CRITICAL or WARNING status). Alerts are delivered via:
+- **Slack webhooks** (global and per-client)
+- **Email** (via SMTP)
+
+Alerts are automatically resolved when the probe returns to OK status. You can also resolve alerts manually via the API. See [Alert Management](../monitoring/alerts.md) for details.
 
 ### How long is data retained?
 
-| Plan | Retention |
-|---|---|
-| Free | 7 days |
-| Pro | 30 days |
-| Business | 90 days |
-| Enterprise | Custom (up to 1 year) |
+Since Probr is self-hosted, data is retained indefinitely by default in your PostgreSQL database. You can set up your own retention policy (e.g., a cron job to delete monitoring batches older than 90 days).

@@ -26,14 +26,7 @@ Non. Le tag Probr Listener est conçu exclusivement pour les conteneurs **server
 
 ### Combien de sites puis-je monitorer ?
 
-Cela dépend de votre plan :
-
-| Plan | Nombre de sites |
-|---|---|
-| Free | 1 |
-| Pro | 5 |
-| Business | 20 |
-| Enterprise | Illimité |
+Probr etant self-hosted, il n'y a **pas de limite intrinseque** sur le nombre de sites. Vous pouvez monitorer autant de sites que les ressources de votre serveur le permettent. Chaque site possede sa propre cle d'ingestion et ses configurations de probes.
 
 ---
 
@@ -82,17 +75,12 @@ Oui. Les champs "Probr Ingest Endpoint" et "Probr Ingest Key" acceptent des vari
 
 ### Puis-je configurer des alertes ?
 
-Oui. Dans le dashboard Probr > **Alertes**, vous pouvez configurer des notifications par email ou webhook quand :
-- Un tag passe en dessous d'un seuil de succès (ex. <95%)
-- Le taux de présence email chute (ex. <50%)
-- Le volume d'événements baisse de manière anormale (détection d'anomalie)
-- Un tag commence à timeout régulièrement
+Oui. Probr cree automatiquement des alertes quand les probes detectent des problemes (statut CRITICAL ou WARNING). Les alertes sont delivrees via :
+- **Webhooks Slack** (global et par client)
+- **Email** (via SMTP)
 
-### Combien de temps les données sont-elles conservées ?
+Les alertes sont automatiquement resolues quand la probe revient au statut OK. Vous pouvez aussi resoudre les alertes manuellement via l'API. Voir [Gestion des alertes](../monitoring/alerts.md) pour les details.
 
-| Plan | Rétention |
-|---|---|
-| Free | 7 jours |
-| Pro | 30 jours |
-| Business | 90 jours |
-| Enterprise | Sur mesure (jusqu'à 1 an) |
+### Combien de temps les donnees sont-elles conservees ?
+
+Probr etant self-hosted, les donnees sont conservees indefiniment par defaut dans votre base de donnees PostgreSQL. Vous pouvez mettre en place votre propre politique de retention (ex. un cron job pour supprimer les batches de monitoring de plus de 90 jours).
