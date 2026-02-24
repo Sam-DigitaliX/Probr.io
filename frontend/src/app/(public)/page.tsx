@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import Image from "next/image";
@@ -14,6 +15,12 @@ import {
   Lock,
   Star,
   BadgeCheck,
+  ChevronDown,
+  ChevronRight,
+  BookOpen,
+  ExternalLink,
+  Menu,
+  X,
 } from "lucide-react";
 
 const features = [
@@ -67,13 +74,105 @@ const stats = [
   { value: "24/7", label: "Automated checks" },
 ];
 
+/* ──────────────────────── Ressources dropdown items ──────────────────────── */
+
+const ressourcesItems = [
+  {
+    icon: BookOpen,
+    label: "Documentation",
+    description: "Guides d'installation & configuration Probr",
+    href: "https://docs.probr.io",
+    external: true,
+  },
+];
+
+/* ──────────────────────── MegaLink component ──────────────────────── */
+
+function MegaLink({
+  item,
+  onClick,
+}: {
+  item: (typeof ressourcesItems)[number];
+  onClick?: () => void;
+}) {
+  const inner = (
+    <div className="flex items-center gap-4 px-4 py-3.5 rounded-xl transition-colors duration-200 group hover:bg-white/[0.04]">
+      <div className="w-11 h-11 rounded-xl bg-white/[0.05] border border-white/[0.06] flex items-center justify-center shrink-0 transition-all duration-300 group-hover:bg-gradient-to-br group-hover:from-primary group-hover:to-secondary group-hover:border-transparent">
+        <item.icon className="w-5 h-5 text-primary group-hover:text-white transition-colors duration-300" />
+      </div>
+      <div className="min-w-0 flex-1">
+        <span className="text-sm font-semibold text-foreground whitespace-nowrap">
+          {item.label}
+        </span>
+        <p className="text-xs text-muted-foreground mt-0.5">
+          {item.description}
+        </p>
+      </div>
+      {item.external ? (
+        <ExternalLink className="w-4 h-4 text-muted-foreground/50 shrink-0" />
+      ) : (
+        <ChevronRight className="w-4 h-4 text-muted-foreground/50 shrink-0" />
+      )}
+    </div>
+  );
+
+  if (item.external) {
+    return (
+      <a
+        href={item.href}
+        target="_blank"
+        rel="noopener noreferrer"
+        onClick={onClick}
+      >
+        {inner}
+      </a>
+    );
+  }
+
+  return (
+    <Link href={item.href} onClick={onClick}>
+      {inner}
+    </Link>
+  );
+}
+
 export default function LandingPage() {
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [mobileAccordion, setMobileAccordion] = useState<string | null>(null);
+  const closeTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+
+  /* Cleanup timeout on unmount */
+  useEffect(() => {
+    return () => clearTimeout(closeTimeoutRef.current);
+  }, []);
+
+  const openNav = useCallback((id: string) => {
+    clearTimeout(closeTimeoutRef.current);
+    setOpenDropdown(id);
+  }, []);
+
+  const scheduleClose = useCallback(() => {
+    closeTimeoutRef.current = setTimeout(() => setOpenDropdown(null), 250);
+  }, []);
+
+  const cancelClose = useCallback(() => {
+    clearTimeout(closeTimeoutRef.current);
+  }, []);
+
+  const closeDropdown = useCallback(() => setOpenDropdown(null), []);
+
+  const closeMobile = useCallback(() => {
+    setIsMobileMenuOpen(false);
+    setMobileAccordion(null);
+  }, []);
+
   return (
     <div className="min-h-screen">
       {/* ── Navbar ────────────────────────────────────── */}
       <nav className="fixed top-0 inset-x-0 z-50 backdrop-blur-xl border-b border-white/[0.06]">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-          <Link href="/" className="flex items-center">
+          <Link href="/" className="flex items-center shrink-0">
             <Image
               src="/images/Probr_logo.webp"
               alt="Probr"
@@ -84,29 +183,57 @@ export default function LandingPage() {
             />
           </Link>
 
-          {/* Nav pill (desktop) */}
-          <div className="hidden md:flex items-center rounded-full border border-white/[0.12] bg-white/[0.07] px-1 py-1">
+          {/* ── Desktop: Nav pill ── */}
+          <div className="hidden lg:flex items-center rounded-full border border-white/[0.12] bg-white/[0.07] px-1 py-1">
             <Link
               href="/"
               className="px-4 py-2 rounded-full text-sm font-medium text-foreground/70 hover:text-foreground transition-colors"
+              onMouseEnter={() => setOpenDropdown(null)}
             >
               Home
             </Link>
             <Link
               href="#features"
               className="px-4 py-2 rounded-full text-sm font-medium text-foreground/70 hover:text-foreground transition-colors"
+              onMouseEnter={() => setOpenDropdown(null)}
             >
               Features
             </Link>
             <Link
               href="#how-it-works"
               className="px-4 py-2 rounded-full text-sm font-medium text-foreground/70 hover:text-foreground transition-colors"
+              onMouseEnter={() => setOpenDropdown(null)}
             >
               How it works
             </Link>
+
+            {/* Ressources trigger */}
+            <button
+              type="button"
+              className={`flex items-center gap-1 px-4 py-2 rounded-full text-sm font-medium transition-colors duration-200 ${
+                openDropdown === "ressources"
+                  ? "bg-white/[0.08] text-foreground"
+                  : "text-foreground/70 hover:text-foreground"
+              }`}
+              onMouseEnter={() => openNav("ressources")}
+              onMouseLeave={scheduleClose}
+              onClick={() =>
+                openDropdown === "ressources"
+                  ? closeDropdown()
+                  : openNav("ressources")
+              }
+            >
+              Ressources
+              <ChevronDown
+                className={`w-3.5 h-3.5 transition-transform duration-200 ${
+                  openDropdown === "ressources" ? "rotate-180" : ""
+                }`}
+              />
+            </button>
           </div>
 
-          <div className="flex items-center gap-3">
+          {/* ── Desktop: CTA ── */}
+          <div className="hidden lg:flex items-center gap-3">
             <Link
               href="/login"
               className="px-4 py-2 text-sm font-medium text-foreground/70 hover:text-foreground transition-colors"
@@ -121,7 +248,133 @@ export default function LandingPage() {
               <ArrowRight className="h-3.5 w-3.5" />
             </Link>
           </div>
+
+          {/* ── Mobile: Hamburger ── */}
+          <button
+            type="button"
+            className="lg:hidden text-foreground"
+            aria-label="Toggle navigation menu"
+            aria-expanded={isMobileMenuOpen}
+            onClick={() => setIsMobileMenuOpen((v) => !v)}
+          >
+            {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
         </div>
+
+        {/* ── Mega Dropdown Panel (desktop) ── */}
+        <div
+          className={`hidden lg:block absolute left-1/2 -translate-x-1/2 top-16 pt-2 z-50 w-full max-w-[400px] transition-all duration-200 ${
+            openDropdown
+              ? "opacity-100 translate-y-0 pointer-events-auto"
+              : "opacity-0 -translate-y-2 pointer-events-none"
+          }`}
+          onMouseEnter={cancelClose}
+          onMouseLeave={scheduleClose}
+        >
+          <div className="rounded-2xl border border-white/[0.08] bg-[#0c0c18]/95 backdrop-blur-xl shadow-2xl shadow-black/40 overflow-hidden">
+            {openDropdown === "ressources" && (
+              <div className="p-4">
+                <p className="px-4 pb-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-widest">
+                  Ressources
+                </p>
+                <div className="space-y-0.5">
+                  {ressourcesItems.map((item) => (
+                    <MegaLink
+                      key={item.label}
+                      item={item}
+                      onClick={closeDropdown}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* ── Mobile Menu ── */}
+        {isMobileMenuOpen && (
+          <div className="lg:hidden py-4 px-6 border-t border-white/[0.06] bg-background/95 backdrop-blur-xl">
+            <div className="flex flex-col">
+              <Link
+                href="/"
+                className="py-3 text-base font-medium text-muted-foreground hover:text-foreground transition-colors"
+                onClick={closeMobile}
+              >
+                Home
+              </Link>
+              <Link
+                href="#features"
+                className="py-3 text-base font-medium text-muted-foreground hover:text-foreground transition-colors"
+                onClick={closeMobile}
+              >
+                Features
+              </Link>
+              <Link
+                href="#how-it-works"
+                className="py-3 text-base font-medium text-muted-foreground hover:text-foreground transition-colors"
+                onClick={closeMobile}
+              >
+                How it works
+              </Link>
+
+              {/* Ressources accordion */}
+              <div>
+                <button
+                  type="button"
+                  className="flex items-center justify-between w-full py-3 text-base font-medium text-muted-foreground hover:text-foreground transition-colors"
+                  onClick={() =>
+                    setMobileAccordion((prev) =>
+                      prev === "ressources" ? null : "ressources"
+                    )
+                  }
+                >
+                  Ressources
+                  <ChevronDown
+                    className={`w-4 h-4 transition-transform duration-200 ${
+                      mobileAccordion === "ressources" ? "rotate-180" : ""
+                    }`}
+                  />
+                </button>
+                <div
+                  className={`overflow-hidden transition-all duration-200 ${
+                    mobileAccordion === "ressources"
+                      ? "max-h-[400px] opacity-100"
+                      : "max-h-0 opacity-0"
+                  }`}
+                >
+                  <div className="pb-2 pl-2 space-y-1">
+                    {ressourcesItems.map((item) => (
+                      <MegaLink
+                        key={item.label}
+                        item={item}
+                        onClick={closeMobile}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* CTA mobile */}
+              <div className="flex flex-col gap-3 mt-4 pt-4 border-t border-white/[0.06]">
+                <Link
+                  href="/login"
+                  className="py-2.5 text-center text-sm font-medium text-foreground/70 hover:text-foreground transition-colors"
+                  onClick={closeMobile}
+                >
+                  Log in
+                </Link>
+                <Link
+                  href="/signup"
+                  className="ev-btn-primary inline-flex items-center justify-center gap-2 px-6 py-2.5 text-sm font-semibold w-full"
+                  onClick={closeMobile}
+                >
+                  Get Started
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
       </nav>
 
       {/* ── Hero — Glass Panel Bottom ──────────────────── */}
