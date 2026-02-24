@@ -22,35 +22,11 @@
   --probr-red:     #FD1D1D;
   --probr-orange:  #FCB045;
 
-  /* Surfaces */
-  --bg-base:       hsl(240 15% 6%);
-  --bg-raised:     hsl(240 15% 8%);
-  --bg-surface:    hsl(240 15% 10%);
-  --bg-overlay:    hsl(240 15% 12%);
-
-  /* Glass */
-  --glass-fill:    rgba(255, 255, 255, 0.04);
-  --glass-border:  rgba(255, 255, 255, 0.08);
-  --glass-hover:   rgba(255, 255, 255, 0.06);
-  --glass-highlight: rgba(255, 255, 255, 0.10);
-
-  /* Text */
-  --text-primary:   hsl(0 0% 95%);
-  --text-secondary: hsl(0 0% 70%);
-  --text-muted:     hsl(0 0% 50%);
-  --text-link:      #a855f7;
-  --text-link-hover:#c084fc;
-
   /* Semantic */
   --color-success: hsl(142 71% 45%);
   --color-warning: hsl(38 92% 50%);
   --color-danger:  hsl(0 84% 60%);
   --color-info:    hsl(217 91% 60%);
-
-  /* Shadows & Glows */
-  --shadow-card:   0 4px 24px rgba(0,0,0,0.30), 0 1px 3px rgba(0,0,0,0.20);
-  --glow-purple:   0 0 40px rgba(131,58,180,0.15);
-  --glow-orange:   0 0 30px rgba(252,176,69,0.10);
 
   /* Radius */
   --radius-sm: 8px;
@@ -62,57 +38,49 @@
   --transition-fast: 150ms ease;
   --transition-base: 250ms ease;
   --transition-slow: 400ms ease;
+
+  /* Light mode defaults */
+  --glass-fill:      rgba(0, 0, 0, 0.03);
+  --glass-border:    rgba(0, 0, 0, 0.08);
+  --glass-hover:     rgba(0, 0, 0, 0.05);
+  --glass-highlight: rgba(0, 0, 0, 0.08);
+  --shadow-card:     0 2px 12px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.06);
+  --glow-purple:     0 0 30px rgba(131,58,180,0.10);
+  --glow-orange:     0 0 20px rgba(252,176,69,0.08);
+  --text-link:       #7c3aed;
+  --text-link-hover: #6d28d9;
+}
+
+/* Dark mode overrides — scoped to BookStack's dark mode class */
+.dark-mode {
+  --glass-fill:      rgba(255, 255, 255, 0.04);
+  --glass-border:    rgba(255, 255, 255, 0.08);
+  --glass-hover:     rgba(255, 255, 255, 0.06);
+  --glass-highlight: rgba(255, 255, 255, 0.10);
+  --shadow-card:     0 4px 24px rgba(0,0,0,0.30), 0 1px 3px rgba(0,0,0,0.20);
+  --glow-purple:     0 0 40px rgba(131,58,180,0.15);
+  --glow-orange:     0 0 30px rgba(252,176,69,0.10);
+  --text-link:       #a855f7;
+  --text-link-hover: #c084fc;
 }
 
 /* ================================================================
    1. BASE & TYPOGRAPHY
    ================================================================ */
 body {
-  background: var(--bg-base) !important;
-  color: var(--text-primary) !important;
   font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Subtle background orbs (atmospheric lighting) */
-body::before,
-body::after {
-  content: '';
-  position: fixed;
-  border-radius: 50%;
-  filter: blur(100px);
-  z-index: 0;
-  pointer-events: none;
-}
-body::before {
-  top: -10%;
-  left: -5%;
-  width: 500px;
-  height: 500px;
-  background: rgba(131, 58, 180, 0.12);
-}
-body::after {
-  bottom: -10%;
-  right: -5%;
-  width: 450px;
-  height: 450px;
-  background: rgba(252, 176, 69, 0.08);
-}
-
 h1, h2, h3, h4, h5, h6,
 .shelf-name, .book-name {
   font-family: 'Space Grotesk', 'Inter', system-ui, sans-serif !important;
-  color: var(--text-primary) !important;
   letter-spacing: -0.01em;
 }
 
 h1 { font-weight: 700 !important; }
 h2 { font-weight: 600 !important; }
-
-p, li, td, th, span, label, .text-muted, small {
-  color: var(--text-secondary) !important;
-}
 
 a {
   color: var(--text-link) !important;
@@ -127,6 +95,8 @@ hr {
   border-color: var(--glass-border) !important;
 }
 
+/* Selection */
+
 ::selection {
   background: rgba(131, 58, 180, 0.35);
   color: white;
@@ -136,11 +106,9 @@ hr {
    2. HEADER / NAVIGATION
    ================================================================ */
 header, .header {
-  background: rgba(15, 15, 25, 0.75) !important;
   backdrop-filter: blur(20px) saturate(1.2) !important;
   -webkit-backdrop-filter: blur(20px) saturate(1.2) !important;
   border-bottom: 1px solid var(--glass-border) !important;
-  box-shadow: 0 1px 30px rgba(0, 0, 0, 0.3) !important;
   position: relative;
   z-index: 50;
 }
@@ -161,16 +129,6 @@ header::before, .header::before {
   z-index: 51;
 }
 
-header a, .header a,
-header .header-links a {
-  color: var(--text-secondary) !important;
-  transition: color var(--transition-fast) !important;
-}
-header a:hover, .header a:hover,
-header .header-links a:hover {
-  color: var(--text-primary) !important;
-}
-
 /* Search bar in header */
 header input[type="text"],
 header .search-box input,
@@ -178,7 +136,6 @@ header .search-box input,
   background: var(--glass-fill) !important;
   border: 1px solid var(--glass-border) !important;
   border-radius: var(--radius-md) !important;
-  color: var(--text-primary) !important;
   backdrop-filter: blur(12px) !important;
   transition: border-color var(--transition-fast), box-shadow var(--transition-fast) !important;
 }
@@ -191,7 +148,6 @@ header input[type="text"]:focus,
 
 /* Header dropdown menus */
 header .dropdown-menu, .header .dropdown-menu {
-  background: var(--bg-surface) !important;
   border: 1px solid var(--glass-border) !important;
   border-radius: var(--radius-md) !important;
   box-shadow: var(--shadow-card) !important;
@@ -228,7 +184,6 @@ header .dropdown-menu, .header .dropdown-menu {
 
 /* Page content specifics */
 .page-content {
-  color: var(--text-secondary) !important;
   line-height: 1.75 !important;
 }
 
@@ -236,7 +191,6 @@ header .dropdown-menu, .header .dropdown-menu {
 .page-content h2,
 .page-content h3,
 .page-content h4 {
-  color: var(--text-primary) !important;
   margin-top: 1.8em !important;
   padding-bottom: 0.3em !important;
 }
@@ -275,7 +229,6 @@ header .dropdown-menu, .header .dropdown-menu {
 
 .card h2 a, .card h3 a,
 .grid-card .grid-card-content a {
-  color: var(--text-primary) !important;
   font-family: 'Space Grotesk', 'Inter', system-ui, sans-serif !important;
 }
 
@@ -283,7 +236,6 @@ header .dropdown-menu, .header .dropdown-menu {
 .card .card-footer,
 .card .meta-info {
   border-top: 1px solid var(--glass-border) !important;
-  background: rgba(255, 255, 255, 0.02) !important;
 }
 
 /* ================================================================
@@ -303,13 +255,7 @@ header .dropdown-menu, .header .dropdown-menu {
 }
 
 .entity-list-item .entity-list-item--name {
-  color: var(--text-primary) !important;
   font-family: 'Space Grotesk', 'Inter', system-ui, sans-serif !important;
-}
-
-.entity-list-item .entity-list-item--description,
-.entity-list-item p {
-  color: var(--text-muted) !important;
 }
 
 /* Ensure all interactive elements stay above decorative layers */
@@ -370,11 +316,8 @@ button.primary:active {
 button:not(.primary):not(.danger),
 .btn,
 a.button:not(.primary):not(.danger) {
-  background: var(--glass-fill) !important;
   border: 1px solid var(--glass-border) !important;
-  color: var(--text-secondary) !important;
   border-radius: var(--radius-md) !important;
-  backdrop-filter: blur(12px) !important;
   transition: background var(--transition-fast),
               border-color var(--transition-fast),
               color var(--transition-fast) !important;
@@ -383,9 +326,7 @@ a.button:not(.primary):not(.danger) {
 .button:hover,
 button:not(.primary):not(.danger):hover,
 .btn:hover {
-  background: var(--glass-hover) !important;
   border-color: rgba(131, 58, 180, 0.3) !important;
-  color: var(--text-primary) !important;
 }
 
 /* Danger buttons */
@@ -415,10 +356,8 @@ input[type="url"],
 input[type="number"],
 select,
 textarea {
-  background: var(--glass-fill) !important;
   border: 1px solid var(--glass-border) !important;
   border-radius: var(--radius-md) !important;
-  color: var(--text-primary) !important;
   font-family: 'Inter', system-ui, sans-serif !important;
   transition: border-color var(--transition-fast),
               box-shadow var(--transition-fast) !important;
@@ -430,11 +369,6 @@ textarea:focus {
   border-color: rgba(131, 58, 180, 0.5) !important;
   box-shadow: 0 0 0 3px rgba(131, 58, 180, 0.12) !important;
   outline: none !important;
-}
-
-input::placeholder,
-textarea::placeholder {
-  color: var(--text-muted) !important;
 }
 
 /* Checkboxes & toggles */
@@ -474,8 +408,6 @@ table {
 }
 
 table thead th {
-  background: var(--bg-surface) !important;
-  color: var(--text-primary) !important;
   font-family: 'Space Grotesk', 'Inter', system-ui, sans-serif !important;
   font-weight: 600 !important;
   border-bottom: 1px solid var(--glass-border) !important;
@@ -543,23 +475,15 @@ span.tag {
 .dropdown-menu,
 .popup-body,
 [class*="dropdown"] ul {
-  background: var(--bg-surface) !important;
   border: 1px solid var(--glass-border) !important;
   border-radius: var(--radius-md) !important;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
+  box-shadow: var(--shadow-card) !important;
   backdrop-filter: blur(20px) !important;
-}
-
-.dropdown-menu a,
-.dropdown-menu button {
-  color: var(--text-secondary) !important;
-  transition: background var(--transition-fast) !important;
 }
 
 .dropdown-menu a:hover,
 .dropdown-menu button:hover {
   background: var(--glass-hover) !important;
-  color: var(--text-primary) !important;
 }
 
 /* ================================================================
@@ -603,28 +527,28 @@ span.tag {
 /* ================================================================
    15. SCROLL BAR
    ================================================================ */
-::-webkit-scrollbar {
+/* Scrollbar — dark mode only */
+.dark-mode ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
-::-webkit-scrollbar-track {
-  background: var(--bg-base);
+.dark-mode ::-webkit-scrollbar-track {
+  background: transparent;
 }
 
-::-webkit-scrollbar-thumb {
+.dark-mode ::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.12);
   border-radius: 4px;
 }
 
-::-webkit-scrollbar-thumb:hover {
+.dark-mode ::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.20);
 }
 
-/* Firefox */
-* {
+.dark-mode * {
   scrollbar-width: thin;
-  scrollbar-color: rgba(255,255,255,0.12) var(--bg-base);
+  scrollbar-color: rgba(255,255,255,0.12) transparent;
 }
 
 /* ================================================================
@@ -656,27 +580,8 @@ span.tag {
 /* ================================================================
    17. PAGE EDITOR (for editing pages)
    ================================================================ */
-.page-editor,
-.editor-toolbar,
-.CodeMirror {
-  background: var(--bg-base) !important;
-  color: var(--text-primary) !important;
-}
-
-.CodeMirror-gutters {
-  background: var(--bg-raised) !important;
-  border-right: 1px solid var(--glass-border) !important;
-}
-
 .editor-toolbar {
   border-bottom: 1px solid var(--glass-border) !important;
-  background: var(--bg-raised) !important;
-}
-
-/* WYSIWYG editor */
-.mce-content-body {
-  background: var(--bg-base) !important;
-  color: var(--text-secondary) !important;
 }
 
 /* ================================================================
@@ -685,18 +590,10 @@ span.tag {
 .popup-body,
 .modal-content,
 [overlay] .popup-body {
-  background: var(--bg-surface) !important;
   border: 1px solid var(--glass-border) !important;
   border-radius: var(--radius-xl) !important;
-  box-shadow: 0 16px 64px rgba(0, 0, 0, 0.5) !important;
+  box-shadow: var(--shadow-card) !important;
   backdrop-filter: blur(24px) !important;
-}
-
-/* Modal overlay */
-.overlay,
-[overlay] {
-  background: rgba(0, 0, 0, 0.6) !important;
-  backdrop-filter: blur(4px) !important;
 }
 
 /* ================================================================
@@ -711,23 +608,15 @@ span.tag {
    20. HOME PAGE HERO — gradient banner
    ================================================================ */
 .home-default .banner {
-  background: linear-gradient(135deg,
-    rgba(131, 58, 180, 0.15),
-    rgba(253, 29, 29, 0.08),
-    rgba(252, 176, 69, 0.10)
-  ) !important;
   border: 1px solid var(--glass-border) !important;
   border-radius: var(--radius-xl) !important;
-  backdrop-filter: blur(16px) !important;
 }
 
 /* ================================================================
    21. FOOTER
    ================================================================ */
 footer, .footer {
-  background: transparent !important;
   border-top: 1px solid var(--glass-border) !important;
-  color: var(--text-muted) !important;
 }
 
 /* ================================================================
@@ -800,20 +689,9 @@ blockquote, .page-content blockquote {
    26. PRINT — reset to clean output
    ================================================================ */
 @media print {
-  body {
-    background: white !important;
-    color: black !important;
-  }
-  body::before, body::after {
-    display: none !important;
-  }
   .card {
     box-shadow: none !important;
-    border: 1px solid #ddd !important;
-    background: white !important;
+    backdrop-filter: none !important;
   }
-  a { color: #333 !important; }
-  h1,h2,h3,h4,h5,h6 { color: black !important; }
-  p,li,td,th,span { color: #333 !important; }
 }
 </style>
