@@ -48,10 +48,10 @@ interface MetalTheme {
    Constants
    ═══════════════════════════════════════════════════════════════════ */
 
-const CARD_W = 320;
-const CARD_H = 180;
-const GAP = 140;
-const SCROLL_SPEED = 0.9;
+const CARD_W = 260;
+const CARD_H = 150;
+const GAP = 100;
+const SCROLL_SPEED = 0.8;
 const MAX_PARTICLES = 180;
 const AMBIENT_COUNT = 35;
 
@@ -203,11 +203,11 @@ function generateGrid(
   );
 }
 
-/* Pre-generate 8 unique grids (one per card) */
-const GRIDS = CARDS.map((_, i) => generateGrid(i * 137, 16, 30));
+/* Pre-generate 8 unique grids (one per card) — sized to fill the full card */
+const GRIDS = CARDS.map((_, i) => generateGrid(i * 137, 24, 65));
 
 /* ═══════════════════════════════════════════════════════════════════
-   AsciiReveal — transparent background, no line numbers
+   AsciiReveal — fully transparent, fills entire card, very subtle
    ═══════════════════════════════════════════════════════════════════ */
 
 function AsciiReveal({ gridIndex }: { gridIndex: number }) {
@@ -220,11 +220,10 @@ function AsciiReveal({ gridIndex }: { gridIndex: number }) {
         inset: 0,
         borderRadius: 14,
         overflow: "hidden",
-        padding: "6px 6px",
         display: "flex",
         flexDirection: "column",
-        justifyContent: "center",
-        gap: 0,
+        justifyContent: "space-between",
+        padding: 0,
       }}
     >
       {grid.map((row, r) => (
@@ -232,11 +231,11 @@ function AsciiReveal({ gridIndex }: { gridIndex: number }) {
           key={r}
           style={{
             fontFamily: "monospace",
-            fontSize: 10,
-            lineHeight: "10.6px",
-            letterSpacing: "0.12em",
+            fontSize: 7,
+            lineHeight: "6.4px",
+            letterSpacing: "0.05em",
             whiteSpace: "nowrap",
-            color: `rgba(${P_R},${P_G},${P_B},${0.18 + (r % 3) * 0.06})`,
+            color: `rgba(${P_R},${P_G},${P_B},${0.06 + (r % 3) * 0.025})`,
           }}
         >
           {row.map((cell, c) => (
@@ -245,7 +244,7 @@ function AsciiReveal({ gridIndex }: { gridIndex: number }) {
               style={
                 cell.bright
                   ? {
-                      color: `rgba(255,255,255,0.45)`,
+                      color: `rgba(255,255,255,0.18)`,
                     }
                   : undefined
               }
@@ -260,7 +259,7 @@ function AsciiReveal({ gridIndex }: { gridIndex: number }) {
 }
 
 /* ═══════════════════════════════════════════════════════════════════
-   MetalCard — Horizontal metallic surface
+   MetalCard — Horizontal metallic surface (compact)
    ═══════════════════════════════════════════════════════════════════ */
 
 function MetalCard({
@@ -288,8 +287,8 @@ function MetalCard({
         display: "flex",
         flexDirection: "row",
         alignItems: "center",
-        padding: "0 24px",
-        gap: 20,
+        padding: "0 16px",
+        gap: 14,
       }}
     >
       {/* Metallic sheen */}
@@ -317,10 +316,10 @@ function MetalCard({
       {/* Icon */}
       <div
         style={{
-          width: 48,
-          height: 48,
-          minWidth: 48,
-          borderRadius: 14,
+          width: 40,
+          height: 40,
+          minWidth: 40,
+          borderRadius: 12,
           background: "rgba(255,255,255,0.04)",
           border: "1px solid rgba(255,255,255,0.06)",
           display: "flex",
@@ -330,8 +329,8 @@ function MetalCard({
         }}
       >
         <svg
-          width={24}
-          height={24}
+          width={20}
+          height={20}
           viewBox={card.viewBox}
           fill="none"
           stroke={theme.iconFill}
@@ -347,7 +346,7 @@ function MetalCard({
       <div style={{ position: "relative", flex: 1, minWidth: 0 }}>
         <h3
           style={{
-            fontSize: 15,
+            fontSize: 13,
             fontWeight: 700,
             color: theme.textColor,
             margin: 0,
@@ -359,7 +358,7 @@ function MetalCard({
         </h3>
         <p
           style={{
-            fontSize: 11,
+            fontSize: 10,
             color: theme.subtitleColor,
             margin: "3px 0 0",
             letterSpacing: "0.01em",
@@ -385,7 +384,7 @@ function MetalCard({
       >
         <span
           style={{
-            fontSize: 11,
+            fontSize: 9,
             fontWeight: 700,
             letterSpacing: "0.06em",
             background:
@@ -399,7 +398,7 @@ function MetalCard({
         </span>
         <span
           style={{
-            fontSize: 8,
+            fontSize: 7,
             color: theme.subtitleColor,
             letterSpacing: "0.06em",
             textTransform: "uppercase",
@@ -415,6 +414,8 @@ function MetalCard({
 /* ═══════════════════════════════════════════════════════════════════
    Main — CardBeamSection
    ═══════════════════════════════════════════════════════════════════ */
+
+const SECTION_H = CARD_H + 80;
 
 export default function CardBeamSection() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -621,10 +622,11 @@ export default function CardBeamSection() {
 
     trackRef.current.style.transform = `translateX(${-scrollXRef.current}px)`;
 
-    const sectionRect = sectionRef.current.getBoundingClientRect();
-    const beamX = sectionRect.width / 2;
-    const sectionW = sectionRect.width;
-    const sectionH = sectionRect.height;
+    /* Use offsetWidth/Height (ignores CSS transform on parent wrapper) */
+    const sectionEl = sectionRef.current;
+    const sectionW = sectionEl.offsetWidth;
+    const sectionH = sectionEl.offsetHeight;
+    const beamX = sectionW / 2;
 
     /* Canvas resize */
     const canvas = canvasRef.current;
@@ -745,91 +747,91 @@ export default function CardBeamSection() {
      ═══════════════════════════════════════════════════════ */
 
   return (
-    <section
-      ref={sectionRef}
-      className="relative overflow-hidden select-none"
-      style={{ height: CARD_H + 120, cursor: "grab" }}
-      onPointerDown={onPointerDown}
-      onPointerMove={onPointerMove}
-      onPointerUp={onPointerUp}
-      onPointerCancel={onPointerUp}
-    >
-      {/* Canvas — beam + all particles */}
-      <canvas
-        ref={canvasRef}
-        className="absolute inset-0 pointer-events-none"
-        style={{ zIndex: 20 }}
-      />
-
-      {/* Edge fades */}
-      <div
-        className="absolute inset-y-0 left-0 pointer-events-none"
-        style={{
-          zIndex: 15,
-          width: "20%",
-          background:
-            "linear-gradient(90deg, hsl(240 15% 6%) 0%, hsl(240 15% 6% / 0.7) 35%, transparent 100%)",
-        }}
-      />
-      <div
-        className="absolute inset-y-0 right-0 pointer-events-none"
-        style={{
-          zIndex: 15,
-          width: "20%",
-          background:
-            "linear-gradient(270deg, hsl(240 15% 6%) 0%, hsl(240 15% 6% / 0.7) 35%, transparent 100%)",
-        }}
-      />
-
-      {/* Cards track */}
-      <div
-        ref={trackRef}
-        className="absolute flex"
-        style={{ top: 60, left: 0, gap: GAP, willChange: "transform" }}
+    <div className="scale-[0.65] -my-[40px] md:scale-100 md:my-0 origin-center">
+      <section
+        ref={sectionRef}
+        className="relative overflow-hidden select-none"
+        style={{ height: SECTION_H, cursor: "grab" }}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+        onPointerCancel={onPointerUp}
       >
-        {tripled.map((card, i) => {
-          const themeKey = THEME_KEYS[i % THEME_KEYS.length];
-          return (
-            <div
-              key={i}
-              className="relative shrink-0"
-              style={{ width: CARD_W, height: CARD_H }}
-            >
-              {/* Code layer — transparent background */}
-              <div
-                ref={(el) => {
-                  codeLayerRefs.current[i] = el;
-                }}
-                style={{
-                  position: "absolute",
-                  inset: 0,
-                  zIndex: 1,
-                  clipPath: "inset(0 100% 0 0)",
-                  opacity: 0,
-                  borderRadius: 14,
-                  overflow: "hidden",
-                }}
-              >
-                <AsciiReveal gridIndex={i % CARDS.length} />
-              </div>
+        {/* Canvas — beam + all particles */}
+        <canvas
+          ref={canvasRef}
+          className="absolute inset-0 pointer-events-none"
+          style={{ zIndex: 20 }}
+        />
 
-              {/* Metal layer */}
+        {/* Edge fades — narrower on mobile */}
+        <div
+          className="absolute inset-y-0 left-0 pointer-events-none w-[6%] md:w-[15%]"
+          style={{
+            zIndex: 15,
+            background:
+              "linear-gradient(90deg, hsl(240 15% 6%) 0%, hsl(240 15% 6% / 0.7) 35%, transparent 100%)",
+          }}
+        />
+        <div
+          className="absolute inset-y-0 right-0 pointer-events-none w-[6%] md:w-[15%]"
+          style={{
+            zIndex: 15,
+            background:
+              "linear-gradient(270deg, hsl(240 15% 6%) 0%, hsl(240 15% 6% / 0.7) 35%, transparent 100%)",
+          }}
+        />
+
+        {/* Cards track */}
+        <div
+          ref={trackRef}
+          className="absolute flex"
+          style={{ top: (SECTION_H - CARD_H) / 2, left: 0, gap: GAP, willChange: "transform" }}
+        >
+          {tripled.map((card, i) => {
+            const themeKey = THEME_KEYS[i % THEME_KEYS.length];
+            return (
               <div
-                ref={(el) => {
-                  metalLayerRefs.current[i] = el;
-                }}
-                style={{ position: "absolute", inset: 0, zIndex: 2 }}
+                key={i}
+                className="relative shrink-0"
+                style={{ width: CARD_W, height: CARD_H }}
               >
-                <MetalCard
-                  card={card}
-                  themeKey={themeKey}
-                  index={i % CARDS.length}
-                />
+                {/* Code layer — fully transparent, no background */}
+                <div
+                  ref={(el) => {
+                    codeLayerRefs.current[i] = el;
+                  }}
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    zIndex: 1,
+                    clipPath: "inset(0 100% 0 0)",
+                    opacity: 0,
+                    borderRadius: 14,
+                    overflow: "hidden",
+                  }}
+                >
+                  <AsciiReveal gridIndex={i % CARDS.length} />
+                </div>
+
+                {/* Metal layer */}
+                <div
+                  ref={(el) => {
+                    metalLayerRefs.current[i] = el;
+                  }}
+                  style={{ position: "absolute", inset: 0, zIndex: 2 }}
+                >
+                  <MetalCard
+                    card={card}
+                    themeKey={themeKey}
+                    index={i % CARDS.length}
+                  />
+                </div>
               </div>
-            </div>
-          );
-        })}
-      </div>
-    </section>
+            );
+          })}
+        </div>
+      </section>
+    </div>
   );
 }
