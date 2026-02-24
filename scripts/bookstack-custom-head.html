@@ -261,7 +261,8 @@ header .dropdown-menu, .header .dropdown-menu {
   transition: transform var(--transition-base),
               box-shadow var(--transition-base),
               border-color var(--transition-base) !important;
-  overflow: hidden;
+  position: relative;
+  z-index: 1;
 }
 
 .card:hover,
@@ -309,6 +310,15 @@ header .dropdown-menu, .header .dropdown-menu {
 .entity-list-item .entity-list-item--description,
 .entity-list-item p {
   color: var(--text-muted) !important;
+}
+
+/* Ensure all interactive elements stay above decorative layers */
+a, button, input, select, textarea,
+.entity-list-item a,
+.card a,
+.grid-card a {
+  position: relative;
+  z-index: 2;
 }
 
 /* Entity type icons / color accents */
@@ -640,7 +650,7 @@ span.tag {
   right: 0;
   height: 40%;
   background: linear-gradient(to top, var(--bg-base), transparent);
-  pointer-events: none;
+  pointer-events: none !important;
 }
 
 /* ================================================================
