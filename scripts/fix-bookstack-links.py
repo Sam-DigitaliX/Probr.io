@@ -12,10 +12,10 @@ internal page links (/link/{page_id}).
 
 Usage:
     # Dry run (default) — shows what would be changed
-    python scripts/fix-bookstack-links.py
+    python3 scripts/fix-bookstack-links.py
 
     # Apply changes
-    python scripts/fix-bookstack-links.py --apply
+    python3 scripts/fix-bookstack-links.py --apply
 
 Environment variables:
     BOOKSTACK_URL            Base URL (e.g. https://docs.probr.io)
