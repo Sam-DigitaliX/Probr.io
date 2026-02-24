@@ -75,7 +75,7 @@ export default function LandingPage() {
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
           <Link href="/" className="flex items-center">
             <Image
-              src="/images/Probr_logo.png"
+              src="/images/Probr_logo.webp"
               alt="Probr"
               width={120}
               height={40}
@@ -383,7 +383,7 @@ export default function LandingPage() {
         <div className="mx-auto max-w-6xl px-6 flex items-center justify-between">
           <div className="flex items-center">
             <Image
-              src="/images/Probr_logo.png"
+              src="/images/Probr_logo.webp"
               alt="Probr"
               width={90}
               height={30}

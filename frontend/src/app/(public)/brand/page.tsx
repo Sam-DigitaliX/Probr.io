@@ -58,7 +58,7 @@ export default function BrandPage() {
         <header className="pt-16 pb-12 border-b border-white/[0.06]">
           <div className="flex items-center gap-4 mb-6">
             <Image
-              src="/images/Probr_logo.png"
+              src="/images/Probr_logo.webp"
               alt="Probr"
               width={160}
               height={53}
