@@ -204,7 +204,7 @@ function generateGrid(
 }
 
 /* Pre-generate 8 unique grids (one per card) — sized to fill the full card */
-const GRIDS = CARDS.map((_, i) => generateGrid(i * 137, 24, 65));
+const GRIDS = CARDS.map((_, i) => generateGrid(i * 137, 18, 48));
 
 /* ═══════════════════════════════════════════════════════════════════
    AsciiReveal — fully transparent, fills entire card, very subtle
@@ -231,9 +231,9 @@ function AsciiReveal({ gridIndex }: { gridIndex: number }) {
           key={r}
           style={{
             fontFamily: "monospace",
-            fontSize: 7,
-            lineHeight: "6.4px",
-            letterSpacing: "0.05em",
+            fontSize: 9,
+            lineHeight: "1",
+            letterSpacing: "0.08em",
             whiteSpace: "nowrap",
             color: `rgba(${P_R},${P_G},${P_B},${0.06 + (r % 3) * 0.025})`,
           }}
@@ -747,16 +747,15 @@ export default function CardBeamSection() {
      ═══════════════════════════════════════════════════════ */
 
   return (
-    <div className="scale-[0.65] -my-[40px] md:scale-100 md:my-0 origin-center">
-      <section
-        ref={sectionRef}
-        className="relative overflow-hidden select-none"
-        style={{ height: SECTION_H, cursor: "grab" }}
-        onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={onPointerUp}
-        onPointerCancel={onPointerUp}
-      >
+    <section
+      ref={sectionRef}
+      className="relative overflow-hidden select-none"
+      style={{ height: SECTION_H, cursor: "grab" }}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerUp}
+      onPointerCancel={onPointerUp}
+    >
         {/* Canvas — beam + all particles */}
         <canvas
           ref={canvasRef}
@@ -831,7 +830,6 @@ export default function CardBeamSection() {
             );
           })}
         </div>
-      </section>
-    </div>
+    </section>
   );
 }
