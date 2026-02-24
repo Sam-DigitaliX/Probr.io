@@ -297,18 +297,27 @@ def main():
     print(f"      Matched: {len(matched_en)} EN, {len(matched_fr)} FR")
 
     if args.verbose:
-        # Show what's missing
+        print()
+        print("      All BookStack pages:")
+        for page in sorted(all_pages, key=lambda p: p["id"]):
+            lang_tag = book_lang.get(page.get("book_id"))
+            lang_label = (lang_tag or "SHARED").upper()
+            in_map = "mapped" if page["name"] in TITLE_TO_FILENAME.get(lang_tag or "", {}) else ""
+            if not in_map and not lang_tag:
+                for l in ["en", "fr"]:
+                    if page["name"] in TITLE_TO_FILENAME.get(l, {}).values():
+                        in_map = f"mapped({l})"
+                        break
+            print(f"        #{page['id']:>4}  [{lang_label:>6}]  {page['name']!r}  {in_map}")
+        print()
         all_en_titles = set(FILENAME_TO_TITLE["en"].values())
         all_fr_titles = set(FILENAME_TO_TITLE["fr"].values())
         missing_en = all_en_titles - set(page_id_by_title.keys())
         missing_fr = all_fr_titles - set(page_id_by_title.keys())
         if missing_en:
-            print(f"      Missing EN pages: {missing_en}")
+            print(f"      Missing EN titles: {missing_en}")
         if missing_fr:
-            print(f"      Missing FR pages: {missing_fr}")
-        unmatched = set(p["name"] for p in all_pages) - matched_en - matched_fr
-        if unmatched:
-            print(f"      Unmatched pages: {unmatched}")
+            print(f"      Missing FR titles: {missing_fr}")
     print()
 
     # ── Step 3: Scan pages for broken links ───────────────────────────
