@@ -48,7 +48,7 @@ export default function SignupPage() {
         <div className="relative z-10 flex flex-col justify-center px-16">
           <div className="mb-12">
             <Image
-              src="/images/Probr_logo.png"
+              src="/images/Probr_logo.webp"
               alt="Probr"
               width={160}
               height={53}
@@ -87,7 +87,7 @@ export default function SignupPage() {
           {/* Mobile logo */}
           <div className="mb-10 lg:hidden">
             <Image
-              src="/images/Probr_logo.png"
+              src="/images/Probr_logo.webp"
               alt="Probr"
               width={120}
               height={40}
