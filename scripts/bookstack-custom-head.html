@@ -129,28 +129,27 @@ input[type="checkbox"]:checked {
    3. BORDER RADIUS — rounded everywhere
    ================================================================ */
 .card,
+.grid-card,
 .bookshelf-grid .grid-card,
 .book-grid .grid-card,
 .content-panel {
-  border: 1px solid transparent !important;
-  border-image: var(--probr-gradient) 1 !important;
   border-radius: var(--radius-lg) !important;
 }
 
-/* Gradient border + border-radius workaround (border-image breaks radius).
-   We use a pseudo-element behind the card instead. */
+/* Gradient border using pseudo-element + CSS mask
+   (border-image doesn't work with border-radius) */
 .card,
+.grid-card,
 .bookshelf-grid .grid-card,
 .book-grid .grid-card,
 .content-panel {
-  border-image: none !important;
   border: none !important;
   position: relative;
+  overflow: visible !important;
 }
 
 .card::before,
-.bookshelf-grid .grid-card::before,
-.book-grid .grid-card::before,
+.grid-card::before,
 .content-panel::before {
   content: '';
   position: absolute;
@@ -167,6 +166,7 @@ input[type="checkbox"]:checked {
     linear-gradient(#fff 0 0);
   mask-composite: exclude;
   pointer-events: none;
+  z-index: 1;
 }
 
 .button, button, .btn, a.button,
