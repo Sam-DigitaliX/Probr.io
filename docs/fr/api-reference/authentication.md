@@ -1,64 +1,66 @@
 # Authentification API
 
-Toutes les requêtes vers l'API Probr doivent être authentifiées.
+## Modele d'authentification
 
-## Méthode d'authentification
+Probr utilise deux mecanismes d'authentification differents selon l'endpoint :
 
-L'API utilise une authentification par **clé API** transmise dans un header HTTP.
+| Groupe d'endpoints | Authentification | Description |
+|---|---|---|
+| `POST /api/ingest` | Header `X-Probr-Key` | Cle d'ingestion (auto-generee par site) |
+| Tous les autres `/api/*` | Aucune (version actuelle) | Securiser via reseau/firewall |
+| `GET /health` | Aucune | Health check public |
+
+## Authentification par cle d'ingestion
+
+L'endpoint d'ingestion necessite une cle API transmise via le header HTTP `X-Probr-Key`.
 
 ### Header
 
 ```
-X-Probr-Key: votre_clé_ici
+X-Probr-Key: votre_cle_ingestion_ici
 ```
 
 ### Exemple
 
 ```bash
-curl -X POST https://api.probr.io/ingest \
+curl -X POST https://votre-instance-probr/api/ingest \
   -H "Content-Type: application/json" \
-  -H "X-Probr-Key: pk_live_abc123def456" \
-  -d '{"container_id": "GTM-XXXXXX", "event_name": "test"}'
+  -H "X-Probr-Key: abc123def456..." \
+  -d '{"container_id": "GTM-XXXXXX", "event_name": "page_view", "timestamp_ms": 1708770000000}'
 ```
 
-## Types de clés
+## Comment fonctionnent les cles d'ingestion
 
-| Type | Préfixe | Usage |
-|---|---|---|
-| **Clé d'ingestion** | `pk_live_` | Envoi de données depuis le tag sGTM |
-| **Clé de test** | `pk_test_` | Envoi de données de test (ne pollue pas les dashboards production) |
+- Chaque site recoit une cle d'ingestion **auto-generee** a la creation (token URL-safe de 32 octets)
+- Les cles sont **scopees par site** : une cle ne peut envoyer des donnees que pour le site auquel elle est rattachee
+- Les cles sont transmises **cote serveur uniquement** (sGTM -> API Probr) — jamais exposees dans le navigateur client
+- Les cles sont uniques dans toute la base de donnees
 
-## Où trouver vos clés
+## Ou trouver votre cle
 
-1. Connectez-vous au [dashboard Probr](https://app.probr.io)
-2. Allez dans **Sites** > sélectionnez votre site
-3. Onglet **Paramètres** > section **Clés API**
-4. Copiez la clé souhaitée
+La cle d'ingestion est retournee quand vous creez ou recuperez un site via l'API :
 
-## Sécurité
+```bash
+# Recuperer un site (inclut ingest_key dans la reponse)
+curl -s https://votre-instance-probr/api/sites/{site_id}
+```
 
-- Les clés sont **scoped par site** : une clé ne peut envoyer des données que pour le site auquel elle est rattachée
-- Les clés sont transmises **côté serveur uniquement** (sGTM → Probr API) — elles ne sont jamais exposées dans le navigateur client
-- Vous pouvez **révoquer et régénérer** une clé à tout moment depuis le dashboard
-- Les requêtes avec une clé invalide ou révoquée reçoivent une réponse `401 Unauthorized`
+La cle se trouve dans le champ `ingest_key` de la reponse. Configurez-la dans le champ "Probr Ingest Key" du tag GTM Listener.
 
-## Rotation des clés
+## Rotation des cles
 
-Pour faire une rotation de clé sans interruption :
+Pour faire une rotation de cle, il faut actuellement supprimer et recreer le site (la cle est auto-generee). Un endpoint dedie de rotation pourra etre ajoute dans une version future.
 
-1. Générez une nouvelle clé dans le dashboard Probr
-2. Mettez à jour la clé dans votre tag GTM
-3. Publiez la nouvelle version du conteneur sGTM
-4. Attendez que toutes les instances aient la nouvelle version
-5. Révoquez l'ancienne clé
+## Recommandations de securite
 
-> Probr accepte les deux clés (ancienne et nouvelle) pendant une période de grâce de 24h après la révocation.
+1. **Securite au niveau reseau** : Les endpoints de gestion n'ayant pas d'authentification dans la version actuelle, restreignez l'acces a l'API Probr via des regles de firewall, VPN ou authentification par reverse proxy
+2. **Ne jamais exposer les cles cote client** : Le tag GTM Listener s'execute cote serveur, les cles ne sont jamais visibles par les utilisateurs finaux
+3. **Surveillez l'endpoint `/health`** : Mettez en place un monitoring externe pour detecter si votre instance Probr tombe
 
-## Codes de réponse d'authentification
+## Codes de reponse d'authentification
 
 | Code | Signification |
 |---|---|
-| `200` | Succès |
-| `401` | Clé manquante ou invalide |
-| `403` | Clé révoquée ou site désactivé |
-| `429` | Rate limit dépassé (voir [Limites](./rate-limits.md)) |
+| `202` | Ingestion acceptee |
+| `401` | Cle d'ingestion manquante ou invalide |
+| `404` | Site non trouve ou inactif |

@@ -3,18 +3,22 @@
 # Probr Documentation — Import vers BookStack / Import to BookStack
 # =============================================================================
 # Ce script importe automatiquement toute la documentation Probr dans BookStack
-# via son API REST, en francais ou en anglais.
+# via son API REST. Il cree 3 shelves :
+#   - User Guide FR (5 books, 12 pages)
+#   - User Guide EN (5 books, 12 pages)
+#   - Developer / API (6 books, 6 pages — shared, EN)
 #
 # This script automatically imports all Probr documentation into BookStack
-# via its REST API, in French or English.
+# via its REST API. It creates 3 shelves:
+#   - User Guide FR (5 books, 12 pages)
+#   - User Guide EN (5 books, 12 pages)
+#   - Developer / API (6 books, 6 pages — shared, EN)
 #
 # Usage:
-#   ./import-bookstack.sh <BOOKSTACK_URL> <TOKEN_ID> <TOKEN_SECRET> [--lang fr|en]
+#   ./import-bookstack.sh <BOOKSTACK_URL> <TOKEN_ID> <TOKEN_SECRET>
 #
 # Examples:
-#   ./import-bookstack.sh https://docs.probr.io abc123 def456            # French (default)
-#   ./import-bookstack.sh https://docs.probr.io abc123 def456 --lang en  # English
-#   ./import-bookstack.sh https://docs.probr.io abc123 def456 --lang fr  # French
+#   ./import-bookstack.sh https://docs.probr.io abc123 def456
 #
 # Prerequisites:
 #   1. curl and jq installed
@@ -25,183 +29,22 @@
 set -euo pipefail
 
 # --- Arguments ---
-BOOKSTACK_URL="${1:?Usage: $0 <BOOKSTACK_URL> <TOKEN_ID> <TOKEN_SECRET> [--lang fr|en]}"
-TOKEN_ID="${2:?Usage: $0 <BOOKSTACK_URL> <TOKEN_ID> <TOKEN_SECRET> [--lang fr|en]}"
-TOKEN_SECRET="${3:?Usage: $0 <BOOKSTACK_URL> <TOKEN_ID> <TOKEN_SECRET> [--lang fr|en]}"
-
-# --- Language ---
-# Supports: --lang en, --lang=en, en/fr (positional)
-LANG_OPT="fr"
-shift 3
-while [[ $# -gt 0 ]]; do
-  case "$1" in
-    --lang)
-      if [[ $# -ge 2 ]]; then
-        LANG_OPT="$2"
-        shift 2
-      else
-        echo "ERROR: --lang requires a value (fr or en)." >&2
-        exit 1
-      fi
-      ;;
-    --lang=*)
-      LANG_OPT="${1#--lang=}"
-      shift
-      ;;
-    en|fr)
-      LANG_OPT="$1"
-      shift
-      ;;
-    *)
-      echo "WARNING: Unknown argument '$1', ignoring." >&2
-      shift
-      ;;
-  esac
-done
-
-if [[ "$LANG_OPT" != "fr" && "$LANG_OPT" != "en" ]]; then
-  echo "ERROR: Unsupported language '${LANG_OPT}'. Use 'fr' or 'en'." >&2
-  exit 1
-fi
+BOOKSTACK_URL="${1:?Usage: $0 <BOOKSTACK_URL> <TOKEN_ID> <TOKEN_SECRET>}"
+TOKEN_ID="${2:?Usage: $0 <BOOKSTACK_URL> <TOKEN_ID> <TOKEN_SECRET>}"
+TOKEN_SECRET="${3:?Usage: $0 <BOOKSTACK_URL> <TOKEN_ID> <TOKEN_SECRET>}"
 
 # Remove trailing slash
 BOOKSTACK_URL="${BOOKSTACK_URL%/}"
 AUTH="Token ${TOKEN_ID}:${TOKEN_SECRET}"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
-DOCS_DIR="${SCRIPT_DIR}/${LANG_OPT}"
-
-# Verify docs directory exists
-if [[ ! -d "$DOCS_DIR/getting-started" ]]; then
-  echo "ERROR: Documentation directory not found: ${DOCS_DIR}" >&2
-  echo "Make sure the '${LANG_OPT}' documentation files exist." >&2
-  exit 1
-fi
-
-# --- i18n strings ---
-if [[ "$LANG_OPT" == "en" ]]; then
-  # Book names
-  BOOK1_NAME="Getting Started"
-  BOOK2_NAME="GTM Listener"
-  BOOK3_NAME="Administration"
-  BOOK4_NAME="Monitoring & Alerts"
-  BOOK5_NAME="API Reference"
-  BOOK6_NAME="Troubleshooting"
-  # Book descriptions
-  BOOK1_DESC="Discover Probr and set up monitoring in minutes."
-  BOOK2_DESC="Configuration and advanced options for the Probr Server-Side Listener tag."
-  BOOK3_DESC="Manage clients, sites, and monitoring probes."
-  BOOK4_DESC="Dashboard, real-time analytics, and alert management."
-  BOOK5_DESC="Complete technical documentation for the Probr API."
-  BOOK6_DESC="Problem solving and frequently asked questions."
-  # Chapter names & descriptions
-  CH_INTRO="Introduction";           CH_INTRO_DESC="Overview of the Probr platform"
-  CH_INSTALL="Installation";         CH_INSTALL_DESC="Step-by-step installation guide"
-  CH_CONFIG="Configuration";         CH_CONFIG_DESC="GTM tag parameters"
-  CH_SEND="Send Modes";              CH_SEND_DESC="Per event vs Batched"
-  CH_QUALITY="Data Quality";         CH_QUALITY_DESC="Data quality monitoring"
-  CH_CLIENTS="Clients & Sites";      CH_CLIENTS_DESC="Client and site management"
-  CH_PROBES="Probes";                CH_PROBES_DESC="Probe configuration and management"
-  CH_DASHBOARD="Dashboard";          CH_DASHBOARD_DESC="Dashboard and control room"
-  CH_ANALYTICS="Analytics";          CH_ANALYTICS_DESC="Monitoring analytics"
-  CH_ALERTS="Alerts";                CH_ALERTS_DESC="Alert management and notifications"
-  CH_OVERVIEW="Overview";            CH_OVERVIEW_DESC="Complete API reference"
-  CH_AUTH="Authentication";          CH_AUTH_DESC="API keys and security"
-  CH_INGEST="Ingestion";             CH_INGEST_DESC="POST /ingest endpoint"
-  CH_LIMITS="Limits";                CH_LIMITS_DESC="Limits and quotas"
-  CH_ISSUES="Common Issues";         CH_ISSUES_DESC="Debug and solutions"
-  CH_FAQ="FAQ";                      CH_FAQ_DESC="Frequently asked questions"
-  # Page names
-  PAGE_INTRO="Introduction to Probr"
-  PAGE_INSTALL="Prerequisites and Installation"
-  PAGE_CONFIG="Tag Configuration"
-  PAGE_SEND="Per event vs Batched"
-  PAGE_QUALITY="User Data and E-commerce"
-  PAGE_CLIENTS="Clients and Sites"
-  PAGE_PROBES="Probe Management"
-  PAGE_DASHBOARD="Dashboard and Control Room"
-  PAGE_ANALYTICS="Monitoring Analytics"
-  PAGE_ALERTS="Alert Management"
-  PAGE_OVERVIEW="Complete API Reference"
-  PAGE_AUTH="API Keys and Security"
-  PAGE_INGEST="POST /ingest"
-  PAGE_LIMITS="Limits and Quotas"
-  PAGE_ISSUES="Debug and Solutions"
-  PAGE_FAQ="Frequently Asked Questions"
-  # Messages
-  MSG_TESTING="Testing connection..."
-  MSG_CONN_OK="Connection OK"
-  MSG_CONN_FAIL="ERROR: Unable to connect"
-  MSG_CHECK="Check the URL and credentials."
-  MSG_CREATING_BOOK="Creating book"
-  MSG_BOOK_CREATED="Book created"
-  MSG_IMPORT_DONE="Import completed successfully!"
-  MSG_BOOKS_CREATED="6 books created:"
-  MSG_PAGES_IMPORTED="16 pages imported in total."
-  MSG_ACCESS="Access your documentation"
-  MSG_LANG_LABEL="Language: English"
-else
-  # Book names
-  BOOK1_NAME="Pour commencer"
-  BOOK2_NAME="GTM Listener"
-  BOOK3_NAME="Administration"
-  BOOK4_NAME="Monitoring & Alertes"
-  BOOK5_NAME="Reference API"
-  BOOK6_NAME="Depannage"
-  # Book descriptions
-  BOOK1_DESC="Decouvrez Probr et installez le monitoring en quelques minutes."
-  BOOK2_DESC="Configuration et options avancees du tag Probr Server-Side Listener."
-  BOOK3_DESC="Gerez les clients, sites et probes de monitoring."
-  BOOK4_DESC="Dashboard, analytics temps reel et gestion des alertes."
-  BOOK5_DESC="Documentation technique complete de l'API Probr."
-  BOOK6_DESC="Resolution de problemes et questions frequentes."
-  # Chapter names & descriptions
-  CH_INTRO="Introduction";           CH_INTRO_DESC="Presentation de la plateforme Probr"
-  CH_INSTALL="Installation";         CH_INSTALL_DESC="Guide d'installation pas a pas"
-  CH_CONFIG="Configuration";         CH_CONFIG_DESC="Parametres du tag GTM"
-  CH_SEND="Modes d'envoi";           CH_SEND_DESC="Per event vs Batched"
-  CH_QUALITY="Qualite des donnees";  CH_QUALITY_DESC="Monitoring de la qualite des donnees"
-  CH_CLIENTS="Clients & Sites";      CH_CLIENTS_DESC="Gestion des clients et sites"
-  CH_PROBES="Probes";                CH_PROBES_DESC="Configuration et gestion des probes"
-  CH_DASHBOARD="Dashboard";          CH_DASHBOARD_DESC="Dashboard et centre de controle"
-  CH_ANALYTICS="Analytics";          CH_ANALYTICS_DESC="Analytics de monitoring"
-  CH_ALERTS="Alertes";               CH_ALERTS_DESC="Gestion des alertes et notifications"
-  CH_OVERVIEW="Vue d'ensemble";      CH_OVERVIEW_DESC="Reference API complete"
-  CH_AUTH="Authentification";        CH_AUTH_DESC="Cles API et securite"
-  CH_INGEST="Ingestion";             CH_INGEST_DESC="Endpoint POST /ingest"
-  CH_LIMITS="Limites";               CH_LIMITS_DESC="Limites et quotas"
-  CH_ISSUES="Problemes courants";    CH_ISSUES_DESC="Debug et solutions"
-  CH_FAQ="FAQ";                      CH_FAQ_DESC="Questions frequentes"
-  # Page names
-  PAGE_INTRO="Introduction a Probr"
-  PAGE_INSTALL="Prerequis et installation"
-  PAGE_CONFIG="Configuration du tag"
-  PAGE_SEND="Per event vs Batched"
-  PAGE_QUALITY="User data et E-commerce"
-  PAGE_CLIENTS="Clients et Sites"
-  PAGE_PROBES="Gestion des probes"
-  PAGE_DASHBOARD="Dashboard et centre de controle"
-  PAGE_ANALYTICS="Analytics de monitoring"
-  PAGE_ALERTS="Gestion des alertes"
-  PAGE_OVERVIEW="Reference API complete"
-  PAGE_AUTH="Cles API et securite"
-  PAGE_INGEST="POST /ingest"
-  PAGE_LIMITS="Limites et quotas"
-  PAGE_ISSUES="Debug et solutions"
-  PAGE_FAQ="Questions frequentes"
-  # Messages
-  MSG_TESTING="Test de connexion..."
-  MSG_CONN_OK="Connexion OK"
-  MSG_CONN_FAIL="ERREUR: Impossible de se connecter"
-  MSG_CHECK="Verifiez l'URL et les credentials."
-  MSG_CREATING_BOOK="Creation du livre"
-  MSG_BOOK_CREATED="Book cree"
-  MSG_IMPORT_DONE="Import termine avec succes !"
-  MSG_BOOKS_CREATED="6 livres crees:"
-  MSG_PAGES_IMPORTED="16 pages importees au total."
-  MSG_ACCESS="Accedez a votre documentation"
-  MSG_LANG_LABEL="Langue: Francais"
-fi
+# Verify docs directories exist
+for lang_dir in en fr; do
+  if [[ ! -d "${SCRIPT_DIR}/${lang_dir}/getting-started" ]]; then
+    echo "ERROR: Documentation directory not found: ${SCRIPT_DIR}/${lang_dir}" >&2
+    exit 1
+  fi
+done
 
 # --- Helpers ---
 api_post() {
@@ -230,6 +73,28 @@ api_post() {
 
 extract_id() {
   echo "$1" | jq -r '.id'
+}
+
+create_shelf() {
+  local name="$1"
+  local description="${2:-}"
+  local data
+  data=$(jq -n --arg n "$name" --arg d "$description" '{name: $n, description: $d}')
+  api_post "shelves" "$data"
+}
+
+assign_books_to_shelf() {
+  local shelf_id="$1"
+  shift
+  local book_ids=("$@")
+  local books_json
+  books_json=$(printf '%s\n' "${book_ids[@]}" | jq -R 'tonumber' | jq -s '.')
+  local data
+  data=$(jq -n --argjson b "$books_json" '{books: $b}')
+  curl -s -X PUT "${BOOKSTACK_URL}/api/shelves/${shelf_id}" \
+    -H "Authorization: ${AUTH}" \
+    -H "Content-Type: application/json" \
+    -d "$data" > /dev/null
 }
 
 create_book() {
@@ -264,217 +129,373 @@ create_page() {
 
 echo "==========================================="
 echo "  Probr Docs -> BookStack Import"
+echo "  3 Shelves — 16 Books — 30 Pages"
 echo "==========================================="
 echo ""
-echo "  URL:    ${BOOKSTACK_URL}"
-echo "  Docs:   ${DOCS_DIR}"
-echo "  ${MSG_LANG_LABEL}"
+echo "  URL: ${BOOKSTACK_URL}"
 echo ""
 
 # --- Test connection ---
-echo "[0/6] ${MSG_TESTING}"
+echo "[0] Testing connection..."
 test_response=$(curl -s -o /dev/null -w "%{http_code}" \
   "${BOOKSTACK_URL}/api/books" \
   -H "Authorization: ${AUTH}")
 
 if [[ "$test_response" != "200" ]]; then
-  echo "  ${MSG_CONN_FAIL} (HTTP ${test_response})" >&2
-  echo "  ${MSG_CHECK}" >&2
+  echo "  ERROR: Unable to connect (HTTP ${test_response})" >&2
+  echo "  Check the URL and credentials." >&2
   exit 1
 fi
-echo "  ${MSG_CONN_OK}"
+echo "  Connection OK"
 echo ""
 
 # =============================================================================
-# Book 1: Getting Started
+# SHELF 1: Guide Utilisateur FR
 # =============================================================================
-echo "[1/6] ${MSG_CREATING_BOOK}: ${BOOK1_NAME}..."
+echo "============================================"
+echo "  SHELF 1: Guide Utilisateur FR"
+echo "============================================"
+echo ""
 
-result=$(create_book "$BOOK1_NAME" "$BOOK1_DESC")
-book1_id=$(extract_id "$result")
-echo "  ${MSG_BOOK_CREATED} (id: ${book1_id})"
+DOCS_FR="${SCRIPT_DIR}/fr"
+shelf1_book_ids=()
 
-# Chapter: Introduction
-result=$(create_chapter "$book1_id" "$CH_INTRO" "$CH_INTRO_DESC")
+# --- Book 1: Pour commencer ---
+echo "[1/5] Creating book: 1 • Pour commencer..."
+result=$(create_book "1 • Pour commencer" "Decouvrez Probr et installez le monitoring en quelques minutes.")
+book_id=$(extract_id "$result")
+shelf1_book_ids+=("$book_id")
+echo "  Book created (id: ${book_id})"
+
+result=$(create_chapter "$book_id" "Introduction" "Presentation de la plateforme Probr")
 ch_id=$(extract_id "$result")
-echo "  Chapter: ${CH_INTRO} (id: ${ch_id})"
-create_page "$ch_id" "$PAGE_INTRO" "${DOCS_DIR}/getting-started/introduction.md" > /dev/null
-echo "    Page: ${PAGE_INTRO}"
+create_page "$ch_id" "Introduction a Probr" "${DOCS_FR}/getting-started/introduction.md" > /dev/null
+echo "    Page: Introduction a Probr"
 
-# Chapter: Installation
-result=$(create_chapter "$book1_id" "$CH_INSTALL" "$CH_INSTALL_DESC")
+result=$(create_chapter "$book_id" "Installation" "Guide d'installation pas a pas")
 ch_id=$(extract_id "$result")
-echo "  Chapter: ${CH_INSTALL} (id: ${ch_id})"
-create_page "$ch_id" "$PAGE_INSTALL" "${DOCS_DIR}/getting-started/prerequisites.md" > /dev/null
-echo "    Page: ${PAGE_INSTALL}"
+create_page "$ch_id" "Prerequis et installation" "${DOCS_FR}/getting-started/prerequisites.md" > /dev/null
+echo "    Page: Prerequis et installation"
+echo ""
 
+# --- Book 2: GTM Listener ---
+echo "[2/5] Creating book: 2 • GTM Listener..."
+result=$(create_book "2 • GTM Listener" "Configuration et options avancees du tag Probr Server-Side Listener.")
+book_id=$(extract_id "$result")
+shelf1_book_ids+=("$book_id")
+echo "  Book created (id: ${book_id})"
+
+result=$(create_chapter "$book_id" "Configuration" "Parametres du tag GTM")
+ch_id=$(extract_id "$result")
+create_page "$ch_id" "Configuration du tag" "${DOCS_FR}/gtm-listener/configuration.md" > /dev/null
+echo "    Page: Configuration du tag"
+
+result=$(create_chapter "$book_id" "Modes d'envoi" "Per event vs Batched")
+ch_id=$(extract_id "$result")
+create_page "$ch_id" "Per event vs Batched" "${DOCS_FR}/gtm-listener/send-modes.md" > /dev/null
+echo "    Page: Per event vs Batched"
+
+result=$(create_chapter "$book_id" "Qualite des donnees" "Monitoring de la qualite des donnees")
+ch_id=$(extract_id "$result")
+create_page "$ch_id" "User data et E-commerce" "${DOCS_FR}/gtm-listener/data-quality.md" > /dev/null
+echo "    Page: User data et E-commerce"
+echo ""
+
+# --- Book 3: Administration ---
+echo "[3/5] Creating book: 3 • Administration..."
+result=$(create_book "3 • Administration" "Gerez les clients, sites et probes de monitoring.")
+book_id=$(extract_id "$result")
+shelf1_book_ids+=("$book_id")
+echo "  Book created (id: ${book_id})"
+
+result=$(create_chapter "$book_id" "Clients & Sites" "Gestion des clients et sites")
+ch_id=$(extract_id "$result")
+create_page "$ch_id" "Clients et Sites" "${DOCS_FR}/administration/clients-and-sites.md" > /dev/null
+echo "    Page: Clients et Sites"
+
+result=$(create_chapter "$book_id" "Probes" "Configuration et gestion des probes")
+ch_id=$(extract_id "$result")
+create_page "$ch_id" "Gestion des probes" "${DOCS_FR}/administration/probes.md" > /dev/null
+echo "    Page: Gestion des probes"
+echo ""
+
+# --- Book 4: Monitoring & Alertes ---
+echo "[4/5] Creating book: 4 • Monitoring & Alertes..."
+result=$(create_book "4 • Monitoring & Alertes" "Dashboard, analytics temps reel et gestion des alertes.")
+book_id=$(extract_id "$result")
+shelf1_book_ids+=("$book_id")
+echo "  Book created (id: ${book_id})"
+
+result=$(create_chapter "$book_id" "Dashboard" "Dashboard et centre de controle")
+ch_id=$(extract_id "$result")
+create_page "$ch_id" "Dashboard et centre de controle" "${DOCS_FR}/monitoring/dashboard.md" > /dev/null
+echo "    Page: Dashboard et centre de controle"
+
+result=$(create_chapter "$book_id" "Analytics" "Analytics de monitoring")
+ch_id=$(extract_id "$result")
+create_page "$ch_id" "Analytics de monitoring" "${DOCS_FR}/monitoring/analytics.md" > /dev/null
+echo "    Page: Analytics de monitoring"
+
+result=$(create_chapter "$book_id" "Alertes" "Gestion des alertes et notifications")
+ch_id=$(extract_id "$result")
+create_page "$ch_id" "Gestion des alertes" "${DOCS_FR}/monitoring/alerts.md" > /dev/null
+echo "    Page: Gestion des alertes"
+echo ""
+
+# --- Book 5: Depannage ---
+echo "[5/5] Creating book: 5 • Depannage..."
+result=$(create_book "5 • Depannage" "Resolution de problemes et questions frequentes.")
+book_id=$(extract_id "$result")
+shelf1_book_ids+=("$book_id")
+echo "  Book created (id: ${book_id})"
+
+result=$(create_chapter "$book_id" "Problemes courants" "Debug et solutions")
+ch_id=$(extract_id "$result")
+create_page "$ch_id" "Debug et solutions" "${DOCS_FR}/troubleshooting/common-issues.md" > /dev/null
+echo "    Page: Debug et solutions"
+
+result=$(create_chapter "$book_id" "FAQ" "Questions frequentes")
+ch_id=$(extract_id "$result")
+create_page "$ch_id" "Questions frequentes" "${DOCS_FR}/troubleshooting/faq.md" > /dev/null
+echo "    Page: Questions frequentes"
+echo ""
+
+# Create Shelf 1
+echo "Creating shelf: Guide Utilisateur FR..."
+result=$(create_shelf "Guide Utilisateur FR" "Documentation utilisateur Probr en francais.")
+shelf1_id=$(extract_id "$result")
+assign_books_to_shelf "$shelf1_id" "${shelf1_book_ids[@]}"
+echo "  Shelf created (id: ${shelf1_id})"
 echo ""
 
 # =============================================================================
-# Book 2: GTM Listener
+# SHELF 2: User Guide EN
 # =============================================================================
-echo "[2/6] ${MSG_CREATING_BOOK}: ${BOOK2_NAME}..."
+echo "============================================"
+echo "  SHELF 2: User Guide EN"
+echo "============================================"
+echo ""
 
-result=$(create_book "$BOOK2_NAME" "$BOOK2_DESC")
-book2_id=$(extract_id "$result")
-echo "  ${MSG_BOOK_CREATED} (id: ${book2_id})"
+DOCS_EN="${SCRIPT_DIR}/en"
+shelf2_book_ids=()
 
-# Chapter: Configuration
-result=$(create_chapter "$book2_id" "$CH_CONFIG" "$CH_CONFIG_DESC")
+# --- Book 1: Getting Started ---
+echo "[1/5] Creating book: 1 • Getting Started..."
+result=$(create_book "1 • Getting Started" "Discover Probr and set up monitoring in minutes.")
+book_id=$(extract_id "$result")
+shelf2_book_ids+=("$book_id")
+echo "  Book created (id: ${book_id})"
+
+result=$(create_chapter "$book_id" "Introduction" "Overview of the Probr platform")
 ch_id=$(extract_id "$result")
-echo "  Chapter: ${CH_CONFIG} (id: ${ch_id})"
-create_page "$ch_id" "$PAGE_CONFIG" "${DOCS_DIR}/gtm-listener/configuration.md" > /dev/null
-echo "    Page: ${PAGE_CONFIG}"
+create_page "$ch_id" "Introduction to Probr" "${DOCS_EN}/getting-started/introduction.md" > /dev/null
+echo "    Page: Introduction to Probr"
 
-# Chapter: Send Modes
-result=$(create_chapter "$book2_id" "$CH_SEND" "$CH_SEND_DESC")
+result=$(create_chapter "$book_id" "Installation" "Step-by-step installation guide")
 ch_id=$(extract_id "$result")
-echo "  Chapter: ${CH_SEND} (id: ${ch_id})"
-create_page "$ch_id" "$PAGE_SEND" "${DOCS_DIR}/gtm-listener/send-modes.md" > /dev/null
-echo "    Page: ${PAGE_SEND}"
+create_page "$ch_id" "Prerequisites and Installation" "${DOCS_EN}/getting-started/prerequisites.md" > /dev/null
+echo "    Page: Prerequisites and Installation"
+echo ""
 
-# Chapter: Data Quality
-result=$(create_chapter "$book2_id" "$CH_QUALITY" "$CH_QUALITY_DESC")
+# --- Book 2: GTM Listener ---
+echo "[2/5] Creating book: 2 • GTM Listener..."
+result=$(create_book "2 • GTM Listener" "Configuration and advanced options for the Probr Server-Side Listener tag.")
+book_id=$(extract_id "$result")
+shelf2_book_ids+=("$book_id")
+echo "  Book created (id: ${book_id})"
+
+result=$(create_chapter "$book_id" "Configuration" "GTM tag parameters")
 ch_id=$(extract_id "$result")
-echo "  Chapter: ${CH_QUALITY} (id: ${ch_id})"
-create_page "$ch_id" "$PAGE_QUALITY" "${DOCS_DIR}/gtm-listener/data-quality.md" > /dev/null
-echo "    Page: ${PAGE_QUALITY}"
+create_page "$ch_id" "Tag Configuration" "${DOCS_EN}/gtm-listener/configuration.md" > /dev/null
+echo "    Page: Tag Configuration"
 
+result=$(create_chapter "$book_id" "Send Modes" "Per event vs Batched")
+ch_id=$(extract_id "$result")
+create_page "$ch_id" "Per event vs Batched" "${DOCS_EN}/gtm-listener/send-modes.md" > /dev/null
+echo "    Page: Per event vs Batched"
+
+result=$(create_chapter "$book_id" "Data Quality" "Data quality monitoring")
+ch_id=$(extract_id "$result")
+create_page "$ch_id" "User Data and E-commerce" "${DOCS_EN}/gtm-listener/data-quality.md" > /dev/null
+echo "    Page: User Data and E-commerce"
+echo ""
+
+# --- Book 3: Administration ---
+echo "[3/5] Creating book: 3 • Administration..."
+result=$(create_book "3 • Administration" "Manage clients, sites, and monitoring probes.")
+book_id=$(extract_id "$result")
+shelf2_book_ids+=("$book_id")
+echo "  Book created (id: ${book_id})"
+
+result=$(create_chapter "$book_id" "Clients & Sites" "Client and site management")
+ch_id=$(extract_id "$result")
+create_page "$ch_id" "Clients and Sites" "${DOCS_EN}/administration/clients-and-sites.md" > /dev/null
+echo "    Page: Clients and Sites"
+
+result=$(create_chapter "$book_id" "Probes" "Probe configuration and management")
+ch_id=$(extract_id "$result")
+create_page "$ch_id" "Probe Management" "${DOCS_EN}/administration/probes.md" > /dev/null
+echo "    Page: Probe Management"
+echo ""
+
+# --- Book 4: Monitoring & Alerts ---
+echo "[4/5] Creating book: 4 • Monitoring & Alerts..."
+result=$(create_book "4 • Monitoring & Alerts" "Dashboard, real-time analytics, and alert management.")
+book_id=$(extract_id "$result")
+shelf2_book_ids+=("$book_id")
+echo "  Book created (id: ${book_id})"
+
+result=$(create_chapter "$book_id" "Dashboard" "Dashboard and control room")
+ch_id=$(extract_id "$result")
+create_page "$ch_id" "Dashboard and Control Room" "${DOCS_EN}/monitoring/dashboard.md" > /dev/null
+echo "    Page: Dashboard and Control Room"
+
+result=$(create_chapter "$book_id" "Analytics" "Monitoring analytics")
+ch_id=$(extract_id "$result")
+create_page "$ch_id" "Monitoring Analytics" "${DOCS_EN}/monitoring/analytics.md" > /dev/null
+echo "    Page: Monitoring Analytics"
+
+result=$(create_chapter "$book_id" "Alerts" "Alert management and notifications")
+ch_id=$(extract_id "$result")
+create_page "$ch_id" "Alert Management" "${DOCS_EN}/monitoring/alerts.md" > /dev/null
+echo "    Page: Alert Management"
+echo ""
+
+# --- Book 5: Troubleshooting ---
+echo "[5/5] Creating book: 5 • Troubleshooting..."
+result=$(create_book "5 • Troubleshooting" "Problem solving and frequently asked questions.")
+book_id=$(extract_id "$result")
+shelf2_book_ids+=("$book_id")
+echo "  Book created (id: ${book_id})"
+
+result=$(create_chapter "$book_id" "Common Issues" "Debug and solutions")
+ch_id=$(extract_id "$result")
+create_page "$ch_id" "Debug and Solutions" "${DOCS_EN}/troubleshooting/common-issues.md" > /dev/null
+echo "    Page: Debug and Solutions"
+
+result=$(create_chapter "$book_id" "FAQ" "Frequently asked questions")
+ch_id=$(extract_id "$result")
+create_page "$ch_id" "Frequently Asked Questions" "${DOCS_EN}/troubleshooting/faq.md" > /dev/null
+echo "    Page: Frequently Asked Questions"
+echo ""
+
+# Create Shelf 2
+echo "Creating shelf: User Guide EN..."
+result=$(create_shelf "User Guide EN" "Probr user documentation in English.")
+shelf2_id=$(extract_id "$result")
+assign_books_to_shelf "$shelf2_id" "${shelf2_book_ids[@]}"
+echo "  Shelf created (id: ${shelf2_id})"
 echo ""
 
 # =============================================================================
-# Book 3: Administration
+# SHELF 3: Developer / API
 # =============================================================================
-echo "[3/6] ${MSG_CREATING_BOOK}: ${BOOK3_NAME}..."
+echo "============================================"
+echo "  SHELF 3: Developer / API"
+echo "============================================"
+echo ""
 
-result=$(create_book "$BOOK3_NAME" "$BOOK3_DESC")
-book3_id=$(extract_id "$result")
-echo "  ${MSG_BOOK_CREATED} (id: ${book3_id})"
+shelf3_book_ids=()
 
-# Chapter: Clients & Sites
-result=$(create_chapter "$book3_id" "$CH_CLIENTS" "$CH_CLIENTS_DESC")
+# --- Book 1: API Overview ---
+echo "[1/6] Creating book: 1 • API Overview..."
+result=$(create_book "1 • API Overview" "Complete endpoint reference for the Probr API.")
+book_id=$(extract_id "$result")
+shelf3_book_ids+=("$book_id")
+echo "  Book created (id: ${book_id})"
+
+result=$(create_chapter "$book_id" "Overview" "Complete API reference")
 ch_id=$(extract_id "$result")
-echo "  Chapter: ${CH_CLIENTS} (id: ${ch_id})"
-create_page "$ch_id" "$PAGE_CLIENTS" "${DOCS_DIR}/administration/clients-and-sites.md" > /dev/null
-echo "    Page: ${PAGE_CLIENTS}"
+create_page "$ch_id" "API Endpoints Overview" "${DOCS_EN}/api-reference/endpoints-overview.md" > /dev/null
+echo "    Page: API Endpoints Overview"
+echo ""
 
-# Chapter: Probes
-result=$(create_chapter "$book3_id" "$CH_PROBES" "$CH_PROBES_DESC")
+# --- Book 2: Authentication ---
+echo "[2/6] Creating book: 2 • Authentication..."
+result=$(create_book "2 • Authentication" "API keys, ingest key authentication, and security recommendations.")
+book_id=$(extract_id "$result")
+shelf3_book_ids+=("$book_id")
+echo "  Book created (id: ${book_id})"
+
+result=$(create_chapter "$book_id" "Authentication" "API keys and security")
 ch_id=$(extract_id "$result")
-echo "  Chapter: ${CH_PROBES} (id: ${ch_id})"
-create_page "$ch_id" "$PAGE_PROBES" "${DOCS_DIR}/administration/probes.md" > /dev/null
-echo "    Page: ${PAGE_PROBES}"
+create_page "$ch_id" "API Authentication" "${DOCS_EN}/api-reference/authentication.md" > /dev/null
+echo "    Page: API Authentication"
+echo ""
 
+# --- Book 3: Ingest API ---
+echo "[3/6] Creating book: 3 • Ingest API..."
+result=$(create_book "3 • Ingest API" "POST /ingest endpoint for receiving monitoring data from GTM Listener.")
+book_id=$(extract_id "$result")
+shelf3_book_ids+=("$book_id")
+echo "  Book created (id: ${book_id})"
+
+result=$(create_chapter "$book_id" "Ingestion" "POST /ingest endpoint")
+ch_id=$(extract_id "$result")
+create_page "$ch_id" "POST /ingest" "${DOCS_EN}/api-reference/ingest-endpoint.md" > /dev/null
+echo "    Page: POST /ingest"
+echo ""
+
+# --- Book 4: Management API ---
+echo "[4/6] Creating book: 4 • Management API..."
+result=$(create_book "4 • Management API" "CRUD endpoints for clients, sites, probes, and alerts.")
+book_id=$(extract_id "$result")
+shelf3_book_ids+=("$book_id")
+echo "  Book created (id: ${book_id})"
+
+result=$(create_chapter "$book_id" "Management" "Clients, Sites, Probes, Alerts CRUD")
+ch_id=$(extract_id "$result")
+create_page "$ch_id" "Management API" "${DOCS_EN}/api-reference/management-api.md" > /dev/null
+echo "    Page: Management API"
+echo ""
+
+# --- Book 5: Monitoring API ---
+echo "[5/6] Creating book: 5 • Monitoring API..."
+result=$(create_book "5 • Monitoring API" "Dashboard overview, monitoring analytics, and flush endpoints.")
+book_id=$(extract_id "$result")
+shelf3_book_ids+=("$book_id")
+echo "  Book created (id: ${book_id})"
+
+result=$(create_chapter "$book_id" "Monitoring" "Dashboard, Analytics, Flush")
+ch_id=$(extract_id "$result")
+create_page "$ch_id" "Monitoring API" "${DOCS_EN}/api-reference/monitoring-api.md" > /dev/null
+echo "    Page: Monitoring API"
+echo ""
+
+# --- Book 6: Limits & Quotas ---
+echo "[6/6] Creating book: 6 • Limits & Quotas..."
+result=$(create_book "6 • Limits & Quotas" "Rate limits, aggregation behavior, and self-hosted recommendations.")
+book_id=$(extract_id "$result")
+shelf3_book_ids+=("$book_id")
+echo "  Book created (id: ${book_id})"
+
+result=$(create_chapter "$book_id" "Limits" "Limits and quotas")
+ch_id=$(extract_id "$result")
+create_page "$ch_id" "Limits and Quotas" "${DOCS_EN}/api-reference/rate-limits.md" > /dev/null
+echo "    Page: Limits and Quotas"
+echo ""
+
+# Create Shelf 3
+echo "Creating shelf: Developer / API..."
+result=$(create_shelf "Developer / API" "Technical API documentation for Probr developers and integrators.")
+shelf3_id=$(extract_id "$result")
+assign_books_to_shelf "$shelf3_id" "${shelf3_book_ids[@]}"
+echo "  Shelf created (id: ${shelf3_id})"
 echo ""
 
 # =============================================================================
-# Book 4: Monitoring & Alerts
+# Summary
 # =============================================================================
-echo "[4/6] ${MSG_CREATING_BOOK}: ${BOOK4_NAME}..."
-
-result=$(create_book "$BOOK4_NAME" "$BOOK4_DESC")
-book4_id=$(extract_id "$result")
-echo "  ${MSG_BOOK_CREATED} (id: ${book4_id})"
-
-# Chapter: Dashboard
-result=$(create_chapter "$book4_id" "$CH_DASHBOARD" "$CH_DASHBOARD_DESC")
-ch_id=$(extract_id "$result")
-echo "  Chapter: ${CH_DASHBOARD} (id: ${ch_id})"
-create_page "$ch_id" "$PAGE_DASHBOARD" "${DOCS_DIR}/monitoring/dashboard.md" > /dev/null
-echo "    Page: ${PAGE_DASHBOARD}"
-
-# Chapter: Analytics
-result=$(create_chapter "$book4_id" "$CH_ANALYTICS" "$CH_ANALYTICS_DESC")
-ch_id=$(extract_id "$result")
-echo "  Chapter: ${CH_ANALYTICS} (id: ${ch_id})"
-create_page "$ch_id" "$PAGE_ANALYTICS" "${DOCS_DIR}/monitoring/analytics.md" > /dev/null
-echo "    Page: ${PAGE_ANALYTICS}"
-
-# Chapter: Alerts
-result=$(create_chapter "$book4_id" "$CH_ALERTS" "$CH_ALERTS_DESC")
-ch_id=$(extract_id "$result")
-echo "  Chapter: ${CH_ALERTS} (id: ${ch_id})"
-create_page "$ch_id" "$PAGE_ALERTS" "${DOCS_DIR}/monitoring/alerts.md" > /dev/null
-echo "    Page: ${PAGE_ALERTS}"
-
-echo ""
-
-# =============================================================================
-# Book 5: API Reference
-# =============================================================================
-echo "[5/6] ${MSG_CREATING_BOOK}: ${BOOK5_NAME}..."
-
-result=$(create_book "$BOOK5_NAME" "$BOOK5_DESC")
-book5_id=$(extract_id "$result")
-echo "  ${MSG_BOOK_CREATED} (id: ${book5_id})"
-
-# Chapter: Overview
-result=$(create_chapter "$book5_id" "$CH_OVERVIEW" "$CH_OVERVIEW_DESC")
-ch_id=$(extract_id "$result")
-echo "  Chapter: ${CH_OVERVIEW} (id: ${ch_id})"
-create_page "$ch_id" "$PAGE_OVERVIEW" "${DOCS_DIR}/api-reference/endpoints-overview.md" > /dev/null
-echo "    Page: ${PAGE_OVERVIEW}"
-
-# Chapter: Authentication
-result=$(create_chapter "$book5_id" "$CH_AUTH" "$CH_AUTH_DESC")
-ch_id=$(extract_id "$result")
-echo "  Chapter: ${CH_AUTH} (id: ${ch_id})"
-create_page "$ch_id" "$PAGE_AUTH" "${DOCS_DIR}/api-reference/authentication.md" > /dev/null
-echo "    Page: ${PAGE_AUTH}"
-
-# Chapter: Ingestion
-result=$(create_chapter "$book5_id" "$CH_INGEST" "$CH_INGEST_DESC")
-ch_id=$(extract_id "$result")
-echo "  Chapter: ${CH_INGEST} (id: ${ch_id})"
-create_page "$ch_id" "$PAGE_INGEST" "${DOCS_DIR}/api-reference/ingest-endpoint.md" > /dev/null
-echo "    Page: ${PAGE_INGEST}"
-
-# Chapter: Limits
-result=$(create_chapter "$book5_id" "$CH_LIMITS" "$CH_LIMITS_DESC")
-ch_id=$(extract_id "$result")
-echo "  Chapter: ${CH_LIMITS} (id: ${ch_id})"
-create_page "$ch_id" "$PAGE_LIMITS" "${DOCS_DIR}/api-reference/rate-limits.md" > /dev/null
-echo "    Page: ${PAGE_LIMITS}"
-
-echo ""
-
-# =============================================================================
-# Book 6: Troubleshooting
-# =============================================================================
-echo "[6/6] ${MSG_CREATING_BOOK}: ${BOOK6_NAME}..."
-
-result=$(create_book "$BOOK6_NAME" "$BOOK6_DESC")
-book6_id=$(extract_id "$result")
-echo "  ${MSG_BOOK_CREATED} (id: ${book6_id})"
-
-# Chapter: Common Issues
-result=$(create_chapter "$book6_id" "$CH_ISSUES" "$CH_ISSUES_DESC")
-ch_id=$(extract_id "$result")
-echo "  Chapter: ${CH_ISSUES} (id: ${ch_id})"
-create_page "$ch_id" "$PAGE_ISSUES" "${DOCS_DIR}/troubleshooting/common-issues.md" > /dev/null
-echo "    Page: ${PAGE_ISSUES}"
-
-# Chapter: FAQ
-result=$(create_chapter "$book6_id" "$CH_FAQ" "$CH_FAQ_DESC")
-ch_id=$(extract_id "$result")
-echo "  Chapter: ${CH_FAQ} (id: ${ch_id})"
-create_page "$ch_id" "$PAGE_FAQ" "${DOCS_DIR}/troubleshooting/faq.md" > /dev/null
-echo "    Page: ${PAGE_FAQ}"
-
-echo ""
 echo "==========================================="
-echo "  ${MSG_IMPORT_DONE}"
+echo "  Import completed successfully!"
 echo "==========================================="
 echo ""
-echo "  ${MSG_BOOKS_CREATED}"
-echo "    - ${BOOK1_NAME}  (id: ${book1_id})"
-echo "    - ${BOOK2_NAME}  (id: ${book2_id})"
-echo "    - ${BOOK3_NAME}  (id: ${book3_id})"
-echo "    - ${BOOK4_NAME}  (id: ${book4_id})"
-echo "    - ${BOOK5_NAME}  (id: ${book5_id})"
-echo "    - ${BOOK6_NAME}  (id: ${book6_id})"
+echo "  3 shelves created:"
+echo "    - Guide Utilisateur FR  (id: ${shelf1_id}) — 5 books, 12 pages"
+echo "    - User Guide EN         (id: ${shelf2_id}) — 5 books, 12 pages"
+echo "    - Developer / API       (id: ${shelf3_id}) — 6 books, 6 pages"
 echo ""
-echo "  ${MSG_PAGES_IMPORTED}"
+echo "  Total: 16 books, 30 pages"
 echo ""
-echo "  ${MSG_ACCESS}: ${BOOKSTACK_URL}"
+echo "  Access your documentation: ${BOOKSTACK_URL}"
 echo ""

@@ -1,4 +1,4 @@
-# Reference API complete
+# Vue d'ensemble de l'API
 
 ## URL de base
 
@@ -14,86 +14,37 @@ https://votre-instance-probr.com/api
 - **Endpoints de gestion** : pas d'authentification requise dans la version actuelle (securiser via reseau/firewall)
 - **Health check** (`/health`) : public, pas d'authentification
 
-## Vue d'ensemble des endpoints
+Voir [Authentification](authentication.md) pour les details.
 
-### Sante
+## Tous les endpoints
 
-| Methode | Endpoint | Description |
-|---|---|---|
-| `GET` | `/health` | Verification de sante de l'application |
-
-### Ingestion
-
-| Methode | Endpoint | Description |
-|---|---|---|
-| `POST` | `/api/ingest` | Recevoir les donnees de monitoring du tag GTM Listener |
-| `POST` | `/api/ingest/flush` | Forcer le vidage du buffer d'agregation en memoire |
-
-Voir [POST /ingest](ingest-endpoint.md) pour la documentation detaillee du payload.
-
-### Clients
-
-| Methode | Endpoint | Description |
-|---|---|---|
-| `GET` | `/api/clients` | Lister tous les clients |
-| `GET` | `/api/clients/{id}` | Obtenir un client |
-| `POST` | `/api/clients` | Creer un client |
-| `PATCH` | `/api/clients/{id}` | Mettre a jour un client |
-| `DELETE` | `/api/clients/{id}` | Supprimer un client (cascade) |
-
-Voir [Clients & Sites](../administration/clients-and-sites.md) pour les details.
-
-### Sites
-
-| Methode | Endpoint | Description |
-|---|---|---|
-| `GET` | `/api/sites` | Lister tous les sites |
-| `GET` | `/api/sites/{id}` | Obtenir un site |
-| `POST` | `/api/sites` | Creer un site |
-| `PATCH` | `/api/sites/{id}` | Mettre a jour un site |
-| `DELETE` | `/api/sites/{id}` | Supprimer un site (cascade) |
-
-Voir [Clients & Sites](../administration/clients-and-sites.md) pour les details.
-
-### Probes
-
-| Methode | Endpoint | Description |
-|---|---|---|
-| `GET` | `/api/probes` | Lister les configurations de probes |
-| `POST` | `/api/probes` | Creer une probe |
-| `PATCH` | `/api/probes/{id}` | Mettre a jour une probe |
-| `DELETE` | `/api/probes/{id}` | Supprimer une probe |
-| `POST` | `/api/probes/{id}/run` | Declencher manuellement une probe |
-| `GET` | `/api/probes/{id}/results` | Obtenir l'historique d'execution d'une probe |
-
-Voir [Gestion des probes](../administration/probes.md) pour les details.
-
-### Alertes
-
-| Methode | Endpoint | Description |
-|---|---|---|
-| `GET` | `/api/alerts` | Lister les alertes (filtrable) |
-| `PATCH` | `/api/alerts/{id}/resolve` | Resoudre manuellement une alerte |
-
-Voir [Gestion des alertes](../monitoring/alerts.md) pour les details.
-
-### Dashboard
-
-| Methode | Endpoint | Description |
-|---|---|---|
-| `GET` | `/api/dashboard/overview` | Vue complete du centre de controle |
-
-Voir [Dashboard & Control Room](../monitoring/dashboard.md) pour les details.
-
-### Monitoring
-
-| Methode | Endpoint | Description |
-|---|---|---|
-| `GET` | `/api/monitoring/sites/{id}/overview` | Aperçu de monitoring agrege |
-| `GET` | `/api/monitoring/sites/{id}/batches` | Donnees brutes en series temporelles |
-| `GET` | `/api/monitoring/sites/{id}/tags/{name}` | Metriques de sante par tag |
-
-Voir [Monitoring Analytics](../monitoring/analytics.md) pour les details.
+| Methode | Endpoint | Description | Docs |
+|---|---|---|---|
+| `GET` | `/health` | Verification de sante | — |
+| `POST` | `/api/ingest` | Recevoir les donnees du tag GTM Listener | [Ingest API](ingest-endpoint.md) |
+| `POST` | `/api/ingest/flush` | Forcer le vidage du buffer | [Monitoring API](monitoring-api.md) |
+| `GET` | `/api/clients` | Lister les clients | [Management API](management-api.md) |
+| `GET` | `/api/clients/{id}` | Obtenir un client | [Management API](management-api.md) |
+| `POST` | `/api/clients` | Creer un client | [Management API](management-api.md) |
+| `PATCH` | `/api/clients/{id}` | Mettre a jour un client | [Management API](management-api.md) |
+| `DELETE` | `/api/clients/{id}` | Supprimer un client (cascade) | [Management API](management-api.md) |
+| `GET` | `/api/sites` | Lister les sites | [Management API](management-api.md) |
+| `GET` | `/api/sites/{id}` | Obtenir un site | [Management API](management-api.md) |
+| `POST` | `/api/sites` | Creer un site | [Management API](management-api.md) |
+| `PATCH` | `/api/sites/{id}` | Mettre a jour un site | [Management API](management-api.md) |
+| `DELETE` | `/api/sites/{id}` | Supprimer un site (cascade) | [Management API](management-api.md) |
+| `GET` | `/api/probes` | Lister les probes | [Management API](management-api.md) |
+| `POST` | `/api/probes` | Creer une probe | [Management API](management-api.md) |
+| `PATCH` | `/api/probes/{id}` | Mettre a jour une probe | [Management API](management-api.md) |
+| `DELETE` | `/api/probes/{id}` | Supprimer une probe | [Management API](management-api.md) |
+| `POST` | `/api/probes/{id}/run` | Declencher une probe | [Management API](management-api.md) |
+| `GET` | `/api/probes/{id}/results` | Historique d'une probe | [Management API](management-api.md) |
+| `GET` | `/api/alerts` | Lister les alertes | [Management API](management-api.md) |
+| `PATCH` | `/api/alerts/{id}/resolve` | Resoudre une alerte | [Management API](management-api.md) |
+| `GET` | `/api/dashboard/overview` | Vue du centre de controle | [Monitoring API](monitoring-api.md) |
+| `GET` | `/api/monitoring/sites/{id}/overview` | Apercu de monitoring | [Monitoring API](monitoring-api.md) |
+| `GET` | `/api/monitoring/sites/{id}/batches` | Series temporelles | [Monitoring API](monitoring-api.md) |
+| `GET` | `/api/monitoring/sites/{id}/tags/{name}` | Sante par tag | [Monitoring API](monitoring-api.md) |
 
 ## Codes de reponse courants
 

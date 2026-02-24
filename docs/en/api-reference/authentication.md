@@ -1,64 +1,66 @@
 # API Authentication
 
-All requests to the Probr API must be authenticated.
+## Authentication Model
 
-## Authentication Method
+Probr uses two different authentication mechanisms depending on the endpoint:
 
-The API uses **API key** authentication transmitted in an HTTP header.
+| Endpoint Group | Authentication | Description |
+|---|---|---|
+| `POST /api/ingest` | `X-Probr-Key` header | Ingest key (auto-generated per site) |
+| All other `/api/*` | None (current version) | Secure via network/firewall |
+| `GET /health` | None | Public health check |
+
+## Ingest Key Authentication
+
+The ingest endpoint requires an API key transmitted via the `X-Probr-Key` HTTP header.
 
 ### Header
 
 ```
-X-Probr-Key: your_key_here
+X-Probr-Key: your_ingest_key_here
 ```
 
 ### Example
 
 ```bash
-curl -X POST https://api.probr.io/ingest \
+curl -X POST https://your-probr-instance/api/ingest \
   -H "Content-Type: application/json" \
-  -H "X-Probr-Key: pk_live_abc123def456" \
-  -d '{"container_id": "GTM-XXXXXX", "event_name": "test"}'
+  -H "X-Probr-Key: abc123def456..." \
+  -d '{"container_id": "GTM-XXXXXX", "event_name": "page_view", "timestamp_ms": 1708770000000}'
 ```
 
-## Key Types
+## How Ingest Keys Work
 
-| Type | Prefix | Usage |
-|---|---|---|
-| **Ingest key** | `pk_live_` | Sending data from the sGTM tag |
-| **Test key** | `pk_test_` | Sending test data (does not pollute production dashboards) |
-
-## Where to Find Your Keys
-
-1. Log in to the [Probr dashboard](https://app.probr.io)
-2. Go to **Sites** > select your site
-3. **Settings** tab > **API Keys** section
-4. Copy the desired key
-
-## Security
-
+- Each site receives an **auto-generated** ingest key upon creation (32-byte URL-safe token)
 - Keys are **scoped per site**: a key can only send data for the site it is attached to
-- Keys are transmitted **server-side only** (sGTM -> Probr API) — they are never exposed in the client browser
-- You can **revoke and regenerate** a key at any time from the dashboard
-- Requests with an invalid or revoked key receive a `401 Unauthorized` response
+- Keys are transmitted **server-side only** (sGTM -> Probr API) — never exposed in the client browser
+- Keys are unique across all sites in the database
+
+## Where to Find Your Key
+
+The ingest key is returned when you create or retrieve a site via the API:
+
+```bash
+# Get a site (includes ingest_key in response)
+curl -s https://your-probr-instance/api/sites/{site_id}
+```
+
+The key is in the `ingest_key` field of the response. Configure it in the GTM Listener tag's "Probr Ingest Key" field.
 
 ## Key Rotation
 
-To rotate a key without downtime:
+To rotate a key, you currently need to delete and recreate the site (the key is auto-generated). A dedicated key rotation endpoint may be added in a future version.
 
-1. Generate a new key in the Probr dashboard
-2. Update the key in your GTM tag
-3. Publish the new version of the sGTM container
-4. Wait for all instances to have the new version
-5. Revoke the old key
+## Security Recommendations
 
-> Probr accepts both keys (old and new) during a 24-hour grace period after revocation.
+1. **Network-level security**: Since management endpoints have no authentication in the current version, restrict access to the Probr API via firewall rules, VPN, or reverse proxy authentication
+2. **Never expose ingest keys client-side**: The GTM Listener tag runs server-side, so keys are never visible to end users
+3. **Monitor the `/health` endpoint**: Set up external monitoring to detect if your Probr instance goes down
 
 ## Authentication Response Codes
 
 | Code | Meaning |
 |---|---|
-| `200` | Success |
-| `401` | Missing or invalid key |
-| `403` | Revoked key or disabled site |
-| `429` | Rate limit exceeded (see [Limits](./rate-limits.md)) |
+| `202` | Ingest accepted |
+| `401` | Missing or invalid ingest key |
+| `404` | Site not found or inactive |
