@@ -77,9 +77,9 @@ export default function LandingPage() {
             <Image
               src="/images/Probr_logo.webp"
               alt="Probr"
-              width={120}
-              height={40}
-              className="h-8 w-auto"
+              width={160}
+              height={48}
+              className="h-10 w-auto"
               priority
             />
           </Link>
@@ -115,7 +115,7 @@ export default function LandingPage() {
             </Link>
             <Link
               href="/signup"
-              className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90 transition-colors"
+              className="inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-primary via-accent to-secondary px-4 py-2 text-sm font-medium text-white shadow-sm hover:opacity-90 transition-opacity"
             >
               Get Started
               <ArrowRight className="h-3.5 w-3.5" />
@@ -387,7 +387,7 @@ export default function LandingPage() {
               alt="Probr"
               width={90}
               height={30}
-              className="h-6 w-auto"
+              className="h-7 w-auto"
             />
           </div>
           <p className="text-xs text-muted-foreground">Built by DigitaliX</p>
