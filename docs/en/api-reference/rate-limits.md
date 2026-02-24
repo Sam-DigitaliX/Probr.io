@@ -1,51 +1,5 @@
 # Limits and Quotas
 
-## Rate Limits
-
-Limits depend on your Probr plan:
-
-| Plan | Requests / second | Events / month |
-|---|---|---|
-| **Free** | 10 req/s | 100,000 |
-| **Pro** | 100 req/s | 1,000,000 |
-| **Business** | 500 req/s | 10,000,000 |
-| **Enterprise** | Custom | Custom |
-
-### How Limits Apply
-
-- **Requests/second**: per ingest key (i.e., per site)
-- **Events/month**: cumulative total of all events received for the site
-  - In per-event mode: 1 request = 1 event
-  - In batched mode: 1 request = N events (`total_events` in the payload)
-
-### Rate Limit Exceeded
-
-If the rate limit is exceeded, the API returns:
-
-```
-HTTP 429 Too Many Requests
-```
-
-```json
-{
-  "error": "rate_limited",
-  "retry_after_ms": 1000
-}
-```
-
-The GTM tag will log: `Probr: send failed (429)`
-
-> Occasional exceedances do not cause permanent data loss. On the tag side, data is simply not resent (per-event mode) or stays in the buffer (batched mode).
-
-### Monthly Quota Exceeded
-
-When the monthly quota is reached:
-
-- The API returns `403` with `{"error": "quota_exceeded"}`
-- A notification is sent by email
-- Data is no longer stored until renewal
-- The tag continues to work (it logs the error but does not block execution of other tags)
-
 ## Payload Size
 
 | Limit | Value |
@@ -55,8 +9,31 @@ When the monthly quota is reached:
 
 > In practice, a per-event payload is ~1-5 KB. A batch of 200 aggregated events is ~10-50 KB.
 
+## In-Memory Aggregation
+
+The ingest endpoint uses an in-memory aggregation layer to minimize database write load:
+
+- Events are aggregated into **1-minute windows** per site and container
+- The buffer is **flushed every 30 seconds** to the database
+- Only completed minute windows are flushed (the current minute stays in memory)
+- You can force a flush via `POST /api/ingest/flush` (useful for debugging)
+
+## Rate Limit Behavior
+
+The current self-hosted version of Probr does **not** enforce rate limits or monthly quotas. Performance is limited only by your server's resources (CPU, memory, database).
+
+### Recommendations
+
+To keep your instance performant:
+
+1. **Use batched mode** for high-traffic sites (>100 events/second) to reduce the number of HTTP requests
+2. **Exclude unnecessary tags** via the "Tag IDs to Exclude" field to reduce payload size
+3. **Monitor database size** — monitoring batches accumulate over time; consider setting up a retention policy (e.g., delete batches older than 90 days)
+4. **Scale horizontally** if needed — the aggregation buffer is per-instance, so multiple backend instances can share the load
+
 ## Best Practices
 
-1. **Use batched mode** if you're approaching requests/second limits
+1. **Use batched mode** if your site generates high event volumes
 2. **Exclude unnecessary tags** via the "Tag IDs to Exclude" field to reduce payload size
-3. **Monitor your usage** in Probr dashboard > Settings > Usage
+3. **Set appropriate probe intervals** — 5 minutes (300s) is a good default; don't go below 60s unless necessary
+4. **Monitor the `/health` endpoint** of your Probr instance to ensure it stays up

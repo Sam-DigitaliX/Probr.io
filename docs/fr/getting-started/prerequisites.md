@@ -5,18 +5,28 @@
 Avant de commencer, assurez-vous d'avoir :
 
 1. **Un conteneur Google Tag Manager Server-Side** fonctionnel et recevant du trafic
-2. **Un compte Probr** avec au moins un site configuré
-3. **Accès éditeur** (ou supérieur) au conteneur GTM server-side
+2. **Une instance Probr en fonctionnement** (self-hosted via Docker) avec au moins un site configure
+3. **Acces editeur** (ou superieur) au conteneur GTM server-side
 
-## Étape 1 : Créer votre site dans Probr
+## Etape 1 : Creer votre site dans Probr
 
-1. Connectez-vous à votre [dashboard Probr](https://app.probr.io)
-2. Cliquez sur **Ajouter un site**
-3. Renseignez :
-   - **Nom du site** : le nom de votre propriété (ex. "monsite.com - Production")
-   - **URL du site** : l'URL principale de votre site web
-4. Cliquez sur **Créer**
-5. Copiez la **Clé d'ingestion (Ingest Key)** affichée — vous en aurez besoin à l'étape suivante
+Utilisez l'API Probr pour creer un client et un site :
+
+```bash
+# 1. Creer un client
+curl -X POST https://votre-instance-probr/api/clients \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Mon Entreprise", "email": "ops@monentreprise.com"}'
+
+# 2. Creer un site (utilisez le client_id de la reponse ci-dessus)
+curl -X POST https://votre-instance-probr/api/sites \
+  -H "Content-Type: application/json" \
+  -d '{"client_id": "<client-uuid>", "name": "monsite.com - Production", "url": "https://monsite.com", "sgtm_url": "https://sgtm.monsite.com"}'
+```
+
+La reponse inclura une **Cle d'ingestion** (`ingest_key`) auto-generee — vous en aurez besoin a l'etape suivante.
+
+Voir [Clients & Sites](../administration/clients-and-sites.md) pour la reference API complete.
 
 ## Étape 2 : Installer le tag Probr Listener
 
@@ -44,8 +54,8 @@ Avant de commencer, assurez-vous d'avoir :
 
 | Champ | Valeur |
 |---|---|
-| **Probr Ingest Endpoint** | `https://api.probr.io/ingest` (ou votre endpoint self-hosted) |
-| **Probr Ingest Key** | La clé copiée à l'étape 1 |
+| **Probr Ingest Endpoint** | `https://votre-instance-probr/api/ingest` |
+| **Probr Ingest Key** | La `ingest_key` de l'etape 1 |
 | **Track user data quality** | ✅ Coché (recommandé) |
 | **Send mode** | Per event (recommandé) |
 

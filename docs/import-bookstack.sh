@@ -83,33 +83,49 @@ if [[ "$LANG_OPT" == "en" ]]; then
   # Book names
   BOOK1_NAME="Getting Started"
   BOOK2_NAME="GTM Listener"
-  BOOK3_NAME="API Reference"
-  BOOK4_NAME="Troubleshooting"
+  BOOK3_NAME="Administration"
+  BOOK4_NAME="Monitoring & Alerts"
+  BOOK5_NAME="API Reference"
+  BOOK6_NAME="Troubleshooting"
   # Book descriptions
   BOOK1_DESC="Discover Probr and set up monitoring in minutes."
   BOOK2_DESC="Configuration and advanced options for the Probr Server-Side Listener tag."
-  BOOK3_DESC="Technical documentation for the Probr ingestion API."
-  BOOK4_DESC="Problem solving and frequently asked questions."
+  BOOK3_DESC="Manage clients, sites, and monitoring probes."
+  BOOK4_DESC="Dashboard, real-time analytics, and alert management."
+  BOOK5_DESC="Complete technical documentation for the Probr API."
+  BOOK6_DESC="Problem solving and frequently asked questions."
   # Chapter names & descriptions
-  CH_INTRO="Introduction";         CH_INTRO_DESC="Overview of the Probr platform"
-  CH_INSTALL="Installation";       CH_INSTALL_DESC="Step-by-step installation guide"
-  CH_CONFIG="Configuration";       CH_CONFIG_DESC="GTM tag parameters"
-  CH_SEND="Send Modes";            CH_SEND_DESC="Per event vs Batched"
-  CH_QUALITY="Data Quality";       CH_QUALITY_DESC="Data quality monitoring"
-  CH_AUTH="Authentication";        CH_AUTH_DESC="API keys and security"
-  CH_INGEST="Ingestion";           CH_INGEST_DESC="POST /ingest endpoint"
-  CH_LIMITS="Limits";              CH_LIMITS_DESC="Rate limits and quotas by plan"
-  CH_ISSUES="Common Issues";       CH_ISSUES_DESC="Debug and solutions"
-  CH_FAQ="FAQ";                    CH_FAQ_DESC="Frequently asked questions"
+  CH_INTRO="Introduction";           CH_INTRO_DESC="Overview of the Probr platform"
+  CH_INSTALL="Installation";         CH_INSTALL_DESC="Step-by-step installation guide"
+  CH_CONFIG="Configuration";         CH_CONFIG_DESC="GTM tag parameters"
+  CH_SEND="Send Modes";              CH_SEND_DESC="Per event vs Batched"
+  CH_QUALITY="Data Quality";         CH_QUALITY_DESC="Data quality monitoring"
+  CH_CLIENTS="Clients & Sites";      CH_CLIENTS_DESC="Client and site management"
+  CH_PROBES="Probes";                CH_PROBES_DESC="Probe configuration and management"
+  CH_DASHBOARD="Dashboard";          CH_DASHBOARD_DESC="Dashboard and control room"
+  CH_ANALYTICS="Analytics";          CH_ANALYTICS_DESC="Monitoring analytics"
+  CH_ALERTS="Alerts";                CH_ALERTS_DESC="Alert management and notifications"
+  CH_OVERVIEW="Overview";            CH_OVERVIEW_DESC="Complete API reference"
+  CH_AUTH="Authentication";          CH_AUTH_DESC="API keys and security"
+  CH_INGEST="Ingestion";             CH_INGEST_DESC="POST /ingest endpoint"
+  CH_LIMITS="Limits";                CH_LIMITS_DESC="Limits and quotas"
+  CH_ISSUES="Common Issues";         CH_ISSUES_DESC="Debug and solutions"
+  CH_FAQ="FAQ";                      CH_FAQ_DESC="Frequently asked questions"
   # Page names
   PAGE_INTRO="Introduction to Probr"
   PAGE_INSTALL="Prerequisites and Installation"
   PAGE_CONFIG="Tag Configuration"
   PAGE_SEND="Per event vs Batched"
   PAGE_QUALITY="User Data and E-commerce"
+  PAGE_CLIENTS="Clients and Sites"
+  PAGE_PROBES="Probe Management"
+  PAGE_DASHBOARD="Dashboard and Control Room"
+  PAGE_ANALYTICS="Monitoring Analytics"
+  PAGE_ALERTS="Alert Management"
+  PAGE_OVERVIEW="Complete API Reference"
   PAGE_AUTH="API Keys and Security"
   PAGE_INGEST="POST /ingest"
-  PAGE_LIMITS="Rate Limits and Quotas"
+  PAGE_LIMITS="Limits and Quotas"
   PAGE_ISSUES="Debug and Solutions"
   PAGE_FAQ="Frequently Asked Questions"
   # Messages
@@ -120,41 +136,57 @@ if [[ "$LANG_OPT" == "en" ]]; then
   MSG_CREATING_BOOK="Creating book"
   MSG_BOOK_CREATED="Book created"
   MSG_IMPORT_DONE="Import completed successfully!"
-  MSG_BOOKS_CREATED="4 books created:"
-  MSG_PAGES_IMPORTED="10 pages imported in total."
+  MSG_BOOKS_CREATED="6 books created:"
+  MSG_PAGES_IMPORTED="16 pages imported in total."
   MSG_ACCESS="Access your documentation"
   MSG_LANG_LABEL="Language: English"
 else
   # Book names
   BOOK1_NAME="Pour commencer"
   BOOK2_NAME="GTM Listener"
-  BOOK3_NAME="Reference API"
-  BOOK4_NAME="Depannage"
+  BOOK3_NAME="Administration"
+  BOOK4_NAME="Monitoring & Alertes"
+  BOOK5_NAME="Reference API"
+  BOOK6_NAME="Depannage"
   # Book descriptions
   BOOK1_DESC="Decouvrez Probr et installez le monitoring en quelques minutes."
   BOOK2_DESC="Configuration et options avancees du tag Probr Server-Side Listener."
-  BOOK3_DESC="Documentation technique de l'API d'ingestion Probr."
-  BOOK4_DESC="Resolution de problemes et questions frequentes."
+  BOOK3_DESC="Gerez les clients, sites et probes de monitoring."
+  BOOK4_DESC="Dashboard, analytics temps reel et gestion des alertes."
+  BOOK5_DESC="Documentation technique complete de l'API Probr."
+  BOOK6_DESC="Resolution de problemes et questions frequentes."
   # Chapter names & descriptions
-  CH_INTRO="Introduction";         CH_INTRO_DESC="Presentation de la plateforme Probr"
-  CH_INSTALL="Installation";       CH_INSTALL_DESC="Guide d'installation pas a pas"
-  CH_CONFIG="Configuration";       CH_CONFIG_DESC="Parametres du tag GTM"
-  CH_SEND="Modes d'envoi";         CH_SEND_DESC="Per event vs Batched"
-  CH_QUALITY="Qualite des donnees"; CH_QUALITY_DESC="Monitoring de la qualite des donnees"
-  CH_AUTH="Authentification";      CH_AUTH_DESC="Cles API et securite"
-  CH_INGEST="Ingestion";           CH_INGEST_DESC="Endpoint POST /ingest"
-  CH_LIMITS="Limites";             CH_LIMITS_DESC="Rate limits et quotas par plan"
-  CH_ISSUES="Problemes courants";  CH_ISSUES_DESC="Debug et solutions"
-  CH_FAQ="FAQ";                    CH_FAQ_DESC="Questions frequentes"
+  CH_INTRO="Introduction";           CH_INTRO_DESC="Presentation de la plateforme Probr"
+  CH_INSTALL="Installation";         CH_INSTALL_DESC="Guide d'installation pas a pas"
+  CH_CONFIG="Configuration";         CH_CONFIG_DESC="Parametres du tag GTM"
+  CH_SEND="Modes d'envoi";           CH_SEND_DESC="Per event vs Batched"
+  CH_QUALITY="Qualite des donnees";  CH_QUALITY_DESC="Monitoring de la qualite des donnees"
+  CH_CLIENTS="Clients & Sites";      CH_CLIENTS_DESC="Gestion des clients et sites"
+  CH_PROBES="Probes";                CH_PROBES_DESC="Configuration et gestion des probes"
+  CH_DASHBOARD="Dashboard";          CH_DASHBOARD_DESC="Dashboard et centre de controle"
+  CH_ANALYTICS="Analytics";          CH_ANALYTICS_DESC="Analytics de monitoring"
+  CH_ALERTS="Alertes";               CH_ALERTS_DESC="Gestion des alertes et notifications"
+  CH_OVERVIEW="Vue d'ensemble";      CH_OVERVIEW_DESC="Reference API complete"
+  CH_AUTH="Authentification";        CH_AUTH_DESC="Cles API et securite"
+  CH_INGEST="Ingestion";             CH_INGEST_DESC="Endpoint POST /ingest"
+  CH_LIMITS="Limites";               CH_LIMITS_DESC="Limites et quotas"
+  CH_ISSUES="Problemes courants";    CH_ISSUES_DESC="Debug et solutions"
+  CH_FAQ="FAQ";                      CH_FAQ_DESC="Questions frequentes"
   # Page names
   PAGE_INTRO="Introduction a Probr"
   PAGE_INSTALL="Prerequis et installation"
   PAGE_CONFIG="Configuration du tag"
   PAGE_SEND="Per event vs Batched"
   PAGE_QUALITY="User data et E-commerce"
+  PAGE_CLIENTS="Clients et Sites"
+  PAGE_PROBES="Gestion des probes"
+  PAGE_DASHBOARD="Dashboard et centre de controle"
+  PAGE_ANALYTICS="Analytics de monitoring"
+  PAGE_ALERTS="Gestion des alertes"
+  PAGE_OVERVIEW="Reference API complete"
   PAGE_AUTH="Cles API et securite"
   PAGE_INGEST="POST /ingest"
-  PAGE_LIMITS="Rate limits et quotas"
+  PAGE_LIMITS="Limites et quotas"
   PAGE_ISSUES="Debug et solutions"
   PAGE_FAQ="Questions frequentes"
   # Messages
@@ -165,8 +197,8 @@ else
   MSG_CREATING_BOOK="Creation du livre"
   MSG_BOOK_CREATED="Book cree"
   MSG_IMPORT_DONE="Import termine avec succes !"
-  MSG_BOOKS_CREATED="4 livres crees:"
-  MSG_PAGES_IMPORTED="10 pages importees au total."
+  MSG_BOOKS_CREATED="6 livres crees:"
+  MSG_PAGES_IMPORTED="16 pages importees au total."
   MSG_ACCESS="Accedez a votre documentation"
   MSG_LANG_LABEL="Langue: Francais"
 fi
@@ -240,7 +272,7 @@ echo "  ${MSG_LANG_LABEL}"
 echo ""
 
 # --- Test connection ---
-echo "[0/4] ${MSG_TESTING}"
+echo "[0/6] ${MSG_TESTING}"
 test_response=$(curl -s -o /dev/null -w "%{http_code}" \
   "${BOOKSTACK_URL}/api/books" \
   -H "Authorization: ${AUTH}")
@@ -256,7 +288,7 @@ echo ""
 # =============================================================================
 # Book 1: Getting Started
 # =============================================================================
-echo "[1/4] ${MSG_CREATING_BOOK}: ${BOOK1_NAME}..."
+echo "[1/6] ${MSG_CREATING_BOOK}: ${BOOK1_NAME}..."
 
 result=$(create_book "$BOOK1_NAME" "$BOOK1_DESC")
 book1_id=$(extract_id "$result")
@@ -281,7 +313,7 @@ echo ""
 # =============================================================================
 # Book 2: GTM Listener
 # =============================================================================
-echo "[2/4] ${MSG_CREATING_BOOK}: ${BOOK2_NAME}..."
+echo "[2/6] ${MSG_CREATING_BOOK}: ${BOOK2_NAME}..."
 
 result=$(create_book "$BOOK2_NAME" "$BOOK2_DESC")
 book2_id=$(extract_id "$result")
@@ -311,30 +343,94 @@ echo "    Page: ${PAGE_QUALITY}"
 echo ""
 
 # =============================================================================
-# Book 3: API Reference
+# Book 3: Administration
 # =============================================================================
-echo "[3/4] ${MSG_CREATING_BOOK}: ${BOOK3_NAME}..."
+echo "[3/6] ${MSG_CREATING_BOOK}: ${BOOK3_NAME}..."
 
 result=$(create_book "$BOOK3_NAME" "$BOOK3_DESC")
 book3_id=$(extract_id "$result")
 echo "  ${MSG_BOOK_CREATED} (id: ${book3_id})"
 
+# Chapter: Clients & Sites
+result=$(create_chapter "$book3_id" "$CH_CLIENTS" "$CH_CLIENTS_DESC")
+ch_id=$(extract_id "$result")
+echo "  Chapter: ${CH_CLIENTS} (id: ${ch_id})"
+create_page "$ch_id" "$PAGE_CLIENTS" "${DOCS_DIR}/administration/clients-and-sites.md" > /dev/null
+echo "    Page: ${PAGE_CLIENTS}"
+
+# Chapter: Probes
+result=$(create_chapter "$book3_id" "$CH_PROBES" "$CH_PROBES_DESC")
+ch_id=$(extract_id "$result")
+echo "  Chapter: ${CH_PROBES} (id: ${ch_id})"
+create_page "$ch_id" "$PAGE_PROBES" "${DOCS_DIR}/administration/probes.md" > /dev/null
+echo "    Page: ${PAGE_PROBES}"
+
+echo ""
+
+# =============================================================================
+# Book 4: Monitoring & Alerts
+# =============================================================================
+echo "[4/6] ${MSG_CREATING_BOOK}: ${BOOK4_NAME}..."
+
+result=$(create_book "$BOOK4_NAME" "$BOOK4_DESC")
+book4_id=$(extract_id "$result")
+echo "  ${MSG_BOOK_CREATED} (id: ${book4_id})"
+
+# Chapter: Dashboard
+result=$(create_chapter "$book4_id" "$CH_DASHBOARD" "$CH_DASHBOARD_DESC")
+ch_id=$(extract_id "$result")
+echo "  Chapter: ${CH_DASHBOARD} (id: ${ch_id})"
+create_page "$ch_id" "$PAGE_DASHBOARD" "${DOCS_DIR}/monitoring/dashboard.md" > /dev/null
+echo "    Page: ${PAGE_DASHBOARD}"
+
+# Chapter: Analytics
+result=$(create_chapter "$book4_id" "$CH_ANALYTICS" "$CH_ANALYTICS_DESC")
+ch_id=$(extract_id "$result")
+echo "  Chapter: ${CH_ANALYTICS} (id: ${ch_id})"
+create_page "$ch_id" "$PAGE_ANALYTICS" "${DOCS_DIR}/monitoring/analytics.md" > /dev/null
+echo "    Page: ${PAGE_ANALYTICS}"
+
+# Chapter: Alerts
+result=$(create_chapter "$book4_id" "$CH_ALERTS" "$CH_ALERTS_DESC")
+ch_id=$(extract_id "$result")
+echo "  Chapter: ${CH_ALERTS} (id: ${ch_id})"
+create_page "$ch_id" "$PAGE_ALERTS" "${DOCS_DIR}/monitoring/alerts.md" > /dev/null
+echo "    Page: ${PAGE_ALERTS}"
+
+echo ""
+
+# =============================================================================
+# Book 5: API Reference
+# =============================================================================
+echo "[5/6] ${MSG_CREATING_BOOK}: ${BOOK5_NAME}..."
+
+result=$(create_book "$BOOK5_NAME" "$BOOK5_DESC")
+book5_id=$(extract_id "$result")
+echo "  ${MSG_BOOK_CREATED} (id: ${book5_id})"
+
+# Chapter: Overview
+result=$(create_chapter "$book5_id" "$CH_OVERVIEW" "$CH_OVERVIEW_DESC")
+ch_id=$(extract_id "$result")
+echo "  Chapter: ${CH_OVERVIEW} (id: ${ch_id})"
+create_page "$ch_id" "$PAGE_OVERVIEW" "${DOCS_DIR}/api-reference/endpoints-overview.md" > /dev/null
+echo "    Page: ${PAGE_OVERVIEW}"
+
 # Chapter: Authentication
-result=$(create_chapter "$book3_id" "$CH_AUTH" "$CH_AUTH_DESC")
+result=$(create_chapter "$book5_id" "$CH_AUTH" "$CH_AUTH_DESC")
 ch_id=$(extract_id "$result")
 echo "  Chapter: ${CH_AUTH} (id: ${ch_id})"
 create_page "$ch_id" "$PAGE_AUTH" "${DOCS_DIR}/api-reference/authentication.md" > /dev/null
 echo "    Page: ${PAGE_AUTH}"
 
 # Chapter: Ingestion
-result=$(create_chapter "$book3_id" "$CH_INGEST" "$CH_INGEST_DESC")
+result=$(create_chapter "$book5_id" "$CH_INGEST" "$CH_INGEST_DESC")
 ch_id=$(extract_id "$result")
 echo "  Chapter: ${CH_INGEST} (id: ${ch_id})"
 create_page "$ch_id" "$PAGE_INGEST" "${DOCS_DIR}/api-reference/ingest-endpoint.md" > /dev/null
 echo "    Page: ${PAGE_INGEST}"
 
 # Chapter: Limits
-result=$(create_chapter "$book3_id" "$CH_LIMITS" "$CH_LIMITS_DESC")
+result=$(create_chapter "$book5_id" "$CH_LIMITS" "$CH_LIMITS_DESC")
 ch_id=$(extract_id "$result")
 echo "  Chapter: ${CH_LIMITS} (id: ${ch_id})"
 create_page "$ch_id" "$PAGE_LIMITS" "${DOCS_DIR}/api-reference/rate-limits.md" > /dev/null
@@ -343,23 +439,23 @@ echo "    Page: ${PAGE_LIMITS}"
 echo ""
 
 # =============================================================================
-# Book 4: Troubleshooting
+# Book 6: Troubleshooting
 # =============================================================================
-echo "[4/4] ${MSG_CREATING_BOOK}: ${BOOK4_NAME}..."
+echo "[6/6] ${MSG_CREATING_BOOK}: ${BOOK6_NAME}..."
 
-result=$(create_book "$BOOK4_NAME" "$BOOK4_DESC")
-book4_id=$(extract_id "$result")
-echo "  ${MSG_BOOK_CREATED} (id: ${book4_id})"
+result=$(create_book "$BOOK6_NAME" "$BOOK6_DESC")
+book6_id=$(extract_id "$result")
+echo "  ${MSG_BOOK_CREATED} (id: ${book6_id})"
 
 # Chapter: Common Issues
-result=$(create_chapter "$book4_id" "$CH_ISSUES" "$CH_ISSUES_DESC")
+result=$(create_chapter "$book6_id" "$CH_ISSUES" "$CH_ISSUES_DESC")
 ch_id=$(extract_id "$result")
 echo "  Chapter: ${CH_ISSUES} (id: ${ch_id})"
 create_page "$ch_id" "$PAGE_ISSUES" "${DOCS_DIR}/troubleshooting/common-issues.md" > /dev/null
 echo "    Page: ${PAGE_ISSUES}"
 
 # Chapter: FAQ
-result=$(create_chapter "$book4_id" "$CH_FAQ" "$CH_FAQ_DESC")
+result=$(create_chapter "$book6_id" "$CH_FAQ" "$CH_FAQ_DESC")
 ch_id=$(extract_id "$result")
 echo "  Chapter: ${CH_FAQ} (id: ${ch_id})"
 create_page "$ch_id" "$PAGE_FAQ" "${DOCS_DIR}/troubleshooting/faq.md" > /dev/null
@@ -375,6 +471,8 @@ echo "    - ${BOOK1_NAME}  (id: ${book1_id})"
 echo "    - ${BOOK2_NAME}  (id: ${book2_id})"
 echo "    - ${BOOK3_NAME}  (id: ${book3_id})"
 echo "    - ${BOOK4_NAME}  (id: ${book4_id})"
+echo "    - ${BOOK5_NAME}  (id: ${book5_id})"
+echo "    - ${BOOK6_NAME}  (id: ${book6_id})"
 echo ""
 echo "  ${MSG_PAGES_IMPORTED}"
 echo ""

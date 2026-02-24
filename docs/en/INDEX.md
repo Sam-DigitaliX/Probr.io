@@ -17,14 +17,28 @@ This file describes the page organization for BookStack import.
 | Send Modes | Per event vs Batched | `gtm-listener/send-modes.md` |
 | Data Quality | User data and E-commerce | `gtm-listener/data-quality.md` |
 
-### Book 3: API Reference
+### Book 3: Administration
 | Chapter | Page | File |
 |---|---|---|
+| Clients & Sites | Client and site management | `administration/clients-and-sites.md` |
+| Probes | Probe configuration and management | `administration/probes.md` |
+
+### Book 4: Monitoring & Alerts
+| Chapter | Page | File |
+|---|---|---|
+| Dashboard | Dashboard and control room | `monitoring/dashboard.md` |
+| Analytics | Monitoring analytics | `monitoring/analytics.md` |
+| Alerts | Alert management and notifications | `monitoring/alerts.md` |
+
+### Book 5: API Reference
+| Chapter | Page | File |
+|---|---|---|
+| Overview | Complete API reference | `api-reference/endpoints-overview.md` |
 | Authentication | API keys and security | `api-reference/authentication.md` |
 | Ingestion | POST /ingest | `api-reference/ingest-endpoint.md` |
-| Limits | Rate limits and quotas | `api-reference/rate-limits.md` |
+| Limits | Limits and quotas | `api-reference/rate-limits.md` |
 
-### Book 4: Troubleshooting
+### Book 6: Troubleshooting
 | Chapter | Page | File |
 |---|---|---|
 | Common Issues | Debug and solutions | `troubleshooting/common-issues.md` |

@@ -5,18 +5,28 @@
 Before you begin, make sure you have:
 
 1. **A working Google Tag Manager Server-Side container** receiving traffic
-2. **A Probr account** with at least one site configured
+2. **A running Probr instance** (self-hosted via Docker) with at least one site configured
 3. **Editor access** (or higher) to the server-side GTM container
 
 ## Step 1: Create Your Site in Probr
 
-1. Log in to your [Probr dashboard](https://app.probr.io)
-2. Click **Add a site**
-3. Fill in:
-   - **Site name**: your property name (e.g., "mysite.com - Production")
-   - **Site URL**: the main URL of your website
-4. Click **Create**
-5. Copy the **Ingest Key** displayed — you'll need it in the next step
+Use the Probr API to create a client and site:
+
+```bash
+# 1. Create a client
+curl -X POST https://your-probr-instance/api/clients \
+  -H "Content-Type: application/json" \
+  -d '{"name": "My Company", "email": "ops@mycompany.com"}'
+
+# 2. Create a site (use the client_id from the response above)
+curl -X POST https://your-probr-instance/api/sites \
+  -H "Content-Type: application/json" \
+  -d '{"client_id": "<client-uuid>", "name": "mysite.com - Production", "url": "https://mysite.com", "sgtm_url": "https://sgtm.mysite.com"}'
+```
+
+The response will include an auto-generated **Ingest Key** (`ingest_key` field) — you'll need it in the next step.
+
+See [Clients & Sites](../administration/clients-and-sites.md) for the full API reference.
 
 ## Step 2: Install the Probr Listener Tag
 
@@ -44,8 +54,8 @@ Before you begin, make sure you have:
 
 | Field | Value |
 |---|---|
-| **Probr Ingest Endpoint** | `https://api.probr.io/ingest` (or your self-hosted endpoint) |
-| **Probr Ingest Key** | The key copied in Step 1 |
+| **Probr Ingest Endpoint** | `https://your-probr-instance/api/ingest` |
+| **Probr Ingest Key** | The `ingest_key` from Step 1 |
 | **Track user data quality** | Checked (recommended) |
 | **Send mode** | Per event (recommended) |
 
