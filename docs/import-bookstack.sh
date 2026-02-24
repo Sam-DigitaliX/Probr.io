@@ -51,11 +51,7 @@ BOOKSTACK_URL="${BOOKSTACK_URL%/}"
 AUTH="Token ${TOKEN_ID}:${TOKEN_SECRET}"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
-if [[ "$LANG_OPT" == "en" ]]; then
-  DOCS_DIR="${SCRIPT_DIR}/en"
-else
-  DOCS_DIR="${SCRIPT_DIR}"
-fi
+DOCS_DIR="${SCRIPT_DIR}/${LANG_OPT}"
 
 # Verify docs directory exists
 if [[ ! -d "$DOCS_DIR/getting-started" ]]; then
