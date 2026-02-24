@@ -1,5 +1,5 @@
 <!-- ============================================================
-     Probr.io — BookStack Custom Theme
+     Probr.io — BookStack Custom Theme (Minimal)
      Paste this into: Settings > Customization > Custom HTML Head Content
      ============================================================ -->
 
@@ -8,112 +8,53 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-<!-- Favicon override (optional — uncomment and set your URL)
-<link rel="icon" href="https://your-cdn.com/probr-favicon.ico" type="image/x-icon">
--->
-
 <style>
 /* ================================================================
    0. CSS CUSTOM PROPERTIES — Probr Design Tokens
    ================================================================ */
 :root {
-  /* Brand gradient stops */
-  --probr-purple:  #833AB4;
-  --probr-red:     #FD1D1D;
-  --probr-orange:  #FCB045;
+  --probr-purple: #833AB4;
+  --probr-red:    #FD1D1D;
+  --probr-orange: #FCB045;
+  --probr-gradient: linear-gradient(135deg, #833AB4, #FD1D1D, #FCB045);
 
-  /* Semantic */
-  --color-success: hsl(142 71% 45%);
-  --color-warning: hsl(38 92% 50%);
-  --color-danger:  hsl(0 84% 60%);
-  --color-info:    hsl(217 91% 60%);
-
-  /* Radius */
   --radius-sm: 8px;
   --radius-md: 10px;
   --radius-lg: 12px;
   --radius-xl: 16px;
 
-  /* Transitions */
   --transition-fast: 150ms ease;
   --transition-base: 250ms ease;
-  --transition-slow: 400ms ease;
-
-  /* Light mode defaults */
-  --glass-fill:      rgba(0, 0, 0, 0.03);
-  --glass-border:    rgba(0, 0, 0, 0.08);
-  --glass-hover:     rgba(0, 0, 0, 0.05);
-  --glass-highlight: rgba(0, 0, 0, 0.08);
-  --shadow-card:     0 2px 12px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.06);
-  --glow-purple:     0 0 30px rgba(131,58,180,0.10);
-  --glow-orange:     0 0 20px rgba(252,176,69,0.08);
-  --text-link:       #7c3aed;
-  --text-link-hover: #6d28d9;
-}
-
-/* Dark mode overrides — scoped to BookStack's dark mode class */
-.dark-mode {
-  --glass-fill:      rgba(255, 255, 255, 0.04);
-  --glass-border:    rgba(255, 255, 255, 0.08);
-  --glass-hover:     rgba(255, 255, 255, 0.06);
-  --glass-highlight: rgba(255, 255, 255, 0.10);
-  --shadow-card:     0 4px 24px rgba(0,0,0,0.30), 0 1px 3px rgba(0,0,0,0.20);
-  --glow-purple:     0 0 40px rgba(131,58,180,0.15);
-  --glow-orange:     0 0 30px rgba(252,176,69,0.10);
-  --text-link:       #a855f7;
-  --text-link-hover: #c084fc;
 }
 
 /* ================================================================
-   1. BASE & TYPOGRAPHY
+   1. TYPOGRAPHY
    ================================================================ */
 body {
   font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
 h1, h2, h3, h4, h5, h6,
-.shelf-name, .book-name {
+.shelf-name, .book-name,
+.entity-list-item .entity-list-item--name,
+.card h2 a, .card h3 a,
+.grid-card .grid-card-content a {
   font-family: 'Space Grotesk', 'Inter', system-ui, sans-serif !important;
-  letter-spacing: -0.01em;
 }
 
 h1 { font-weight: 700 !important; }
 h2 { font-weight: 600 !important; }
 
-a {
-  color: var(--text-link) !important;
-  text-decoration: none !important;
-  transition: color var(--transition-fast) !important;
-}
-a:hover {
-  color: var(--text-link-hover) !important;
-}
-
-hr {
-  border-color: var(--glass-border) !important;
-}
-
-/* Selection */
-
-::selection {
-  background: rgba(131, 58, 180, 0.35);
-  color: white;
+.page-content {
+  line-height: 1.75 !important;
 }
 
 /* ================================================================
-   2. HEADER / NAVIGATION
+   2. BRAND GRADIENT ACCENTS — small touches only
    ================================================================ */
-header, .header {
-  backdrop-filter: blur(20px) saturate(1.2) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(1.2) !important;
-  border-bottom: 1px solid var(--glass-border) !important;
-  position: relative;
-  z-index: 50;
-}
 
-/* Brand gradient accent line at top of header */
+/* Gradient line at the very top of the header */
 header::before, .header::before {
   content: '';
   position: absolute;
@@ -121,162 +62,13 @@ header::before, .header::before {
   left: 0;
   right: 0;
   height: 2px;
-  background: linear-gradient(90deg,
-    var(--probr-purple),
-    var(--probr-red),
-    var(--probr-orange)
-  );
-  z-index: 51;
+  background: var(--probr-gradient);
+  z-index: 100;
+  pointer-events: none;
 }
-
-/* Search bar in header */
-header input[type="text"],
-header .search-box input,
-.header input[type="text"] {
-  background: var(--glass-fill) !important;
-  border: 1px solid var(--glass-border) !important;
-  border-radius: var(--radius-md) !important;
-  backdrop-filter: blur(12px) !important;
-  transition: border-color var(--transition-fast), box-shadow var(--transition-fast) !important;
-}
-header input[type="text"]:focus,
-.header input[type="text"]:focus {
-  border-color: rgba(131, 58, 180, 0.5) !important;
-  box-shadow: 0 0 0 3px rgba(131, 58, 180, 0.15) !important;
-  outline: none !important;
-}
-
-/* Header dropdown menus */
-header .dropdown-menu, .header .dropdown-menu {
-  border: 1px solid var(--glass-border) !important;
-  border-radius: var(--radius-md) !important;
-  box-shadow: var(--shadow-card) !important;
-  backdrop-filter: blur(20px) !important;
-}
-
-/* ================================================================
-   3. SIDEBAR
-   ================================================================ */
-.tri-layout-left,
-.tri-layout-right,
-.sidebar,
-[class*="sidebar"] {
-  background: rgba(255, 255, 255, 0.02) !important;
-  border-color: var(--glass-border) !important;
-}
-
-.tri-layout-left-contents,
-.tri-layout-right-contents {
-  background: transparent !important;
-}
-
-/* ================================================================
-   4. MAIN CONTENT AREA
-   ================================================================ */
-.content-wrap,
-.tri-layout-middle,
-.tri-layout-middle-contents,
-.page-content {
-  background: transparent !important;
+header, .header {
   position: relative;
-  z-index: 1;
 }
-
-/* Page content specifics */
-.page-content {
-  line-height: 1.75 !important;
-}
-
-.page-content h1,
-.page-content h2,
-.page-content h3,
-.page-content h4 {
-  margin-top: 1.8em !important;
-  padding-bottom: 0.3em !important;
-}
-
-.page-content h2 {
-  border-bottom: 1px solid var(--glass-border) !important;
-}
-
-/* ================================================================
-   5. CARDS — Glassmorphism
-   ================================================================ */
-.card,
-.bookshelf-grid .grid-card,
-.book-grid .grid-card,
-.content-panel {
-  background: var(--glass-fill) !important;
-  border: 1px solid var(--glass-border) !important;
-  border-radius: var(--radius-lg) !important;
-  box-shadow: var(--shadow-card) !important;
-  backdrop-filter: blur(16px) !important;
-  -webkit-backdrop-filter: blur(16px) !important;
-  transition: transform var(--transition-base),
-              box-shadow var(--transition-base),
-              border-color var(--transition-base) !important;
-  position: relative;
-  z-index: 1;
-}
-
-.card:hover,
-.bookshelf-grid .grid-card:hover,
-.book-grid .grid-card:hover {
-  transform: translateY(-2px) !important;
-  border-color: rgba(131, 58, 180, 0.20) !important;
-  box-shadow: var(--shadow-card), var(--glow-purple) !important;
-}
-
-.card h2 a, .card h3 a,
-.grid-card .grid-card-content a {
-  font-family: 'Space Grotesk', 'Inter', system-ui, sans-serif !important;
-}
-
-/* Card footer / meta */
-.card .card-footer,
-.card .meta-info {
-  border-top: 1px solid var(--glass-border) !important;
-}
-
-/* ================================================================
-   6. ENTITY LISTS
-   ================================================================ */
-.entity-list-item,
-.entity-list-item-basic {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04) !important;
-  padding: 12px 16px !important;
-  border-radius: var(--radius-sm) !important;
-  transition: background var(--transition-fast) !important;
-}
-
-.entity-list-item:hover,
-.entity-list-item-basic:hover {
-  background: var(--glass-hover) !important;
-}
-
-.entity-list-item .entity-list-item--name {
-  font-family: 'Space Grotesk', 'Inter', system-ui, sans-serif !important;
-}
-
-/* Ensure all interactive elements stay above decorative layers */
-a, button, input, select, textarea,
-.entity-list-item a,
-.card a,
-.grid-card a {
-  position: relative;
-  z-index: 2;
-}
-
-/* Entity type icons / color accents */
-.entity-list-item .icon-book,
-.entity-list-item .icon-page,
-.entity-list-item .icon-chapter {
-  opacity: 0.7;
-}
-
-/* ================================================================
-   7. BUTTONS
-   ================================================================ */
 
 /* Primary buttons — brand gradient */
 .button.primary,
@@ -284,7 +76,7 @@ button.primary,
 .btn-primary,
 input[type="submit"].primary,
 a.button.primary {
-  background: linear-gradient(135deg, var(--probr-purple), var(--probr-red), var(--probr-orange)) !important;
+  background: var(--probr-gradient) !important;
   border: none !important;
   color: white !important;
   font-family: 'Space Grotesk', 'Inter', system-ui, sans-serif !important;
@@ -294,7 +86,7 @@ a.button.primary {
   transition: transform var(--transition-fast),
               box-shadow var(--transition-fast),
               filter var(--transition-fast) !important;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .button.primary:hover,
@@ -311,58 +103,73 @@ button.primary:active {
   filter: brightness(0.95) !important;
 }
 
-/* Secondary / outline buttons — glass style */
-.button,
-button:not(.primary):not(.danger),
-.btn,
-a.button:not(.primary):not(.danger) {
-  border: 1px solid var(--glass-border) !important;
-  border-radius: var(--radius-md) !important;
-  transition: background var(--transition-fast),
-              border-color var(--transition-fast),
-              color var(--transition-fast) !important;
+/* Page loading bar — brand gradient */
+#nprogress .bar {
+  background: var(--probr-gradient) !important;
 }
 
-.button:hover,
-button:not(.primary):not(.danger):hover,
-.btn:hover {
-  border-color: rgba(131, 58, 180, 0.3) !important;
+/* Spinner */
+.loading-container .spinner {
+  border-color: rgba(131, 58, 180, 0.2) !important;
+  border-top-color: var(--probr-purple) !important;
 }
 
-/* Danger buttons */
-.button.danger,
-button.danger,
-.btn-danger {
-  background: rgba(239, 68, 68, 0.15) !important;
-  border: 1px solid rgba(239, 68, 68, 0.3) !important;
-  color: var(--color-danger) !important;
-  border-radius: var(--radius-md) !important;
+/* Selection highlight */
+::selection {
+  background: rgba(131, 58, 180, 0.3);
+  color: white;
 }
 
-.button.danger:hover,
-button.danger:hover {
-  background: rgba(239, 68, 68, 0.25) !important;
-  border-color: rgba(239, 68, 68, 0.5) !important;
+/* Checkbox accent */
+input[type="checkbox"]:checked {
+  accent-color: var(--probr-purple) !important;
 }
 
 /* ================================================================
-   8. FORMS & INPUTS
+   3. BORDER RADIUS — rounded everywhere
    ================================================================ */
-input[type="text"],
-input[type="email"],
-input[type="password"],
-input[type="search"],
-input[type="url"],
-input[type="number"],
-select,
-textarea {
-  border: 1px solid var(--glass-border) !important;
-  border-radius: var(--radius-md) !important;
-  font-family: 'Inter', system-ui, sans-serif !important;
-  transition: border-color var(--transition-fast),
-              box-shadow var(--transition-fast) !important;
+.card,
+.bookshelf-grid .grid-card,
+.book-grid .grid-card,
+.content-panel {
+  border-radius: var(--radius-lg) !important;
 }
 
+.button, button, .btn, a.button,
+input[type="text"], input[type="email"], input[type="password"],
+input[type="search"], input[type="url"], input[type="number"],
+select, textarea {
+  border-radius: var(--radius-md) !important;
+}
+
+.dropdown-menu,
+.popup-body,
+[class*="dropdown"] ul {
+  border-radius: var(--radius-md) !important;
+}
+
+.popup-body,
+.modal-content,
+[overlay] .popup-body {
+  border-radius: var(--radius-xl) !important;
+}
+
+.notification, .alert, .callout {
+  border-radius: var(--radius-md) !important;
+}
+
+.page-content img {
+  border-radius: var(--radius-md) !important;
+}
+
+.entity-list-item,
+.entity-list-item-basic {
+  border-radius: var(--radius-sm) !important;
+}
+
+/* ================================================================
+   4. FOCUS RINGS — purple accent
+   ================================================================ */
 input:focus,
 select:focus,
 textarea:focus {
@@ -371,163 +178,68 @@ textarea:focus {
   outline: none !important;
 }
 
-/* Checkboxes & toggles */
-input[type="checkbox"]:checked {
-  accent-color: var(--probr-purple) !important;
-}
-
 /* ================================================================
-   9. BREADCRUMBS
+   5. GRADIENT BORDER ACCENTS — subtle touches
    ================================================================ */
-.breadcrumbs,
-.breadcrumb-listing {
-  background: transparent !important;
+
+/* Blockquote left border */
+blockquote, .page-content blockquote {
+  border-left: 3px solid var(--probr-purple) !important;
 }
 
-.breadcrumbs a,
-.breadcrumb-listing a {
-  color: var(--text-muted) !important;
+/* Page heading separator */
+.page-content h2 {
+  padding-bottom: 0.3em !important;
 }
 
-.breadcrumbs a:hover,
-.breadcrumb-listing a:hover {
-  color: var(--text-link) !important;
-}
-
-.breadcrumbs .separator {
-  color: var(--text-muted) !important;
-  opacity: 0.5;
-}
-
-/* ================================================================
-   10. TABLES
-   ================================================================ */
-table {
-  border-collapse: separate !important;
-  border-spacing: 0 !important;
-}
-
-table thead th {
-  font-family: 'Space Grotesk', 'Inter', system-ui, sans-serif !important;
-  font-weight: 600 !important;
-  border-bottom: 1px solid var(--glass-border) !important;
-  text-transform: uppercase !important;
-  font-size: 0.75em !important;
-  letter-spacing: 0.05em !important;
-}
-
-table tbody tr {
-  transition: background var(--transition-fast) !important;
-}
-
-table tbody tr:hover {
-  background: rgba(255, 255, 255, 0.03) !important;
-}
-
-table td, table th {
-  border-color: rgba(255, 255, 255, 0.04) !important;
-}
-
-/* ================================================================
-   11. CODE BLOCKS
-   ================================================================ */
-code {
-  background: rgba(131, 58, 180, 0.10) !important;
-  color: #c084fc !important;
-  padding: 2px 6px !important;
-  border-radius: 4px !important;
-  font-family: ui-monospace, 'Cascadia Code', 'Fira Code', monospace !important;
-  font-size: 0.9em !important;
-}
-
-pre {
-  background: var(--bg-raised) !important;
-  border: 1px solid var(--glass-border) !important;
-  border-radius: var(--radius-md) !important;
-  padding: 16px 20px !important;
-  overflow-x: auto;
-}
-
-pre code {
-  background: transparent !important;
-  color: var(--text-secondary) !important;
-  padding: 0 !important;
-}
-
-/* ================================================================
-   12. TAGS
-   ================================================================ */
+/* Tags — pill style with purple tint */
 .tag-item,
 .tag-name,
 span.tag {
-  background: rgba(131, 58, 180, 0.12) !important;
-  border: 1px solid rgba(131, 58, 180, 0.25) !important;
-  color: #c084fc !important;
+  background: rgba(131, 58, 180, 0.10) !important;
+  border: 1px solid rgba(131, 58, 180, 0.20) !important;
+  color: #9333ea !important;
   border-radius: 9999px !important;
   font-size: 0.75em !important;
   padding: 2px 10px !important;
   font-weight: 500 !important;
 }
 
-/* ================================================================
-   13. DROPDOWNS & POPUPS
-   ================================================================ */
-.dropdown-menu,
-.popup-body,
-[class*="dropdown"] ul {
-  border: 1px solid var(--glass-border) !important;
+/* Dark mode tag color adjustment */
+.dark-mode .tag-item,
+.dark-mode .tag-name,
+.dark-mode span.tag {
+  color: #c084fc !important;
+}
+
+/* Inline code — purple tint */
+code {
+  background: rgba(131, 58, 180, 0.08) !important;
+  padding: 2px 6px !important;
+  border-radius: 4px !important;
+  font-family: ui-monospace, 'Cascadia Code', 'Fira Code', monospace !important;
+  font-size: 0.9em !important;
+}
+
+.dark-mode code {
+  background: rgba(131, 58, 180, 0.15) !important;
+  color: #c084fc !important;
+}
+
+/* Code blocks */
+pre {
   border-radius: var(--radius-md) !important;
-  box-shadow: var(--shadow-card) !important;
-  backdrop-filter: blur(20px) !important;
+  padding: 16px 20px !important;
 }
 
-.dropdown-menu a:hover,
-.dropdown-menu button:hover {
-  background: var(--glass-hover) !important;
-}
-
-/* ================================================================
-   14. NOTIFICATIONS & ALERTS
-   ================================================================ */
-.notification,
-.alert {
-  border-radius: var(--radius-md) !important;
-  border: 1px solid var(--glass-border) !important;
-  backdrop-filter: blur(12px) !important;
-}
-
-.notification.pos,
-.alert-success {
-  background: rgba(34, 197, 94, 0.10) !important;
-  border-color: rgba(34, 197, 94, 0.25) !important;
-  color: var(--color-success) !important;
-}
-
-.notification.warning,
-.alert-warning {
-  background: rgba(245, 158, 11, 0.10) !important;
-  border-color: rgba(245, 158, 11, 0.25) !important;
-  color: var(--color-warning) !important;
-}
-
-.notification.neg,
-.alert-danger {
-  background: rgba(239, 68, 68, 0.10) !important;
-  border-color: rgba(239, 68, 68, 0.25) !important;
-  color: var(--color-danger) !important;
-}
-
-.notification.info,
-.alert-info {
-  background: rgba(59, 130, 246, 0.10) !important;
-  border-color: rgba(59, 130, 246, 0.25) !important;
-  color: var(--color-info) !important;
+pre code {
+  background: transparent !important;
+  padding: 0 !important;
 }
 
 /* ================================================================
-   15. SCROLL BAR
+   6. DARK MODE SCROLLBAR
    ================================================================ */
-/* Scrollbar — dark mode only */
 .dark-mode ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -548,150 +260,6 @@ span.tag {
 
 .dark-mode * {
   scrollbar-width: thin;
-  scrollbar-color: rgba(255,255,255,0.12) transparent;
-}
-
-/* ================================================================
-   16. SHELF / BOOK COVERS & GRID
-   ================================================================ */
-.bookshelf-grid .grid-card .grid-card-content,
-.book-grid .grid-card .grid-card-content {
-  background: transparent !important;
-}
-
-.bookshelf-grid .grid-card .grid-card-header,
-.book-grid .grid-card .grid-card-header {
-  position: relative;
-  overflow: hidden;
-}
-
-/* Subtle gradient overlay on cover images */
-.grid-card .grid-card-header::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 40%;
-  background: linear-gradient(to top, var(--bg-base), transparent);
-  pointer-events: none !important;
-}
-
-/* ================================================================
-   17. PAGE EDITOR (for editing pages)
-   ================================================================ */
-.editor-toolbar {
-  border-bottom: 1px solid var(--glass-border) !important;
-}
-
-/* ================================================================
-   18. MODAL / DIALOG
-   ================================================================ */
-.popup-body,
-.modal-content,
-[overlay] .popup-body {
-  border: 1px solid var(--glass-border) !important;
-  border-radius: var(--radius-xl) !important;
-  box-shadow: var(--shadow-card) !important;
-  backdrop-filter: blur(24px) !important;
-}
-
-/* ================================================================
-   19. SHELF COLOR STRIPS — use brand gradient
-   ================================================================ */
-.tri-layout-left .entity-list-item .icon,
-.entity-color-strip {
-  /* Override BookStack shelf color strips with Probr gradient */
-}
-
-/* ================================================================
-   20. HOME PAGE HERO — gradient banner
-   ================================================================ */
-.home-default .banner {
-  border: 1px solid var(--glass-border) !important;
-  border-radius: var(--radius-xl) !important;
-}
-
-/* ================================================================
-   21. FOOTER
-   ================================================================ */
-footer, .footer {
-  border-top: 1px solid var(--glass-border) !important;
-}
-
-/* ================================================================
-   22. IMAGES in page content
-   ================================================================ */
-.page-content img {
-  border-radius: var(--radius-md) !important;
-  border: 1px solid var(--glass-border) !important;
-}
-
-.page-content img:hover {
-  border-color: rgba(131, 58, 180, 0.3) !important;
-  box-shadow: var(--glow-purple) !important;
-}
-
-/* ================================================================
-   23. BLOCK QUOTES
-   ================================================================ */
-blockquote, .page-content blockquote {
-  border-left: 3px solid var(--probr-purple) !important;
-  background: rgba(131, 58, 180, 0.06) !important;
-  border-radius: 0 var(--radius-sm) var(--radius-sm) 0 !important;
-  padding: 12px 16px !important;
-  color: var(--text-secondary) !important;
-}
-
-/* ================================================================
-   24. CALLOUTS (info, warning, danger, success)
-   ================================================================ */
-.callout {
-  border-radius: var(--radius-md) !important;
-  border-width: 1px !important;
-  border-style: solid !important;
-}
-
-.callout.info {
-  background: rgba(59, 130, 246, 0.08) !important;
-  border-color: rgba(59, 130, 246, 0.25) !important;
-}
-
-.callout.success {
-  background: rgba(34, 197, 94, 0.08) !important;
-  border-color: rgba(34, 197, 94, 0.25) !important;
-}
-
-.callout.warning {
-  background: rgba(245, 158, 11, 0.08) !important;
-  border-color: rgba(245, 158, 11, 0.25) !important;
-}
-
-.callout.danger {
-  background: rgba(239, 68, 68, 0.08) !important;
-  border-color: rgba(239, 68, 68, 0.25) !important;
-}
-
-/* ================================================================
-   25. LOADING / PROGRESS
-   ================================================================ */
-.loading-container .spinner {
-  border-color: rgba(131, 58, 180, 0.2) !important;
-  border-top-color: var(--probr-purple) !important;
-}
-
-/* Page loading bar */
-#nprogress .bar {
-  background: linear-gradient(90deg, var(--probr-purple), var(--probr-red), var(--probr-orange)) !important;
-}
-
-/* ================================================================
-   26. PRINT — reset to clean output
-   ================================================================ */
-@media print {
-  .card {
-    box-shadow: none !important;
-    backdrop-filter: none !important;
-  }
+  scrollbar-color: rgba(255, 255, 255, 0.12) transparent;
 }
 </style>
