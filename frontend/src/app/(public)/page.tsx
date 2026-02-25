@@ -21,6 +21,9 @@ import {
   ExternalLink,
   Menu,
   X,
+  Zap,
+  Layers,
+  ShieldCheck,
 } from "lucide-react";
 
 const features = [
@@ -73,10 +76,10 @@ const HeartbeatCanvas = dynamic(
 );
 
 const stats = [
-  { value: "99.9%", label: "Uptime monitoring" },
-  { value: "<30s", label: "Alert latency" },
-  { value: "7", label: "Probe types" },
-  { value: "24/7", label: "Automated checks" },
+  { value: "99.9%", label: "Uptime monitoring", icon: ShieldCheck, accent: "from-emerald-500/20 to-emerald-500/5" },
+  { value: "<30s", label: "Alert latency", icon: Zap, accent: "from-amber-500/20 to-amber-500/5" },
+  { value: "7", label: "Probe types", icon: Layers, accent: "from-purple-500/20 to-purple-500/5" },
+  { value: "24/7", label: "Automated checks", icon: Activity, accent: "from-blue-500/20 to-blue-500/5" },
 ];
 
 /* ──────────────────────── Resources dropdown items ──────────────────────── */
@@ -497,14 +500,32 @@ export default function LandingPage() {
 
       {/* ── Stats ─────────────────────────────────────── */}
       <section className="relative py-16 md:py-20">
-        <div className="mx-auto max-w-4xl px-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {stats.map((stat) => (
-              <div key={stat.label} className="text-center">
-                <p className="text-3xl font-bold text-gradient-primary">
+        <div className="mx-auto max-w-5xl px-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+            {stats.map((stat, i) => (
+              <div
+                key={stat.label}
+                className="glass-card group relative p-5 md:p-6 text-center transition-all duration-300 hover:border-white/[0.12] hover:-translate-y-1"
+              >
+                {/* Subtle gradient accent at top */}
+                <div
+                  className={`absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r ${stat.accent} opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
+                />
+
+                {/* Icon */}
+                <div className="flex justify-center mb-3">
+                  <div className="flex h-10 w-10 md:h-12 md:w-12 items-center justify-center rounded-xl bg-white/[0.04] border border-white/[0.06]">
+                    <stat.icon className="h-5 w-5 md:h-6 md:w-6 text-muted-foreground group-hover:text-primary transition-colors duration-300" />
+                  </div>
+                </div>
+
+                {/* Value */}
+                <p className="text-2xl md:text-3xl font-bold text-gradient-primary leading-none">
                   {stat.value}
                 </p>
-                <p className="mt-1 text-sm text-muted-foreground">
+
+                {/* Label */}
+                <p className="mt-2 text-xs md:text-sm text-muted-foreground">
                   {stat.label}
                 </p>
               </div>
