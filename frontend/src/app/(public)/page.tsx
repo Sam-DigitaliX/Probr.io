@@ -482,6 +482,16 @@ export default function LandingPage() {
 
       {/* ── Card Beam Carousel ──────────────────────────── */}
       <div className="relative -mt-4 mb-4">
+        <div className="text-center pt-16 md:pt-20 pb-2 px-6">
+          <h2 className="text-3xl md:text-4xl font-bold tracking-tight">
+            Full-stack{" "}
+            <span className="text-gradient-primary">monitoring coverage</span>
+          </h2>
+          <p className="mt-4 text-muted-foreground max-w-xl mx-auto">
+            Every layer of your tracking infrastructure — from uptime probes to
+            consent compliance — monitored in real time.
+          </p>
+        </div>
         <CardBeamSection />
       </div>
 
