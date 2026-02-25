@@ -243,6 +243,12 @@ export default function LandingPage() {
           {/* ── Desktop: CTA ── */}
           <div className="hidden lg:flex items-center gap-3">
             <Link
+              href="/demo"
+              className="px-4 py-2 text-sm font-medium text-foreground/70 hover:text-foreground transition-colors"
+            >
+              Live Demo
+            </Link>
+            <Link
               href="/login"
               className="px-4 py-2 text-sm font-medium text-foreground/70 hover:text-foreground transition-colors"
             >
@@ -365,6 +371,13 @@ export default function LandingPage() {
               {/* CTA mobile */}
               <div className="flex flex-col gap-3 mt-4 pt-4 border-t border-white/[0.06]">
                 <Link
+                  href="/demo"
+                  className="py-2.5 text-center text-sm font-medium text-foreground/70 hover:text-foreground transition-colors"
+                  onClick={closeMobile}
+                >
+                  Live Demo
+                </Link>
+                <Link
                   href="/login"
                   className="py-2.5 text-center text-sm font-medium text-foreground/70 hover:text-foreground transition-colors"
                   onClick={closeMobile}
@@ -435,7 +448,7 @@ export default function LandingPage() {
               Built for agencies managing multiple client setups.
             </p>
 
-            <div className="flex items-center justify-center gap-4 mt-10 animate-fade-in-up animate-delay-300">
+            <div className="flex flex-wrap items-center justify-center gap-4 mt-10 animate-fade-in-up animate-delay-300">
               <Link
                 href="/signup"
                 className="ev-btn-primary inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold shadow-lg shadow-primary/25"
@@ -444,10 +457,11 @@ export default function LandingPage() {
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
-                href="/login"
+                href="/demo"
                 className="inline-flex items-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.05] px-6 py-3 text-sm font-semibold text-foreground hover:bg-white/[0.08] transition-all"
               >
-                Log in to Dashboard
+                <Eye className="h-4 w-4 icon-grad" />
+                Live Demo
               </Link>
             </div>
 
@@ -654,13 +668,22 @@ export default function LandingPage() {
               Stop discovering tracking failures from angry clients. Start
               monitoring proactively with Probr.
             </p>
-            <Link
-              href="/signup"
-              className="ev-btn-primary inline-flex items-center gap-2 px-8 py-3.5 text-sm font-semibold shadow-lg shadow-primary/25"
-            >
-              Get Started Free
-              <ArrowRight className="h-4 w-4" />
-            </Link>
+            <div className="flex flex-wrap items-center justify-center gap-4">
+              <Link
+                href="/signup"
+                className="ev-btn-primary inline-flex items-center gap-2 px-8 py-3.5 text-sm font-semibold shadow-lg shadow-primary/25"
+              >
+                Get Started Free
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+              <Link
+                href="/demo"
+                className="inline-flex items-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.05] px-6 py-3.5 text-sm font-semibold text-foreground hover:bg-white/[0.08] transition-all"
+              >
+                <Eye className="h-4 w-4 icon-grad" />
+                Voir la d&eacute;mo
+              </Link>
+            </div>
           </div>
         </div>
       </div>
