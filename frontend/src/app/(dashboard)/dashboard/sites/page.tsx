@@ -103,13 +103,13 @@ export default function SitesPage() {
         }
       />
 
-      <div className="p-8 space-y-6">
+      <div className="p-4 sm:p-6 lg:p-8 space-y-4 sm:space-y-6">
         {/* Filters */}
         <div className="flex items-center gap-3">
           <Select
             value={filterClient ?? ""}
             onChange={(e) => setFilterClient(e.target.value ? Number(e.target.value) : undefined)}
-            className="w-[220px]"
+            className="w-full sm:w-[220px]"
           >
             <option value="">All clients</option>
             {clients.map((c) => (
@@ -131,84 +131,147 @@ export default function SitesPage() {
             }
           />
         ) : (
-          <Card>
-            <CardContent className="p-0">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Site</TableHead>
-                    <TableHead>Client</TableHead>
-                    <TableHead>URL</TableHead>
-                    <TableHead>Tags</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Created</TableHead>
-                    <TableHead className="w-[100px]">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {sites.map((site) => (
-                    <TableRow key={site.id}>
-                      <TableCell className="font-medium">{site.name}</TableCell>
-                      <TableCell className="text-sm text-muted-foreground">
-                        {clientName(site.client_id)}
-                      </TableCell>
-                      <TableCell>
-                        <a
-                          href={site.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
-                        >
-                          {parseHostname(site.url)}
-                          <ExternalLink className="h-3 w-3" />
-                        </a>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex flex-wrap gap-1">
-                          {site.gtm_ids.map((id) => (
-                            <Badge key={id} variant="outline" className="text-[10px] font-mono">{id}</Badge>
-                          ))}
-                          {site.ga4_ids.map((id) => (
-                            <Badge key={id} variant="secondary" className="text-[10px] font-mono">{id}</Badge>
-                          ))}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant={site.is_active ? "success" : "outline"}>
-                          {site.is_active ? "Active" : "Inactive"}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-sm text-muted-foreground">
-                        {formatDate(site.created_at)}
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-1">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => {
-                              setEditSite(site);
-                              setForm({ client_id: site.client_id, name: site.name, url: site.url });
-                            }}
-                          >
-                            <Pencil className="h-3.5 w-3.5" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="text-destructive hover:text-destructive"
-                            onClick={() => handleDelete(site.id)}
-                          >
-                            <Trash2 className="h-3.5 w-3.5" />
-                          </Button>
-                        </div>
-                      </TableCell>
+          <>
+            {/* Mobile: Card list */}
+            <div className="space-y-3 md:hidden">
+              {sites.map((site) => (
+                <div key={site.id} className="glass-card p-4 space-y-3">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <p className="font-medium truncate">{site.name}</p>
+                      <p className="text-xs text-muted-foreground truncate">{clientName(site.client_id)}</p>
+                    </div>
+                    <Badge variant={site.is_active ? "success" : "outline"} className="shrink-0">
+                      {site.is_active ? "Active" : "Inactive"}
+                    </Badge>
+                  </div>
+                  <a
+                    href={site.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-sm text-primary hover:underline truncate"
+                  >
+                    {parseHostname(site.url)}
+                    <ExternalLink className="h-3 w-3 shrink-0" />
+                  </a>
+                  {(site.gtm_ids.length > 0 || site.ga4_ids.length > 0) && (
+                    <div className="flex flex-wrap gap-1">
+                      {site.gtm_ids.map((id) => (
+                        <Badge key={id} variant="outline" className="text-[10px] font-mono">{id}</Badge>
+                      ))}
+                      {site.ga4_ids.map((id) => (
+                        <Badge key={id} variant="secondary" className="text-[10px] font-mono">{id}</Badge>
+                      ))}
+                    </div>
+                  )}
+                  <div className="flex items-center justify-between pt-2 border-t border-border">
+                    <span className="text-xs text-muted-foreground">{formatDate(site.created_at)}</span>
+                    <div className="flex items-center gap-1">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8"
+                        onClick={() => {
+                          setEditSite(site);
+                          setForm({ client_id: site.client_id, name: site.name, url: site.url });
+                        }}
+                      >
+                        <Pencil className="h-3.5 w-3.5" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-destructive hover:text-destructive"
+                        onClick={() => handleDelete(site.id)}
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Desktop: Table */}
+            <Card className="hidden md:block">
+              <CardContent className="p-0">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Site</TableHead>
+                      <TableHead>Client</TableHead>
+                      <TableHead>URL</TableHead>
+                      <TableHead>Tags</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Created</TableHead>
+                      <TableHead className="w-[100px]">Actions</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
+                  </TableHeader>
+                  <TableBody>
+                    {sites.map((site) => (
+                      <TableRow key={site.id}>
+                        <TableCell className="font-medium">{site.name}</TableCell>
+                        <TableCell className="text-sm text-muted-foreground">
+                          {clientName(site.client_id)}
+                        </TableCell>
+                        <TableCell>
+                          <a
+                            href={site.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
+                          >
+                            {parseHostname(site.url)}
+                            <ExternalLink className="h-3 w-3" />
+                          </a>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex flex-wrap gap-1">
+                            {site.gtm_ids.map((id) => (
+                              <Badge key={id} variant="outline" className="text-[10px] font-mono">{id}</Badge>
+                            ))}
+                            {site.ga4_ids.map((id) => (
+                              <Badge key={id} variant="secondary" className="text-[10px] font-mono">{id}</Badge>
+                            ))}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant={site.is_active ? "success" : "outline"}>
+                            {site.is_active ? "Active" : "Inactive"}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-sm text-muted-foreground">
+                          {formatDate(site.created_at)}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-1">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => {
+                                setEditSite(site);
+                                setForm({ client_id: site.client_id, name: site.name, url: site.url });
+                              }}
+                            >
+                              <Pencil className="h-3.5 w-3.5" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="text-destructive hover:text-destructive"
+                              onClick={() => handleDelete(site.id)}
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </>
         )}
       </div>
 

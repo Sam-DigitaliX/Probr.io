@@ -10,7 +10,7 @@ export default function DashboardLayout({
   return (
     <>
       <Sidebar />
-      <main className="ml-[240px] min-h-screen transition-all duration-300">
+      <main className="min-h-screen transition-all duration-300 lg:ml-[240px] pb-[72px] lg:pb-0">
         {children}
       </main>
     </>

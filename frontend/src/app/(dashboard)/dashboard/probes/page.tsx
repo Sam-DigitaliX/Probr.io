@@ -136,13 +136,13 @@ export default function ProbesPage() {
         }
       />
 
-      <div className="p-8 space-y-6">
+      <div className="p-4 sm:p-6 lg:p-8 space-y-4 sm:space-y-6">
         {/* Filters */}
         <div className="flex items-center gap-3">
           <Select
             value={filterSite ?? ""}
             onChange={(e) => setFilterSite(e.target.value ? Number(e.target.value) : undefined)}
-            className="w-[220px]"
+            className="w-full sm:w-[220px]"
           >
             <option value="">All sites</option>
             {sites.map((s) => (
@@ -168,30 +168,32 @@ export default function ProbesPage() {
             {probes.map((probe) => (
               <Card key={probe.id} className="overflow-hidden">
                 <div
-                  className="flex items-center gap-4 p-5 cursor-pointer hover:bg-black/[0.02] transition-all"
+                  className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 p-4 sm:p-5 cursor-pointer hover:bg-black/[0.02] transition-all"
                   onClick={() => toggleExpand(probe.id)}
                 >
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
-                    <Zap className="h-5 w-5 text-primary" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium text-sm">{probeTypeLabel(probe.probe_type)}</span>
-                      <Badge variant="outline" className="text-[10px] font-mono">
-                        {siteName(probe.site_id)}
-                      </Badge>
+                  <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10">
+                      <Zap className="h-5 w-5 text-primary" />
                     </div>
-                    <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
-                      <span className="flex items-center gap-1">
-                        <Clock className="h-3 w-3" />
-                        Every {probe.interval_seconds}s
-                      </span>
-                      <Badge variant={probe.is_active ? "success" : "outline"} className="text-[10px]">
-                        {probe.is_active ? "Active" : "Paused"}
-                      </Badge>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="font-medium text-sm">{probeTypeLabel(probe.probe_type)}</span>
+                        <Badge variant="outline" className="text-[10px] font-mono">
+                          {siteName(probe.site_id)}
+                        </Badge>
+                      </div>
+                      <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
+                        <span className="flex items-center gap-1">
+                          <Clock className="h-3 w-3" />
+                          Every {probe.interval_seconds}s
+                        </span>
+                        <Badge variant={probe.is_active ? "success" : "outline"} className="text-[10px]">
+                          {probe.is_active ? "Active" : "Paused"}
+                        </Badge>
+                      </div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 pl-[52px] sm:pl-0">
                     <Button
                       variant="outline"
                       size="sm"
@@ -208,7 +210,7 @@ export default function ProbesPage() {
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="text-destructive hover:text-destructive"
+                      className="text-destructive hover:text-destructive h-8 w-8"
                       onClick={(e) => { e.stopPropagation(); handleDelete(probe.id); }}
                     >
                       <Trash2 className="h-3.5 w-3.5" />
@@ -223,7 +225,7 @@ export default function ProbesPage() {
 
                 {/* Expanded results */}
                 {expandedProbe === probe.id && (
-                  <div className="border-t border-border bg-black/[0.02] p-5">
+                  <div className="border-t border-border bg-black/[0.02] p-4 sm:p-5">
                     <h4 className="text-sm font-medium mb-3">Recent Results</h4>
                     {(results[probe.id] ?? []).length === 0 ? (
                       <p className="text-sm text-muted-foreground">No results yet. Run the probe to see results.</p>
@@ -232,23 +234,27 @@ export default function ProbesPage() {
                         {(results[probe.id] ?? []).slice(0, 10).map((result) => (
                           <div
                             key={result.id}
-                            className="flex items-center gap-3 rounded-lg border border-black/[0.06] bg-white p-3 text-sm"
+                            className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 rounded-lg border border-black/[0.06] bg-white/[0.02] p-3 text-sm"
                           >
-                            <StatusDot status={result.status} size="sm" pulse={false} />
-                            <Badge className={statusBg(result.status)} variant="outline">
-                              {result.status}
-                            </Badge>
-                            <span className="flex-1 truncate text-muted-foreground">
+                            <div className="flex items-center gap-2">
+                              <StatusDot status={result.status} size="sm" pulse={false} />
+                              <Badge className={statusBg(result.status)} variant="outline">
+                                {result.status}
+                              </Badge>
+                            </div>
+                            <span className="flex-1 truncate text-muted-foreground text-xs sm:text-sm">
                               {result.message}
                             </span>
-                            {result.response_time_ms != null && (
-                              <span className="text-xs font-mono text-muted-foreground">
-                                {result.response_time_ms}ms
+                            <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                              {result.response_time_ms != null && (
+                                <span className="font-mono">
+                                  {result.response_time_ms}ms
+                                </span>
+                              )}
+                              <span className="shrink-0">
+                                {formatRelative(result.executed_at)}
                               </span>
-                            )}
-                            <span className="text-xs text-muted-foreground shrink-0">
-                              {formatRelative(result.executed_at)}
-                            </span>
+                            </div>
                           </div>
                         ))}
                       </div>

@@ -73,7 +73,7 @@ export default function DashboardPage() {
         title="Dashboard"
         description="Overview of your monitoring infrastructure"
       />
-      <div className="p-8 space-y-8">
+      <div className="p-4 sm:p-6 lg:p-8 space-y-6 lg:space-y-8">
         {/* Stats */}
         <StatsCards
           totalClients={data?.total_clients ?? 0}

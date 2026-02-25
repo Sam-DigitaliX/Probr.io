@@ -485,6 +485,11 @@ h1, h2, h3, h4 {
 .group:hover .orbit-ring:nth-child(3) { animation-delay: -1.5s; }
 .group:hover .orbit-ring:nth-child(4) { animation-delay: -2.25s; }
 
+/* ── Safe area for mobile bottom nav ───────────────── */
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
 /* ── Scrollbar ──────────────────────────────────────── */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
