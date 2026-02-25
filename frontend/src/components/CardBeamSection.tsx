@@ -48,10 +48,8 @@ interface MetalTheme {
    Constants
    ═══════════════════════════════════════════════════════════════════ */
 
-const MAX_PARTICLES = 180;
-const AMBIENT_COUNT = 35;
-
-/* ── Responsive breakpoints — tall vertical cards ────── */
+const MAX_PARTICLES = 120;
+const AMBIENT_COUNT = 25;
 
 interface Dims {
   cardW: number;
@@ -60,9 +58,11 @@ interface Dims {
   speed: number;
 }
 
-const DESKTOP: Dims = { cardW: 280, cardH: 360, gap: 80, speed: 0.7 };
-const TABLET: Dims = { cardW: 240, cardH: 300, gap: 55, speed: 0.6 };
-const MOBILE: Dims = { cardW: 200, cardH: 260, gap: 36, speed: 0.45 };
+/* ── Horizontal landscape cards ──────────────────────── */
+
+const DESKTOP: Dims = { cardW: 380, cardH: 210, gap: 60, speed: 0.6 };
+const TABLET: Dims = { cardW: 320, cardH: 180, gap: 45, speed: 0.5 };
+const MOBILE: Dims = { cardW: 260, cardH: 150, gap: 30, speed: 0.4 };
 
 function getDims(w: number): Dims {
   if (w < 640) return MOBILE;
@@ -186,11 +186,13 @@ const CARDS: ExpertiseCard[] = [
   },
 ];
 
+/* Doubled for infinite scroll (16 cards instead of 24) */
+const DOUBLED = [...CARDS, ...CARDS];
+
 /* ═══════════════════════════════════════════════════════════════════
    Helpers
    ═══════════════════════════════════════════════════════════════════ */
 
-/* Seeded RNG for deterministic grids per card */
 function seededRng(seed: number): () => number {
   let s = seed;
   return () => {
@@ -199,80 +201,58 @@ function seededRng(seed: number): () => number {
   };
 }
 
-interface GridCell {
-  char: string;
-  bright: boolean;
-}
-
-function generateGrid(
+/* Pre-generate ASCII text — single string per card for perf */
+function generateGridText(
   seed: number,
   rows: number,
   cols: number,
-): GridCell[][] {
+): string {
   const rng = seededRng(seed + 17);
-  return Array.from({ length: rows }, () =>
-    Array.from({ length: cols }, () => ({
-      char: GRID_CHARS[Math.floor(rng() * GRID_CHARS.length)],
-      bright: rng() < 0.12,
-    })),
-  );
+  const lines: string[] = [];
+  for (let r = 0; r < rows; r++) {
+    let line = "";
+    for (let c = 0; c < cols; c++) {
+      line += GRID_CHARS[Math.floor(rng() * GRID_CHARS.length)];
+    }
+    lines.push(line);
+  }
+  return lines.join("\n");
 }
 
-/* Pre-generate 8 unique grids — large vertical grids */
-const GRIDS = CARDS.map((_, i) => generateGrid(i * 137, 40, 36));
+/* 8 unique text grids — wider for landscape cards */
+const GRIDS = CARDS.map((_, i) => generateGridText(i * 137, 22, 60));
 
 /* ═══════════════════════════════════════════════════════════════════
-   AsciiReveal — bright, clear code-like matrix
+   AsciiReveal — single <pre> element (replaces ~1400 spans per card)
    ═══════════════════════════════════════════════════════════════════ */
 
 function AsciiReveal({ gridIndex }: { gridIndex: number }) {
-  const grid = GRIDS[gridIndex % GRIDS.length];
+  const text = GRIDS[gridIndex % GRIDS.length];
 
   return (
-    <div
+    <pre
       style={{
         position: "absolute",
         inset: 0,
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "space-between",
-        padding: "4px 2px",
+        margin: 0,
+        padding: "6px 8px",
         overflow: "hidden",
+        fontFamily:
+          "ui-monospace, 'Cascadia Code', 'Fira Code', monospace",
+        fontSize: 9,
+        lineHeight: "1.15",
+        letterSpacing: "0.06em",
+        color: `rgba(${P_R},${P_G},${P_B},0.22)`,
+        whiteSpace: "pre",
       }}
     >
-      {grid.map((row, r) => (
-        <div
-          key={r}
-          style={{
-            fontFamily:
-              "ui-monospace, 'Cascadia Code', 'Fira Code', monospace",
-            fontSize: 10,
-            lineHeight: "1.1",
-            letterSpacing: "0.06em",
-            whiteSpace: "nowrap",
-            color: `rgba(${P_R},${P_G},${P_B},${0.18 + (r % 4) * 0.04})`,
-          }}
-        >
-          {row.map((cell, c) => (
-            <span
-              key={c}
-              style={
-                cell.bright
-                  ? { color: "rgba(255,255,255,0.55)" }
-                  : undefined
-              }
-            >
-              {cell.char}
-            </span>
-          ))}
-        </div>
-      ))}
-    </div>
+      {text}
+    </pre>
   );
 }
 
 /* ═══════════════════════════════════════════════════════════════════
-   MetalCard — Vertical portrait card (DigitaliX-style)
+   MetalCard — Horizontal landscape layout
    ═══════════════════════════════════════════════════════════════════ */
 
 function MetalCard({
@@ -289,8 +269,8 @@ function MetalCard({
   const theme = THEMES[themeKey];
   const cardNum = String(index + 1).padStart(2, "0");
 
-  const iconBox = compact ? 48 : 60;
-  const svgSize = compact ? 24 : 30;
+  const iconBox = compact ? 40 : 48;
+  const svgSize = compact ? 20 : 24;
 
   return (
     <div
@@ -298,17 +278,15 @@ function MetalCard({
         position: "absolute",
         inset: 0,
         background: theme.gradient,
-        borderRadius: compact ? 16 : 20,
+        borderRadius: compact ? 14 : 18,
         border: `1px solid ${theme.border}`,
         boxShadow: theme.shadow,
         overflow: "hidden",
         display: "flex",
-        flexDirection: "column",
+        flexDirection: "row",
         alignItems: "center",
-        justifyContent: "center",
-        padding: compact ? "20px 16px" : "28px 24px",
-        gap: compact ? 14 : 20,
-        textAlign: "center",
+        padding: compact ? "16px 20px" : "24px 28px",
+        gap: compact ? 16 : 24,
       }}
     >
       {/* Metallic sheen */}
@@ -339,13 +317,13 @@ function MetalCard({
           width: iconBox,
           height: iconBox,
           minWidth: iconBox,
-          borderRadius: compact ? 14 : 18,
+          borderRadius: compact ? 12 : 14,
           background: "rgba(255,255,255,0.05)",
           border: "1px solid rgba(255,255,255,0.08)",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          position: "relative",
+          flexShrink: 0,
         }}
       >
         <svg
@@ -363,10 +341,10 @@ function MetalCard({
       </div>
 
       {/* Text */}
-      <div style={{ position: "relative" }}>
+      <div style={{ position: "relative", flex: 1, minWidth: 0 }}>
         <h3
           style={{
-            fontSize: compact ? 15 : 18,
+            fontSize: compact ? 14 : 16,
             fontWeight: 700,
             color: theme.textColor,
             margin: 0,
@@ -378,53 +356,48 @@ function MetalCard({
         </h3>
         <p
           style={{
-            fontSize: compact ? 11 : 12,
+            fontSize: compact ? 10 : 11,
             color: theme.subtitleColor,
-            margin: "8px 0 0",
+            margin: "6px 0 0",
             letterSpacing: "0.01em",
             lineHeight: 1.5,
-            maxWidth: 200,
           }}
         >
           {card.subtitle}
         </p>
-      </div>
-
-      {/* Badge */}
-      <div
-        style={{
-          position: "relative",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: 3,
-          marginTop: "auto",
-        }}
-      >
-        <span
+        <div
           style={{
-            fontSize: compact ? 9 : 10,
-            fontWeight: 700,
-            letterSpacing: "0.08em",
-            background:
-              "linear-gradient(135deg, #833AB4, #FD1D1D, #FCB045)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            backgroundClip: "text",
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+            marginTop: compact ? 8 : 12,
           }}
         >
-          PROBR
-        </span>
-        <span
-          style={{
-            fontSize: compact ? 7 : 8,
-            color: theme.subtitleColor,
-            letterSpacing: "0.06em",
-            textTransform: "uppercase",
-          }}
-        >
-          #{cardNum} · {themeKey}
-        </span>
+          <span
+            style={{
+              fontSize: compact ? 8 : 9,
+              fontWeight: 700,
+              letterSpacing: "0.08em",
+              background:
+                "linear-gradient(135deg, #833AB4, #FD1D1D, #FCB045)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              backgroundClip: "text",
+            }}
+          >
+            PROBR
+          </span>
+          <span
+            style={{
+              fontSize: compact ? 7 : 8,
+              color: theme.subtitleColor,
+              letterSpacing: "0.06em",
+              textTransform: "uppercase",
+            }}
+          >
+            #{cardNum} · {themeKey}
+          </span>
+        </div>
       </div>
     </div>
   );
@@ -436,6 +409,7 @@ function MetalCard({
 
 export default function CardBeamSection() {
   const [dims, setDims] = useState<Dims>(DESKTOP);
+  const [sectionH, setSectionH] = useState(600);
   const dimsRef = useRef<Dims>(DESKTOP);
 
   const sectionRef = useRef<HTMLElement>(null);
@@ -455,8 +429,6 @@ export default function CardBeamSection() {
   const metalLayerRefs = useRef<(HTMLDivElement | null)[]>([]);
   const codeLayerRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-  const tripled = [...CARDS, ...CARDS, ...CARDS];
-
   /* ── Responsive dimensions ──────────────────────────── */
 
   useEffect(() => {
@@ -464,18 +436,17 @@ export default function CardBeamSection() {
       const next = getDims(window.innerWidth);
       dimsRef.current = next;
       setDims((prev) => (prev === next ? prev : next));
+      setSectionH(Math.max(next.cardH + 160, window.innerHeight * 0.7));
     };
     update();
     window.addEventListener("resize", update);
     return () => window.removeEventListener("resize", update);
   }, []);
 
-  const sectionH = dims.cardH + 100;
-
   /* ── Draw everything on canvas ──────────────────────── */
 
   const drawCanvas = useCallback(
-    (beamX: number, sectionW: number, sectionH: number, intensity: number) => {
+    (beamX: number, sW: number, sH: number, intensity: number) => {
       const canvas = canvasRef.current;
       if (!canvas) return;
       const ctx = canvas.getContext("2d");
@@ -486,10 +457,10 @@ export default function CardBeamSection() {
 
       /* ── 1. Ambient floating particles ─────────────── */
 
-      if (ambientRef.current.length === 0 && sectionW > 0) {
+      if (ambientRef.current.length === 0 && sW > 0) {
         ambientRef.current = Array.from({ length: AMBIENT_COUNT }, () => ({
-          x: Math.random() * sectionW,
-          y: Math.random() * sectionH,
+          x: Math.random() * sW,
+          y: Math.random() * sH,
           vx: 0.5 + Math.random() * 2.0,
           vy: (Math.random() - 0.5) * 0.3,
           size: 0.6 + Math.random() * 1.8,
@@ -503,12 +474,12 @@ export default function CardBeamSection() {
         dot.x += dot.vx;
         dot.y += dot.vy;
 
-        if (dot.x > sectionW + 30) {
+        if (dot.x > sW + 30) {
           dot.x = -30;
-          dot.y = Math.random() * sectionH;
+          dot.y = Math.random() * sH;
         }
-        if (dot.y < -10) dot.y = sectionH + 10;
-        if (dot.y > sectionH + 10) dot.y = -10;
+        if (dot.y < -10) dot.y = sH + 10;
+        if (dot.y > sH + 10) dot.y = -10;
 
         const distFromBeam = Math.abs(dot.x - beamX);
         const beamProximity = Math.max(0, 1 - distFromBeam / 250);
@@ -526,8 +497,8 @@ export default function CardBeamSection() {
       const idlePulse = 0.5 + 0.5 * Math.sin(now / 2200);
 
       ctx.save();
-      ctx.translate(beamX, sectionH / 2);
-      ctx.scale(1, (sectionH * 0.6) / 100);
+      ctx.translate(beamX, sH / 2);
+      ctx.scale(1, (sH * 0.6) / 100);
       const glowR = 60 + intensity * 50;
       const glowGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, glowR);
       const glowBase = 0.04 + idlePulse * 0.02;
@@ -551,7 +522,7 @@ export default function CardBeamSection() {
       /* ── 3. Beam — Core line (tapered opacity) ─────── */
 
       const coreAlpha = 0.12 + idlePulse * 0.08 + intensity * 0.8;
-      const lineGrad = ctx.createLinearGradient(0, 0, 0, sectionH);
+      const lineGrad = ctx.createLinearGradient(0, 0, 0, sH);
       lineGrad.addColorStop(0, "rgba(255,255,255,0)");
       lineGrad.addColorStop(0.1, `rgba(255,255,255,${coreAlpha * 0.3})`);
       lineGrad.addColorStop(0.3, `rgba(255,255,255,${coreAlpha})`);
@@ -563,7 +534,7 @@ export default function CardBeamSection() {
       ctx.lineWidth = 1.2 + intensity * 0.8;
       ctx.beginPath();
       ctx.moveTo(beamX, 0);
-      ctx.lineTo(beamX, sectionH);
+      ctx.lineTo(beamX, sH);
       ctx.stroke();
 
       /* Extra glow during scanning */
@@ -576,12 +547,12 @@ export default function CardBeamSection() {
         ctx.lineWidth = 6 + intensity * 8;
         ctx.beginPath();
         ctx.moveTo(beamX, 0);
-        ctx.lineTo(beamX, sectionH);
+        ctx.lineTo(beamX, sH);
         ctx.stroke();
         ctx.restore();
       }
 
-      /* ── 4. Scan particles — luminous dots only ────── */
+      /* ── 4. Scan particles — luminous dots ─────────── */
 
       const pool = particlesRef.current;
       for (let i = 0; i < pool.length; i++) {
@@ -607,13 +578,13 @@ export default function CardBeamSection() {
     [],
   );
 
-  /* ── Emit particles at scan edge — fine luminous dots ── */
+  /* ── Emit particles at scan edge ─────────────────────── */
 
   const emitParticles = useCallback(
     (x: number, yMin: number, yMax: number) => {
       const pool = particlesRef.current;
       let emitted = 0;
-      for (let i = 0; i < pool.length && emitted < 5; i++) {
+      for (let i = 0; i < pool.length && emitted < 4; i++) {
         if (pool[i].life > 0) continue;
 
         const maxLife = 25 + Math.random() * 40;
@@ -659,17 +630,16 @@ export default function CardBeamSection() {
 
     trackRef.current.style.transform = `translateX(${-scrollXRef.current}px)`;
 
-    /* Use offsetWidth/Height (ignores CSS transform on parent wrapper) */
     const sectionEl = sectionRef.current;
-    const sectionW = sectionEl.offsetWidth;
-    const sectionH = sectionEl.offsetHeight;
-    const beamX = sectionW / 2;
+    const sW = sectionEl.offsetWidth;
+    const sH = sectionEl.offsetHeight;
+    const beamX = sW / 2;
 
     /* Canvas resize */
     const canvas = canvasRef.current;
     if (canvas) {
-      const w = Math.round(sectionW);
-      const h = Math.round(sectionH);
+      const w = Math.round(sW);
+      const h = Math.round(sH);
       if (canvas.width !== w || canvas.height !== h) {
         canvas.width = w;
         canvas.height = h;
@@ -677,12 +647,12 @@ export default function CardBeamSection() {
     }
 
     const trackLeft = -scrollXRef.current;
-    const cardTop = (sectionH - cardH) / 2;
+    const cardTop = (sH - cardH) / 2;
     let isScanning = false;
 
     /* ── Per-card scan ─────────────────────────────────── */
 
-    for (let i = 0; i < tripled.length; i++) {
+    for (let i = 0; i < DOUBLED.length; i++) {
       const metalLayer = metalLayerRefs.current[i];
       const codeLayer = codeLayerRefs.current[i];
       if (!metalLayer || !codeLayer) continue;
@@ -728,9 +698,9 @@ export default function CardBeamSection() {
     beamIntensityRef.current +=
       (target - beamIntensityRef.current) * lerpRate;
 
-    drawCanvas(beamX, sectionW, sectionH, beamIntensityRef.current);
+    drawCanvas(beamX, sW, sH, beamIntensityRef.current);
     rafRef.current = requestAnimationFrame(animate);
-  }, [tripled.length, drawCanvas, emitParticles]);
+  }, [drawCanvas, emitParticles]);
 
   /* ── Lifecycle ──────────────────────────────────────── */
 
@@ -781,7 +751,7 @@ export default function CardBeamSection() {
   }, []);
 
   /* ═══════════════════════════════════════════════════════
-     Render — no background, blends with page
+     Render
      ═══════════════════════════════════════════════════════ */
 
   return (
@@ -801,7 +771,7 @@ export default function CardBeamSection() {
         style={{ zIndex: 20 }}
       />
 
-      {/* Edge fades — seamless blend with page background */}
+      {/* Edge fades */}
       <div
         className="absolute inset-y-0 left-0 pointer-events-none w-[8%] md:w-[18%]"
         style={{
@@ -830,7 +800,7 @@ export default function CardBeamSection() {
           willChange: "transform",
         }}
       >
-        {tripled.map((card, i) => {
+        {DOUBLED.map((card, i) => {
           const themeKey = THEME_KEYS[i % THEME_KEYS.length];
           return (
             <div
@@ -838,7 +808,7 @@ export default function CardBeamSection() {
               className="relative shrink-0"
               style={{ width: dims.cardW, height: dims.cardH }}
             >
-              {/* Code layer — bright visible code */}
+              {/* Code layer */}
               <div
                 ref={(el) => {
                   codeLayerRefs.current[i] = el;
@@ -865,7 +835,7 @@ export default function CardBeamSection() {
                   card={card}
                   themeKey={themeKey}
                   index={i % CARDS.length}
-                  compact={dims.cardW < 250}
+                  compact={dims.cardW < 300}
                 />
               </div>
             </div>
