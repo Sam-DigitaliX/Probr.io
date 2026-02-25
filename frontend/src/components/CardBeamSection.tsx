@@ -51,7 +51,7 @@ interface MetalTheme {
 const MAX_PARTICLES = 180;
 const AMBIENT_COUNT = 35;
 
-/* ── Responsive breakpoints ──────────────────────────── */
+/* ── Responsive breakpoints — tall vertical cards ────── */
 
 interface Dims {
   cardW: number;
@@ -60,9 +60,9 @@ interface Dims {
   speed: number;
 }
 
-const DESKTOP: Dims = { cardW: 260, cardH: 150, gap: 100, speed: 0.8 };
-const TABLET: Dims = { cardW: 230, cardH: 130, gap: 60, speed: 0.65 };
-const MOBILE: Dims = { cardW: 200, cardH: 110, gap: 40, speed: 0.5 };
+const DESKTOP: Dims = { cardW: 280, cardH: 360, gap: 80, speed: 0.7 };
+const TABLET: Dims = { cardW: 240, cardH: 300, gap: 55, speed: 0.6 };
+const MOBILE: Dims = { cardW: 200, cardH: 260, gap: 36, speed: 0.45 };
 
 function getDims(w: number): Dims {
   if (w < 640) return MOBILE;
@@ -75,28 +75,28 @@ const P_R = 190;
 const P_G = 170;
 const P_B = 255;
 
-const GRID_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#$!=+.:·";
+const GRID_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#$!=+.:·<>{}[]|/\\";
 
 /* ── Themes ───────────────────────────────────────────── */
 
 const THEMES: Record<string, MetalTheme> = {
   matte: {
     gradient:
-      "linear-gradient(145deg, #18182a 0%, #232340 40%, #1a1a2e 100%)",
+      "linear-gradient(165deg, #18182a 0%, #232340 40%, #1a1a2e 100%)",
     border: "rgba(255,255,255,0.06)",
-    shadow: "0 4px 24px rgba(0,0,0,0.45)",
-    textColor: "rgba(255,255,255,0.85)",
+    shadow: "0 8px 32px rgba(0,0,0,0.50)",
+    textColor: "rgba(255,255,255,0.88)",
     subtitleColor: "rgba(255,255,255,0.45)",
     iconFill: "rgba(255,255,255,0.7)",
     accentGradient:
-      "linear-gradient(135deg, rgba(131,58,180,0.15), rgba(252,176,69,0.10))",
+      "linear-gradient(135deg, rgba(131,58,180,0.18), rgba(252,176,69,0.12))",
   },
   platinum: {
     gradient:
-      "linear-gradient(145deg, #d4d4e0 0%, #b0b0c0 30%, #e8e8f0 60%, #a0a0b5 100%)",
+      "linear-gradient(165deg, #d4d4e0 0%, #b0b0c0 30%, #e8e8f0 60%, #a0a0b5 100%)",
     border: "rgba(255,255,255,0.35)",
-    shadow: "0 4px 24px rgba(0,0,0,0.30)",
-    textColor: "rgba(15,15,25,0.85)",
+    shadow: "0 8px 32px rgba(0,0,0,0.30)",
+    textColor: "rgba(15,15,25,0.88)",
     subtitleColor: "rgba(15,15,25,0.50)",
     iconFill: "rgba(15,15,25,0.65)",
     accentGradient:
@@ -104,20 +104,20 @@ const THEMES: Record<string, MetalTheme> = {
   },
   silver: {
     gradient:
-      "linear-gradient(145deg, #2a2a42 0%, #3a3a58 45%, #2a2a42 100%)",
+      "linear-gradient(165deg, #2a2a42 0%, #3a3a58 45%, #2a2a42 100%)",
     border: "rgba(255,255,255,0.10)",
-    shadow: "0 4px 24px rgba(0,0,0,0.40)",
-    textColor: "rgba(255,255,255,0.80)",
-    subtitleColor: "rgba(255,255,255,0.40)",
+    shadow: "0 8px 32px rgba(0,0,0,0.45)",
+    textColor: "rgba(255,255,255,0.82)",
+    subtitleColor: "rgba(255,255,255,0.42)",
     iconFill: "rgba(255,255,255,0.60)",
     accentGradient:
       "linear-gradient(135deg, rgba(253,29,29,0.10), rgba(252,176,69,0.08))",
   },
   iridescent: {
     gradient:
-      "linear-gradient(145deg, #833AB4 0%, #FD1D1D 50%, #FCB045 100%)",
+      "linear-gradient(165deg, #833AB4 0%, #FD1D1D 50%, #FCB045 100%)",
     border: "rgba(255,255,255,0.18)",
-    shadow: "0 4px 24px rgba(131,58,180,0.35)",
+    shadow: "0 8px 32px rgba(131,58,180,0.35)",
     textColor: "rgba(255,255,255,0.95)",
     subtitleColor: "rgba(255,255,255,0.70)",
     iconFill: "rgba(255,255,255,0.90)",
@@ -213,16 +213,16 @@ function generateGrid(
   return Array.from({ length: rows }, () =>
     Array.from({ length: cols }, () => ({
       char: GRID_CHARS[Math.floor(rng() * GRID_CHARS.length)],
-      bright: rng() < 0.06,
+      bright: rng() < 0.12,
     })),
   );
 }
 
-/* Pre-generate 8 unique grids (one per card) — sized to fill the full card */
-const GRIDS = CARDS.map((_, i) => generateGrid(i * 137, 18, 48));
+/* Pre-generate 8 unique grids — large vertical grids */
+const GRIDS = CARDS.map((_, i) => generateGrid(i * 137, 40, 36));
 
 /* ═══════════════════════════════════════════════════════════════════
-   AsciiReveal — fully transparent, fills entire card, very subtle
+   AsciiReveal — bright, clear code-like matrix
    ═══════════════════════════════════════════════════════════════════ */
 
 function AsciiReveal({ gridIndex }: { gridIndex: number }) {
@@ -232,23 +232,25 @@ function AsciiReveal({ gridIndex }: { gridIndex: number }) {
     <div
       style={{
         position: "absolute",
-        inset: -4,
+        inset: 0,
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
-        padding: 0,
+        padding: "4px 2px",
+        overflow: "hidden",
       }}
     >
       {grid.map((row, r) => (
         <div
           key={r}
           style={{
-            fontFamily: "monospace",
-            fontSize: 9,
-            lineHeight: "1",
-            letterSpacing: "0.08em",
+            fontFamily:
+              "ui-monospace, 'Cascadia Code', 'Fira Code', monospace",
+            fontSize: 10,
+            lineHeight: "1.1",
+            letterSpacing: "0.06em",
             whiteSpace: "nowrap",
-            color: `rgba(${P_R},${P_G},${P_B},${0.06 + (r % 3) * 0.025})`,
+            color: `rgba(${P_R},${P_G},${P_B},${0.18 + (r % 4) * 0.04})`,
           }}
         >
           {row.map((cell, c) => (
@@ -256,9 +258,7 @@ function AsciiReveal({ gridIndex }: { gridIndex: number }) {
               key={c}
               style={
                 cell.bright
-                  ? {
-                      color: `rgba(255,255,255,0.18)`,
-                    }
+                  ? { color: "rgba(255,255,255,0.55)" }
                   : undefined
               }
             >
@@ -272,7 +272,7 @@ function AsciiReveal({ gridIndex }: { gridIndex: number }) {
 }
 
 /* ═══════════════════════════════════════════════════════════════════
-   MetalCard — Horizontal metallic surface (compact)
+   MetalCard — Vertical portrait card (DigitaliX-style)
    ═══════════════════════════════════════════════════════════════════ */
 
 function MetalCard({
@@ -289,8 +289,8 @@ function MetalCard({
   const theme = THEMES[themeKey];
   const cardNum = String(index + 1).padStart(2, "0");
 
-  const iconSize = compact ? 32 : 40;
-  const svgSize = compact ? 16 : 20;
+  const iconBox = compact ? 48 : 60;
+  const svgSize = compact ? 24 : 30;
 
   return (
     <div
@@ -298,15 +298,17 @@ function MetalCard({
         position: "absolute",
         inset: 0,
         background: theme.gradient,
-        borderRadius: compact ? 12 : 14,
+        borderRadius: compact ? 16 : 20,
         border: `1px solid ${theme.border}`,
         boxShadow: theme.shadow,
         overflow: "hidden",
         display: "flex",
-        flexDirection: "row",
+        flexDirection: "column",
         alignItems: "center",
-        padding: compact ? "0 10px" : "0 16px",
-        gap: compact ? 10 : 14,
+        justifyContent: "center",
+        padding: compact ? "20px 16px" : "28px 24px",
+        gap: compact ? 14 : 20,
+        textAlign: "center",
       }}
     >
       {/* Metallic sheen */}
@@ -315,7 +317,7 @@ function MetalCard({
           position: "absolute",
           inset: 0,
           background:
-            "linear-gradient(115deg, transparent 30%, rgba(255,255,255,0.04) 45%, transparent 55%)",
+            "linear-gradient(145deg, transparent 25%, rgba(255,255,255,0.05) 45%, transparent 60%)",
           pointerEvents: "none",
         }}
       />
@@ -324,8 +326,8 @@ function MetalCard({
         style={{
           position: "absolute",
           top: 0,
-          left: "10%",
-          right: "10%",
+          left: "15%",
+          right: "15%",
           height: 1,
           background: theme.accentGradient,
         }}
@@ -334,12 +336,12 @@ function MetalCard({
       {/* Icon */}
       <div
         style={{
-          width: iconSize,
-          height: iconSize,
-          minWidth: iconSize,
-          borderRadius: compact ? 10 : 12,
-          background: "rgba(255,255,255,0.04)",
-          border: "1px solid rgba(255,255,255,0.06)",
+          width: iconBox,
+          height: iconBox,
+          minWidth: iconBox,
+          borderRadius: compact ? 14 : 18,
+          background: "rgba(255,255,255,0.05)",
+          border: "1px solid rgba(255,255,255,0.08)",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -352,7 +354,7 @@ function MetalCard({
           viewBox={card.viewBox}
           fill="none"
           stroke={theme.iconFill}
-          strokeWidth={1.8}
+          strokeWidth={1.6}
           strokeLinecap="round"
           strokeLinejoin="round"
         >
@@ -361,10 +363,10 @@ function MetalCard({
       </div>
 
       {/* Text */}
-      <div style={{ position: "relative", flex: 1, minWidth: 0 }}>
+      <div style={{ position: "relative" }}>
         <h3
           style={{
-            fontSize: compact ? 11 : 13,
+            fontSize: compact ? 15 : 18,
             fontWeight: 700,
             color: theme.textColor,
             margin: 0,
@@ -376,14 +378,12 @@ function MetalCard({
         </h3>
         <p
           style={{
-            fontSize: compact ? 9 : 10,
+            fontSize: compact ? 11 : 12,
             color: theme.subtitleColor,
-            margin: "3px 0 0",
+            margin: "8px 0 0",
             letterSpacing: "0.01em",
-            lineHeight: 1.3,
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
+            lineHeight: 1.5,
+            maxWidth: 200,
           }}
         >
           {card.subtitle}
@@ -396,15 +396,16 @@ function MetalCard({
           position: "relative",
           display: "flex",
           flexDirection: "column",
-          alignItems: "flex-end",
-          gap: 2,
+          alignItems: "center",
+          gap: 3,
+          marginTop: "auto",
         }}
       >
         <span
           style={{
-            fontSize: compact ? 8 : 9,
+            fontSize: compact ? 9 : 10,
             fontWeight: 700,
-            letterSpacing: "0.06em",
+            letterSpacing: "0.08em",
             background:
               "linear-gradient(135deg, #833AB4, #FD1D1D, #FCB045)",
             WebkitBackgroundClip: "text",
@@ -416,7 +417,7 @@ function MetalCard({
         </span>
         <span
           style={{
-            fontSize: compact ? 6 : 7,
+            fontSize: compact ? 7 : 8,
             color: theme.subtitleColor,
             letterSpacing: "0.06em",
             textTransform: "uppercase",
@@ -469,7 +470,7 @@ export default function CardBeamSection() {
     return () => window.removeEventListener("resize", update);
   }, []);
 
-  const sectionH = dims.cardH + 80;
+  const sectionH = dims.cardH + 100;
 
   /* ── Draw everything on canvas ──────────────────────── */
 
@@ -552,10 +553,10 @@ export default function CardBeamSection() {
       const coreAlpha = 0.12 + idlePulse * 0.08 + intensity * 0.8;
       const lineGrad = ctx.createLinearGradient(0, 0, 0, sectionH);
       lineGrad.addColorStop(0, "rgba(255,255,255,0)");
-      lineGrad.addColorStop(0.15, `rgba(255,255,255,${coreAlpha * 0.4})`);
-      lineGrad.addColorStop(0.35, `rgba(255,255,255,${coreAlpha})`);
-      lineGrad.addColorStop(0.65, `rgba(255,255,255,${coreAlpha})`);
-      lineGrad.addColorStop(0.85, `rgba(255,255,255,${coreAlpha * 0.4})`);
+      lineGrad.addColorStop(0.1, `rgba(255,255,255,${coreAlpha * 0.3})`);
+      lineGrad.addColorStop(0.3, `rgba(255,255,255,${coreAlpha})`);
+      lineGrad.addColorStop(0.7, `rgba(255,255,255,${coreAlpha})`);
+      lineGrad.addColorStop(0.9, `rgba(255,255,255,${coreAlpha * 0.3})`);
       lineGrad.addColorStop(1, "rgba(255,255,255,0)");
 
       ctx.strokeStyle = lineGrad;
@@ -771,7 +772,8 @@ export default function CardBeamSection() {
 
   const onPointerMove = useCallback((e: React.PointerEvent) => {
     if (!isDraggingRef.current) return;
-    scrollXRef.current = dragScrollRef.current - (e.clientX - dragStartXRef.current);
+    scrollXRef.current =
+      dragScrollRef.current - (e.clientX - dragStartXRef.current);
   }, []);
 
   const onPointerUp = useCallback(() => {
@@ -779,7 +781,7 @@ export default function CardBeamSection() {
   }, []);
 
   /* ═══════════════════════════════════════════════════════
-     Render
+     Render — no background, blends with page
      ═══════════════════════════════════════════════════════ */
 
   return (
@@ -792,79 +794,84 @@ export default function CardBeamSection() {
       onPointerUp={onPointerUp}
       onPointerCancel={onPointerUp}
     >
-        {/* Canvas — beam + all particles */}
-        <canvas
-          ref={canvasRef}
-          className="absolute inset-0 pointer-events-none"
-          style={{ zIndex: 20 }}
-        />
+      {/* Canvas — beam + all particles */}
+      <canvas
+        ref={canvasRef}
+        className="absolute inset-0 pointer-events-none"
+        style={{ zIndex: 20 }}
+      />
 
-        {/* Edge fades — narrower on mobile */}
-        <div
-          className="absolute inset-y-0 left-0 pointer-events-none w-[6%] md:w-[15%]"
-          style={{
-            zIndex: 15,
-            background:
-              "linear-gradient(90deg, hsl(240 15% 6%) 0%, hsl(240 15% 6% / 0.7) 35%, transparent 100%)",
-          }}
-        />
-        <div
-          className="absolute inset-y-0 right-0 pointer-events-none w-[6%] md:w-[15%]"
-          style={{
-            zIndex: 15,
-            background:
-              "linear-gradient(270deg, hsl(240 15% 6%) 0%, hsl(240 15% 6% / 0.7) 35%, transparent 100%)",
-          }}
-        />
+      {/* Edge fades — seamless blend with page background */}
+      <div
+        className="absolute inset-y-0 left-0 pointer-events-none w-[8%] md:w-[18%]"
+        style={{
+          zIndex: 15,
+          background:
+            "linear-gradient(90deg, hsl(240 15% 6%) 0%, hsl(240 15% 6% / 0.8) 30%, transparent 100%)",
+        }}
+      />
+      <div
+        className="absolute inset-y-0 right-0 pointer-events-none w-[8%] md:w-[18%]"
+        style={{
+          zIndex: 15,
+          background:
+            "linear-gradient(270deg, hsl(240 15% 6%) 0%, hsl(240 15% 6% / 0.8) 30%, transparent 100%)",
+        }}
+      />
 
-        {/* Cards track */}
-        <div
-          ref={trackRef}
-          className="absolute flex"
-          style={{ top: (sectionH - dims.cardH) / 2, left: 0, gap: dims.gap, willChange: "transform" }}
-        >
-          {tripled.map((card, i) => {
-            const themeKey = THEME_KEYS[i % THEME_KEYS.length];
-            return (
+      {/* Cards track */}
+      <div
+        ref={trackRef}
+        className="absolute flex"
+        style={{
+          top: (sectionH - dims.cardH) / 2,
+          left: 0,
+          gap: dims.gap,
+          willChange: "transform",
+        }}
+      >
+        {tripled.map((card, i) => {
+          const themeKey = THEME_KEYS[i % THEME_KEYS.length];
+          return (
+            <div
+              key={i}
+              className="relative shrink-0"
+              style={{ width: dims.cardW, height: dims.cardH }}
+            >
+              {/* Code layer — bright visible code */}
               <div
-                key={i}
-                className="relative shrink-0"
-                style={{ width: dims.cardW, height: dims.cardH }}
+                ref={(el) => {
+                  codeLayerRefs.current[i] = el;
+                }}
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  zIndex: 1,
+                  clipPath: "inset(0 100% 0 0)",
+                  opacity: 0,
+                }}
               >
-                {/* Code layer — fully transparent, no background */}
-                <div
-                  ref={(el) => {
-                    codeLayerRefs.current[i] = el;
-                  }}
-                  style={{
-                    position: "absolute",
-                    inset: 0,
-                    zIndex: 1,
-                    clipPath: "inset(0 100% 0 0)",
-                    opacity: 0,
-                  }}
-                >
-                  <AsciiReveal gridIndex={i % CARDS.length} />
-                </div>
-
-                {/* Metal layer */}
-                <div
-                  ref={(el) => {
-                    metalLayerRefs.current[i] = el;
-                  }}
-                  style={{ position: "absolute", inset: 0, zIndex: 2 }}
-                >
-                  <MetalCard
-                    card={card}
-                    themeKey={themeKey}
-                    index={i % CARDS.length}
-                    compact={dims.cardW < 240}
-                  />
-                </div>
+                <AsciiReveal gridIndex={i % CARDS.length} />
               </div>
-            );
-          })}
-        </div>
+
+              {/* Metal layer */}
+              <div
+                ref={(el) => {
+                  metalLayerRefs.current[i] = el;
+                }}
+                style={{ position: "absolute", inset: 0, zIndex: 2 }}
+              >
+                <MetalCard
+                  card={card}
+                  themeKey={themeKey}
+                  index={i % CARDS.length}
+                  compact={dims.cardW < 250}
+                />
+              </div>
+            </div>
+          );
+        })}
+      </div>
     </section>
   );
 }

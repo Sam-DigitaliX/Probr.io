@@ -67,6 +67,11 @@ const CardBeamSection = dynamic(
   { ssr: false },
 );
 
+const HeartbeatCanvas = dynamic(
+  () => import("@/components/HeartbeatCanvas"),
+  { ssr: false },
+);
+
 const stats = [
   { value: "99.9%", label: "Uptime monitoring" },
   { value: "<30s", label: "Alert latency" },
@@ -388,6 +393,9 @@ export default function LandingPage() {
                 "linear-gradient(180deg, hsl(276 51% 47% / 0.12) 0%, hsl(0 98% 55% / 0.05) 40%, transparent 70%)",
             }}
           />
+
+          {/* Heartbeat ECG background — subtle pulse of data monitoring */}
+          <HeartbeatCanvas />
 
           {/* Luminous liseré bottom */}
           <div
