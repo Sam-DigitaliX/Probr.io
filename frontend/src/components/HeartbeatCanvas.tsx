@@ -3,55 +3,51 @@
 import { useEffect, useRef, useCallback } from "react";
 
 /* ═══════════════════════════════════════════════════════════════════
-   HeartbeatCanvas — ECG-style background animation
-   Draws a continuous heartbeat / pulse line that sweeps across
-   the hero section, evoking the "pulse of data being monitored".
+   HeartbeatCanvas — ECG tracer animation
+   A luminous dot travels left → right, drawing the ECG waveform
+   behind it. The trail fades with distance from the dot.
+   Colour: Probr gradient (#833AB4 → #FD1D1D → #FCB045).
    ═══════════════════════════════════════════════════════════════════ */
 
-/* ECG waveform sample — normalised to 0..1 Y range, centered at 0.5 */
+/* ECG waveform — returns vertical offset (centered at 0) */
 function ecgWaveform(t: number): number {
-  /* t goes from 0 → 1 for one full heartbeat cycle */
-  /* Flat → P-wave → flat → QRS complex → flat → T-wave → flat */
-
-  if (t < 0.10) return 0; /* flat baseline */
+  if (t < 0.1) return 0;
   if (t < 0.18) {
-    /* P-wave — gentle bump */
-    const p = (t - 0.10) / 0.08;
+    const p = (t - 0.1) / 0.08;
     return Math.sin(p * Math.PI) * 0.08;
   }
-  if (t < 0.28) return 0; /* PR segment */
+  if (t < 0.28) return 0;
   if (t < 0.32) {
-    /* Q dip */
     const q = (t - 0.28) / 0.04;
     return -Math.sin(q * Math.PI) * 0.06;
   }
   if (t < 0.38) {
-    /* R peak — the main spike */
     const r = (t - 0.32) / 0.06;
     return Math.sin(r * Math.PI) * 0.45;
   }
   if (t < 0.42) {
-    /* S dip */
     const s = (t - 0.38) / 0.04;
     return -Math.sin(s * Math.PI) * 0.12;
   }
-  if (t < 0.55) return 0; /* ST segment */
+  if (t < 0.55) return 0;
   if (t < 0.68) {
-    /* T-wave — rounded bump */
     const tw = (t - 0.55) / 0.13;
-    return Math.sin(tw * Math.PI) * 0.10;
+    return Math.sin(tw * Math.PI) * 0.1;
   }
-  return 0; /* flat until next beat */
+  return 0;
 }
 
-const BEAT_DURATION = 2400; /* ms per heartbeat cycle */
-const LINE_OPACITY = 0.12; /* subtle — stays behind content */
-const GLOW_OPACITY = 0.06;
+/* How many heartbeat cycles fit across the screen */
+const BEATS_PER_SCREEN = 2.5;
+/* Time for the dot to cross the full screen (ms) */
+const CYCLE_MS = 4500;
+/* Visible trail length as fraction of screen width */
+const TRAIL_RATIO = 0.55;
 
 export default function HeartbeatCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rafRef = useRef<number>(0);
-  const parentRef = useRef<HTMLElement | null>(null);
+  const isVisibleRef = useRef(true);
 
   const draw = useCallback(() => {
     const canvas = canvasRef.current;
@@ -59,14 +55,15 @@ export default function HeartbeatCanvas() {
       rafRef.current = requestAnimationFrame(draw);
       return;
     }
-
-    /* Size to parent */
     const parent = canvas.parentElement;
     if (!parent) {
       rafRef.current = requestAnimationFrame(draw);
       return;
     }
-    parentRef.current = parent;
+    if (!isVisibleRef.current) {
+      rafRef.current = requestAnimationFrame(draw);
+      return;
+    }
 
     const w = parent.offsetWidth;
     const h = parent.offsetHeight;
@@ -84,93 +81,123 @@ export default function HeartbeatCanvas() {
     ctx.clearRect(0, 0, w, h);
 
     const now = Date.now();
-    const centerY = h * 0.52; /* slightly below center */
-    const amplitude = h * 0.22; /* waveform height */
+    const centerY = h * 0.52;
+    const amplitude = h * 0.22;
 
-    /* ── Draw two waveform lines (offset phase for organic feel) ── */
+    /* Y position for any X on the waveform */
+    const getY = (x: number) => {
+      const phase = ((((x / w) * BEATS_PER_SCREEN) % 1) + 1) % 1;
+      return centerY - ecgWaveform(phase) * amplitude;
+    };
 
-    for (let line = 0; line < 2; line++) {
-      const phaseOffset = line * 0.45;
-      const yOffset = line === 0 ? 0 : h * 0.06;
-      const opacity = line === 0 ? LINE_OPACITY : LINE_OPACITY * 0.4;
-      const glowOp = line === 0 ? GLOW_OPACITY : GLOW_OPACITY * 0.3;
+    /* Overshoot so the dot enters / exits off-screen */
+    const overshoot = w * 0.06;
+    const totalTravel = w + overshoot * 2;
 
-      /* Sweep position — the "now" point moving across the screen */
-      const sweepT = ((now / BEAT_DURATION + phaseOffset) % 3) / 3;
-      const sweepX = sweepT * w * 1.4 - w * 0.2;
+    /* Dot position — continuous loop */
+    const progress = (now % CYCLE_MS) / CYCLE_MS;
+    const dotX = -overshoot + progress * totalTravel;
+    const dotY = getY(dotX);
 
+    /* ── Trail ──────────────────────────────────────────── */
+
+    const trailLength = w * TRAIL_RATIO;
+    const trailStart = Math.max(0, dotX - trailLength);
+    const trailEnd = Math.max(0, Math.min(w, dotX));
+
+    if (trailEnd > trailStart + 2) {
       ctx.beginPath();
-
       const step = 2;
-      for (let x = 0; x < w; x += step) {
-        /* Map x position to heartbeat phase */
-        const distFromSweep = (x - sweepX) / w;
-        /* Repeat the waveform across the width */
-        const beatPhase =
-          ((distFromSweep * 2.5 + phaseOffset + 100) % 1 + 1) % 1;
-        const y =
-          centerY + yOffset - ecgWaveform(beatPhase) * amplitude;
-
-        /* Fade out far from sweep point */
-        if (x === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
+      let first = true;
+      for (let x = trailStart; x <= trailEnd; x += step) {
+        const y = getY(x);
+        if (first) {
+          ctx.moveTo(x, y);
+          first = false;
+        } else {
+          ctx.lineTo(x, y);
+        }
       }
+      ctx.lineTo(trailEnd, getY(trailEnd));
 
-      /* Fade trail — stronger near sweep, fading behind */
-      const trailGrad = ctx.createLinearGradient(0, 0, w, 0);
-      const sweepNorm = Math.max(0, Math.min(1, sweepX / w));
+      /* Gradient: transparent far → Probr gradient near dot */
+      const grad = ctx.createLinearGradient(trailStart, 0, trailEnd, 0);
+      grad.addColorStop(0, "rgba(131,58,180,0)");
+      grad.addColorStop(0.2, "rgba(131,58,180,0.05)");
+      grad.addColorStop(0.45, "rgba(131,58,180,0.12)");
+      grad.addColorStop(0.7, "rgba(253,29,29,0.18)");
+      grad.addColorStop(0.88, "rgba(252,176,69,0.24)");
+      grad.addColorStop(1, "rgba(252,176,69,0.35)");
 
-      /* Build gradient stops: faded on left, bright at sweep, fading right */
-      trailGrad.addColorStop(
-        0,
-        `rgba(131,58,180,${opacity * 0.1})`,
-      );
-      trailGrad.addColorStop(
-        Math.max(0, sweepNorm - 0.15),
-        `rgba(131,58,180,${opacity * 0.3})`,
-      );
-      trailGrad.addColorStop(
-        Math.max(0, sweepNorm - 0.02),
-        `rgba(253,29,29,${opacity})`,
-      );
-      trailGrad.addColorStop(
-        Math.min(1, sweepNorm),
-        `rgba(252,176,69,${opacity})`,
-      );
-      trailGrad.addColorStop(
-        Math.min(1, sweepNorm + 0.05),
-        `rgba(131,58,180,${opacity * 0.15})`,
-      );
-      trailGrad.addColorStop(
-        1,
-        `rgba(131,58,180,${opacity * 0.05})`,
-      );
-
-      ctx.strokeStyle = trailGrad;
-      ctx.lineWidth = line === 0 ? 1.5 : 1;
+      ctx.strokeStyle = grad;
+      ctx.lineWidth = 1.8;
       ctx.lineJoin = "round";
       ctx.lineCap = "round";
       ctx.stroke();
 
-      /* Glow effect near sweep point */
-      if (line === 0) {
-        ctx.save();
-        ctx.globalCompositeOperation = "lighter";
-        ctx.shadowColor = `rgba(131,58,180,${glowOp})`;
-        ctx.shadowBlur = 20;
-        ctx.strokeStyle = `rgba(131,58,180,${glowOp})`;
-        ctx.lineWidth = 4;
-        ctx.stroke();
-        ctx.restore();
-      }
+      /* Soft glow on the trail near the dot */
+      ctx.save();
+      ctx.globalCompositeOperation = "lighter";
+      const glowGrad = ctx.createLinearGradient(trailStart, 0, trailEnd, 0);
+      glowGrad.addColorStop(0, "rgba(131,58,180,0)");
+      glowGrad.addColorStop(0.7, "rgba(131,58,180,0)");
+      glowGrad.addColorStop(0.9, "rgba(253,29,29,0.03)");
+      glowGrad.addColorStop(1, "rgba(252,176,69,0.07)");
+      ctx.strokeStyle = glowGrad;
+      ctx.lineWidth = 5;
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    /* ── Luminous dot ──────────────────────────────────── */
+
+    if (dotX > -10 && dotX < w + 10) {
+      /* Outer halo */
+      const outer = ctx.createRadialGradient(dotX, dotY, 0, dotX, dotY, 24);
+      outer.addColorStop(0, "rgba(252,176,69,0.35)");
+      outer.addColorStop(0.3, "rgba(253,29,29,0.12)");
+      outer.addColorStop(0.6, "rgba(131,58,180,0.04)");
+      outer.addColorStop(1, "rgba(131,58,180,0)");
+      ctx.fillStyle = outer;
+      ctx.beginPath();
+      ctx.arc(dotX, dotY, 24, 0, Math.PI * 2);
+      ctx.fill();
+
+      /* Inner glow */
+      const inner = ctx.createRadialGradient(dotX, dotY, 0, dotX, dotY, 8);
+      inner.addColorStop(0, "rgba(255,255,255,0.85)");
+      inner.addColorStop(0.4, "rgba(252,176,69,0.45)");
+      inner.addColorStop(1, "rgba(253,29,29,0)");
+      ctx.fillStyle = inner;
+      ctx.beginPath();
+      ctx.arc(dotX, dotY, 8, 0, Math.PI * 2);
+      ctx.fill();
+
+      /* Core bright point */
+      ctx.fillStyle = "rgba(255,255,255,0.92)";
+      ctx.beginPath();
+      ctx.arc(dotX, dotY, 2, 0, Math.PI * 2);
+      ctx.fill();
     }
 
     rafRef.current = requestAnimationFrame(draw);
   }, []);
 
   useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        isVisibleRef.current = entry.isIntersecting;
+      },
+      { threshold: 0.1 },
+    );
+    if (canvasRef.current?.parentElement) {
+      observer.observe(canvasRef.current.parentElement);
+    }
     rafRef.current = requestAnimationFrame(draw);
-    return () => cancelAnimationFrame(rafRef.current);
+    return () => {
+      observer.disconnect();
+      cancelAnimationFrame(rafRef.current);
+    };
   }, [draw]);
 
   return (
