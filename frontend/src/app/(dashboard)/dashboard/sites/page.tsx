@@ -97,7 +97,7 @@ export default function SitesPage() {
         description="Manage monitored websites"
         action={
           <Button onClick={() => { setForm({ client_id: clients[0]?.id ?? 0, name: "", url: "" }); setShowCreate(true); }}>
-            <Plus className="h-4 w-4" />
+            <Plus className="h-4 w-4 icon-grad" />
             Add Site
           </Button>
         }
@@ -120,12 +120,12 @@ export default function SitesPage() {
 
         {sites.length === 0 ? (
           <EmptyState
-            icon={<Globe className="h-7 w-7" />}
+            icon={<Globe className="h-7 w-7 icon-grad" />}
             title="No sites yet"
             description="Add a site to start monitoring its tracking setup."
             action={
               <Button onClick={() => setShowCreate(true)}>
-                <Plus className="h-4 w-4" />
+                <Plus className="h-4 w-4 icon-grad" />
                 Add Site
               </Button>
             }
@@ -152,7 +152,7 @@ export default function SitesPage() {
                     className="inline-flex items-center gap-1 text-sm text-primary hover:underline truncate"
                   >
                     {parseHostname(site.url)}
-                    <ExternalLink className="h-3 w-3 shrink-0" />
+                    <ExternalLink className="h-3 w-3 shrink-0 icon-grad" />
                   </a>
                   {(site.gtm_ids.length > 0 || site.ga4_ids.length > 0) && (
                     <div className="flex flex-wrap gap-1">
@@ -176,7 +176,7 @@ export default function SitesPage() {
                           setForm({ client_id: site.client_id, name: site.name, url: site.url });
                         }}
                       >
-                        <Pencil className="h-3.5 w-3.5" />
+                        <Pencil className="h-3.5 w-3.5 icon-grad" />
                       </Button>
                       <Button
                         variant="ghost"
@@ -222,7 +222,7 @@ export default function SitesPage() {
                             className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
                           >
                             {parseHostname(site.url)}
-                            <ExternalLink className="h-3 w-3" />
+                            <ExternalLink className="h-3 w-3 icon-grad" />
                           </a>
                         </TableCell>
                         <TableCell>
@@ -253,7 +253,7 @@ export default function SitesPage() {
                                 setForm({ client_id: site.client_id, name: site.name, url: site.url });
                               }}
                             >
-                              <Pencil className="h-3.5 w-3.5" />
+                              <Pencil className="h-3.5 w-3.5 icon-grad" />
                             </Button>
                             <Button
                               variant="ghost"

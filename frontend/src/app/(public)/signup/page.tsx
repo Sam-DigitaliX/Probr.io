@@ -110,7 +110,7 @@ export default function SignupPage() {
             <div>
               <label className="text-sm font-medium mb-1.5 block">Full name</label>
               <div className="relative">
-                <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 icon-grad" />
                 <input
                   type="text"
                   value={name}
@@ -125,7 +125,7 @@ export default function SignupPage() {
             <div>
               <label className="text-sm font-medium mb-1.5 block">Email</label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 icon-grad" />
                 <input
                   type="email"
                   value={email}
@@ -140,7 +140,7 @@ export default function SignupPage() {
             <div>
               <label className="text-sm font-medium mb-1.5 block">Password</label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 icon-grad" />
                 <input
                   type={showPassword ? "text" : "password"}
                   value={password}
@@ -155,7 +155,7 @@ export default function SignupPage() {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  {showPassword ? <EyeOff className="h-4 w-4 icon-grad" /> : <Eye className="h-4 w-4 icon-grad" />}
                 </button>
               </div>
             </div>

@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { EvervaultGlow } from "@/components/ui/evervault-glow";
+import { SvgGradientDefs } from "@/components/ui/gradient-icon";
 
 export const metadata: Metadata = {
   title: "Probr — Monitoring Infrastructure",
@@ -21,6 +22,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased bg-background text-foreground">
+        <SvgGradientDefs />
         <EvervaultGlow />
         <div className="relative z-[1]">
           {children}

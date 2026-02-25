@@ -57,7 +57,7 @@ export function Modal({ open, onClose, title, description, children, className }
             onClick={onClose}
             className="rounded-lg p-1.5 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors shrink-0 ml-3"
           >
-            <X className="h-4 w-4" />
+            <X className="h-4 w-4 icon-grad" />
           </button>
         </div>
         {children}

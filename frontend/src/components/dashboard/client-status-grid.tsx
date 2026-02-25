@@ -86,7 +86,7 @@ export function ClientStatusGrid({ clients }: ClientStatusGridProps) {
                     rel="noopener noreferrer"
                     className="text-muted-foreground hover:text-foreground transition-colors"
                   >
-                    <ExternalLink className="h-3 w-3" />
+                    <ExternalLink className="h-3 w-3 icon-grad" />
                   </a>
                 </div>
               </div>
@@ -104,7 +104,7 @@ export function ClientStatusGrid({ clients }: ClientStatusGridProps) {
             className="flex items-center justify-center gap-1 mt-4 pt-3 border-t border-border text-xs font-medium text-primary hover:text-primary/80 transition-colors"
           >
             View details
-            <ChevronRight className="h-3 w-3" />
+            <ChevronRight className="h-3 w-3 icon-grad" />
           </Link>
         </div>
       ))}

@@ -74,19 +74,19 @@ export default function AlertsPage() {
         {/* Summary badges */}
         <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           <div className="flex items-center gap-2 rounded-lg border border-glass-border bg-glass shadow-sm px-3 sm:px-4 py-2">
-            <AlertTriangle className="h-4 w-4 text-destructive" />
+            <AlertTriangle className="h-4 w-4 icon-grad" />
             <span className="text-sm font-medium">
               {alerts.filter((a) => !a.is_resolved && a.severity === "critical").length} critical
             </span>
           </div>
           <div className="flex items-center gap-2 rounded-lg border border-glass-border bg-glass shadow-sm px-3 sm:px-4 py-2">
-            <AlertTriangle className="h-4 w-4 text-warning" />
+            <AlertTriangle className="h-4 w-4 icon-grad" />
             <span className="text-sm font-medium">
               {alerts.filter((a) => !a.is_resolved && a.severity === "warning").length} warnings
             </span>
           </div>
           <div className="flex items-center gap-2 rounded-lg border border-glass-border bg-glass shadow-sm px-3 sm:px-4 py-2">
-            <CheckCircle2 className="h-4 w-4 text-success" />
+            <CheckCircle2 className="h-4 w-4 icon-grad" />
             <span className="text-sm font-medium">
               {alerts.filter((a) => a.is_resolved).length} resolved
             </span>
@@ -118,7 +118,7 @@ export default function AlertsPage() {
 
         {filteredAlerts.length === 0 ? (
           <EmptyState
-            icon={<Bell className="h-7 w-7" />}
+            icon={<Bell className="h-7 w-7 icon-grad" />}
             title={filterResolved === "active" ? "No active alerts" : "No alerts found"}
             description={
               filterResolved === "active"
@@ -160,7 +160,7 @@ export default function AlertsPage() {
                         className="w-full"
                         onClick={() => handleResolve(alert.id)}
                       >
-                        <CheckCircle2 className="h-3.5 w-3.5" />
+                        <CheckCircle2 className="h-3.5 w-3.5 icon-grad" />
                         Resolve
                       </Button>
                     ) : (
@@ -228,7 +228,7 @@ export default function AlertsPage() {
                               size="sm"
                               onClick={() => handleResolve(alert.id)}
                             >
-                              <CheckCircle2 className="h-3.5 w-3.5" />
+                              <CheckCircle2 className="h-3.5 w-3.5 icon-grad" />
                               Resolve
                             </Button>
                           ) : (

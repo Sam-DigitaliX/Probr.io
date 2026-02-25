@@ -130,7 +130,7 @@ export default function ProbesPage() {
         description="Configure and monitor your probes"
         action={
           <Button onClick={() => { setForm({ site_id: sites[0]?.id ?? 0, probe_type: "http_health", interval_seconds: 300 }); setShowCreate(true); }}>
-            <Plus className="h-4 w-4" />
+            <Plus className="h-4 w-4 icon-grad" />
             Add Probe
           </Button>
         }
@@ -153,12 +153,12 @@ export default function ProbesPage() {
 
         {probes.length === 0 ? (
           <EmptyState
-            icon={<Activity className="h-7 w-7" />}
+            icon={<Activity className="h-7 w-7 icon-grad" />}
             title="No probes configured"
             description="Create your first probe to start monitoring."
             action={
               <Button onClick={() => setShowCreate(true)}>
-                <Plus className="h-4 w-4" />
+                <Plus className="h-4 w-4 icon-grad" />
                 Add Probe
               </Button>
             }
@@ -172,8 +172,8 @@ export default function ProbesPage() {
                   onClick={() => toggleExpand(probe.id)}
                 >
                   <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10">
-                      <Zap className="h-5 w-5 text-primary" />
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/[0.04] border border-white/[0.06]">
+                      <Zap className="h-5 w-5 icon-grad" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
@@ -184,7 +184,7 @@ export default function ProbesPage() {
                       </div>
                       <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
                         <span className="flex items-center gap-1">
-                          <Clock className="h-3 w-3" />
+                          <Clock className="h-3 w-3 icon-grad" />
                           Every {probe.interval_seconds}s
                         </span>
                         <Badge variant={probe.is_active ? "success" : "outline"} className="text-[10px]">
@@ -201,9 +201,9 @@ export default function ProbesPage() {
                       disabled={runningProbe === probe.id}
                     >
                       {runningProbe === probe.id ? (
-                        <RefreshCw className="h-3.5 w-3.5 animate-spin" />
+                        <RefreshCw className="h-3.5 w-3.5 animate-spin icon-grad" />
                       ) : (
-                        <Play className="h-3.5 w-3.5" />
+                        <Play className="h-3.5 w-3.5 icon-grad" />
                       )}
                       Run
                     </Button>
@@ -216,9 +216,9 @@ export default function ProbesPage() {
                       <Trash2 className="h-3.5 w-3.5" />
                     </Button>
                     {expandedProbe === probe.id ? (
-                      <ChevronUp className="h-4 w-4 text-muted-foreground" />
+                      <ChevronUp className="h-4 w-4 icon-grad" />
                     ) : (
-                      <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                      <ChevronDown className="h-4 w-4 icon-grad" />
                     )}
                   </div>
                 </div>

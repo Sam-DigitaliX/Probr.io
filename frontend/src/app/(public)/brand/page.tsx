@@ -348,8 +348,8 @@ export default function BrandPage() {
           <div className="grid md:grid-cols-3 gap-6 mb-10">
             {/* Static */}
             <div className="glass-card p-6">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/[0.06] border border-primary/[0.08] mb-4">
-                <Activity className="h-6 w-6 text-primary" />
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/[0.04] border border-white/[0.06] mb-4">
+                <Activity className="h-6 w-6 icon-grad" />
               </div>
               <h4 className="font-semibold mb-1">Glass Card</h4>
               <p className="text-sm text-muted-foreground">Static card with glass background and subtle highlight overlay.</p>
@@ -358,8 +358,8 @@ export default function BrandPage() {
 
             {/* Interactive */}
             <div className="group glass-card-interactive p-6">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/[0.06] border border-primary/[0.08] mb-4 transition-all duration-300 group-hover:bg-gradient-to-br group-hover:from-primary group-hover:to-secondary group-hover:border-transparent group-hover:scale-110">
-                <Bell className="h-6 w-6 text-primary group-hover:text-white transition-colors duration-300" />
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/[0.04] border border-white/[0.06] mb-4 transition-all duration-300 group-hover:bg-gradient-to-br group-hover:from-primary group-hover:via-accent group-hover:to-secondary group-hover:border-transparent group-hover:scale-110">
+                <Bell className="h-6 w-6 icon-grad icon-grad-hover-white" />
               </div>
               <h4 className="font-semibold mb-1">Interactive Card</h4>
               <p className="text-sm text-muted-foreground">Hover for lift, glow border, and icon gradient fill.</p>
@@ -369,8 +369,8 @@ export default function BrandPage() {
             {/* Animated border */}
             <div className="ev-card p-6">
               <div className="relative z-10">
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/[0.06] border border-primary/[0.08] mb-4">
-                  <BarChart3 className="h-6 w-6 text-primary" />
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/[0.04] border border-white/[0.06] mb-4">
+                  <BarChart3 className="h-6 w-6 icon-grad" />
                 </div>
                 <h4 className="font-semibold mb-1">Ev Card</h4>
                 <p className="text-sm text-muted-foreground">Animated conic-gradient spinning border.</p>

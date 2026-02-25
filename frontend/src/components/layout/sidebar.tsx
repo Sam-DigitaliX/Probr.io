@@ -80,11 +80,11 @@ export function Sidebar() {
                 )}
               >
                 <item.icon
-                  className={cn("h-[18px] w-[18px] shrink-0", isActive && "text-sidebar-primary")}
+                  className={cn("h-[18px] w-[18px] shrink-0", isActive ? "icon-grad" : "text-muted-foreground")}
                 />
                 {!collapsed && <span>{item.label}</span>}
                 {isActive && !collapsed && (
-                  <div className="ml-auto h-1.5 w-1.5 rounded-full bg-sidebar-primary" />
+                  <div className="ml-auto h-1.5 w-1.5 rounded-full bg-gradient-to-br from-primary via-accent to-secondary" />
                 )}
               </Link>
             );
@@ -98,9 +98,9 @@ export function Sidebar() {
             className="flex w-full items-center justify-center rounded-xl p-2 text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-all"
           >
             {collapsed ? (
-              <ChevronRight className="h-4 w-4" />
+              <ChevronRight className="h-4 w-4 icon-grad" />
             ) : (
-              <ChevronLeft className="h-4 w-4" />
+              <ChevronLeft className="h-4 w-4 icon-grad" />
             )}
           </button>
         </div>
@@ -124,10 +124,10 @@ export function Sidebar() {
                   : "text-muted-foreground active:text-sidebar-primary"
               )}
             >
-              <item.icon className="h-5 w-5" />
+              <item.icon className={cn("h-5 w-5", isActive ? "icon-grad" : "")} />
               <span className="text-[10px] font-medium truncate">{item.label}</span>
               {isActive && (
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 h-0.5 w-6 rounded-full bg-sidebar-primary" />
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 h-0.5 w-6 rounded-full bg-gradient-to-r from-primary via-accent to-secondary" />
               )}
             </Link>
           );

@@ -89,7 +89,7 @@ export default function ClientsPage() {
         description="Manage your monitored clients"
         action={
           <Button onClick={() => { setForm({ name: "", email: "" }); setShowCreate(true); }}>
-            <Plus className="h-4 w-4" />
+            <Plus className="h-4 w-4 icon-grad" />
             Add Client
           </Button>
         }
@@ -98,12 +98,12 @@ export default function ClientsPage() {
       <div className="p-4 sm:p-6 lg:p-8">
         {clients.length === 0 ? (
           <EmptyState
-            icon={<Users className="h-7 w-7" />}
+            icon={<Users className="h-7 w-7 icon-grad" />}
             title="No clients yet"
             description="Add your first client to start monitoring their tracking infrastructure."
             action={
               <Button onClick={() => setShowCreate(true)}>
-                <Plus className="h-4 w-4" />
+                <Plus className="h-4 w-4 icon-grad" />
                 Add Client
               </Button>
             }
@@ -116,14 +116,14 @@ export default function ClientsPage() {
                 <div key={client.id} className="glass-card p-4 space-y-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3 min-w-0">
-                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                        <Hash className="h-4 w-4" />
+                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white/[0.04] border border-white/[0.06]">
+                        <Hash className="h-4 w-4 icon-grad" />
                       </div>
                       <div className="min-w-0">
                         <p className="font-medium truncate">{client.name}</p>
                         {client.email && (
                           <p className="text-xs text-muted-foreground truncate flex items-center gap-1">
-                            <Mail className="h-3 w-3 shrink-0" />
+                            <Mail className="h-3 w-3 shrink-0 icon-grad" />
                             {client.email}
                           </p>
                         )}
@@ -137,7 +137,7 @@ export default function ClientsPage() {
                     <span className="text-xs text-muted-foreground">{formatDate(client.created_at)}</span>
                     <div className="flex items-center gap-1">
                       <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openEdit(client)}>
-                        <Pencil className="h-3.5 w-3.5" />
+                        <Pencil className="h-3.5 w-3.5 icon-grad" />
                       </Button>
                       <Button
                         variant="ghost"
@@ -180,7 +180,7 @@ export default function ClientsPage() {
                         <TableCell>
                           {client.email ? (
                             <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                              <Mail className="h-3.5 w-3.5" />
+                              <Mail className="h-3.5 w-3.5 icon-grad" />
                               {client.email}
                             </div>
                           ) : (
@@ -198,7 +198,7 @@ export default function ClientsPage() {
                         <TableCell>
                           <div className="flex items-center gap-1">
                             <Button variant="ghost" size="icon" onClick={() => openEdit(client)}>
-                              <Pencil className="h-3.5 w-3.5" />
+                              <Pencil className="h-3.5 w-3.5 icon-grad" />
                             </Button>
                             <Button
                               variant="ghost"

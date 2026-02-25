@@ -105,8 +105,8 @@ function MegaLink({
 }) {
   const inner = (
     <div className="flex items-center gap-4 px-4 py-3.5 rounded-xl transition-colors duration-200 group hover:bg-white/[0.04]">
-      <div className="w-11 h-11 rounded-xl bg-white/[0.05] border border-white/[0.06] flex items-center justify-center shrink-0 transition-all duration-300 group-hover:bg-gradient-to-br group-hover:from-primary group-hover:to-secondary group-hover:border-transparent">
-        <item.icon className="w-5 h-5 text-primary group-hover:text-white transition-colors duration-300" />
+      <div className="w-11 h-11 rounded-xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center shrink-0 transition-all duration-300 group-hover:bg-gradient-to-br group-hover:from-primary group-hover:via-accent group-hover:to-secondary group-hover:border-transparent">
+        <item.icon className="w-5 h-5 icon-grad icon-grad-hover-white" />
       </div>
       <div className="min-w-0 flex-1">
         <span className="text-sm font-semibold text-foreground whitespace-nowrap">
@@ -117,9 +117,9 @@ function MegaLink({
         </p>
       </div>
       {item.external ? (
-        <ExternalLink className="w-4 h-4 text-muted-foreground/50 shrink-0" />
+        <ExternalLink className="w-4 h-4 shrink-0 icon-grad opacity-50 group-hover:opacity-100" />
       ) : (
-        <ChevronRight className="w-4 h-4 text-muted-foreground/50 shrink-0" />
+        <ChevronRight className="w-4 h-4 shrink-0 icon-grad opacity-50 group-hover:opacity-100" />
       )}
     </div>
   );
@@ -265,7 +265,7 @@ export default function LandingPage() {
             aria-expanded={isMobileMenuOpen}
             onClick={() => setIsMobileMenuOpen((v) => !v)}
           >
-            {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            {isMobileMenuOpen ? <X size={24} className="icon-grad" /> : <Menu size={24} className="icon-grad" />}
           </button>
         </div>
 
@@ -338,7 +338,7 @@ export default function LandingPage() {
                 >
                   Resources
                   <ChevronDown
-                    className={`w-4 h-4 transition-transform duration-200 ${
+                    className={`w-4 h-4 icon-grad transition-transform duration-200 ${
                       mobileAccordion === "ressources" ? "rotate-180" : ""
                     }`}
                   />
@@ -509,8 +509,8 @@ export default function LandingPage() {
               >
                 {/* Icon — gradient stroke, inverts to gradient fill on hover */}
                 <div className="flex justify-center mb-3">
-                  <div className="relative flex h-10 w-10 md:h-12 md:w-12 items-center justify-center rounded-xl bg-primary/[0.06] border border-primary/[0.08] transition-all duration-300 group-hover:bg-gradient-to-br group-hover:from-primary group-hover:to-secondary group-hover:border-transparent group-hover:scale-110">
-                    <stat.icon className="h-5 w-5 md:h-6 md:w-6 text-primary group-hover:text-white transition-colors duration-300" />
+                  <div className="relative flex h-10 w-10 md:h-12 md:w-12 items-center justify-center rounded-xl bg-white/[0.04] border border-white/[0.06] transition-all duration-300 group-hover:bg-gradient-to-br group-hover:from-primary group-hover:via-accent group-hover:to-secondary group-hover:border-transparent group-hover:scale-110">
+                    <stat.icon className="h-5 w-5 md:h-6 md:w-6 icon-grad icon-grad-hover-white" />
                   </div>
                 </div>
 
@@ -557,8 +557,8 @@ export default function LandingPage() {
                 }`}
               >
                 {/* Icon container — gradient stroke → solid gradient fill on group hover */}
-                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/[0.06] border border-primary/[0.08] mb-4 transition-all duration-300 group-hover:bg-gradient-to-br group-hover:from-primary group-hover:to-secondary group-hover:border-transparent group-hover:scale-110">
-                  <feature.icon className="h-7 w-7 text-primary group-hover:text-white transition-colors duration-300" />
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/[0.04] border border-white/[0.06] mb-4 transition-all duration-300 group-hover:bg-gradient-to-br group-hover:from-primary group-hover:via-accent group-hover:to-secondary group-hover:border-transparent group-hover:scale-110">
+                  <feature.icon className="h-7 w-7 icon-grad icon-grad-hover-white" />
                 </div>
                 <h3 className="font-semibold mb-2">{feature.title}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">
@@ -646,7 +646,7 @@ export default function LandingPage() {
           />
 
           <div className="relative z-10 max-w-3xl mx-auto text-center">
-            <Globe className="h-10 w-10 text-primary mx-auto mb-6" />
+            <Globe className="h-10 w-10 mx-auto mb-6 icon-grad" />
             <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
               Ready to protect your tracking?
             </h2>

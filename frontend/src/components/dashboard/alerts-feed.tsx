@@ -15,7 +15,7 @@ export function AlertsFeed({ alerts, onResolve }: AlertsFeedProps) {
   if (alerts.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-8 text-center">
-        <CheckCircle2 className="h-8 w-8 text-success mb-2" />
+        <CheckCircle2 className="h-8 w-8 mb-2 icon-grad" />
         <p className="text-sm font-medium">All clear</p>
         <p className="text-xs text-muted-foreground">No active alerts</p>
       </div>

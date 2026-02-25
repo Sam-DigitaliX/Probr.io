@@ -7,7 +7,6 @@ interface Stat {
   label: string;
   value: number;
   icon: React.ElementType;
-  color: string;
   bgColor: string;
 }
 
@@ -24,29 +23,25 @@ export function StatsCards({ totalClients, totalSites, totalProbes, activeAlerts
       label: "Clients",
       value: totalClients,
       icon: Users,
-      color: "text-primary",
-      bgColor: "bg-primary/10",
+      bgColor: "bg-white/[0.04]",
     },
     {
       label: "Sites",
       value: totalSites,
       icon: Globe,
-      color: "text-secondary",
-      bgColor: "bg-secondary/10",
+      bgColor: "bg-white/[0.04]",
     },
     {
       label: "Probes actives",
       value: totalProbes,
       icon: Activity,
-      color: "text-success",
-      bgColor: "bg-success/10",
+      bgColor: "bg-white/[0.04]",
     },
     {
       label: "Alertes",
       value: activeAlerts,
       icon: Bell,
-      color: activeAlerts > 0 ? "text-destructive" : "text-muted-foreground",
-      bgColor: activeAlerts > 0 ? "bg-destructive/10" : "bg-muted",
+      bgColor: activeAlerts > 0 ? "bg-destructive/10" : "bg-white/[0.04]",
     },
   ];
 
@@ -65,8 +60,8 @@ export function StatsCards({ totalClients, totalSites, totalProbes, activeAlerts
               <p className="text-sm font-medium text-muted-foreground">{stat.label}</p>
               <p className="mt-1 text-3xl font-bold tracking-tight">{stat.value}</p>
             </div>
-            <div className={cn("flex h-11 w-11 items-center justify-center rounded-xl", stat.bgColor)}>
-              <stat.icon className={cn("h-5 w-5", stat.color)} />
+            <div className={cn("flex h-11 w-11 items-center justify-center rounded-xl border border-white/[0.06]", stat.bgColor)}>
+              <stat.icon className="h-5 w-5 icon-grad" />
             </div>
           </div>
         </div>

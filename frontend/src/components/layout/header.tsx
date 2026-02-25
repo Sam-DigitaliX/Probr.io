@@ -21,7 +21,7 @@ export function Header({ title, description, action }: HeaderProps) {
       <div className="flex items-center gap-2 sm:gap-3 shrink-0">
         {action}
         <Button variant="ghost" size="icon" className="relative h-9 w-9">
-          <Bell className="h-4 w-4" />
+          <Bell className="h-4 w-4 icon-grad" />
           <span className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-destructive" />
         </Button>
         <Button
@@ -30,7 +30,7 @@ export function Header({ title, description, action }: HeaderProps) {
           className="h-9 w-9"
           onClick={() => window.location.reload()}
         >
-          <RefreshCw className="h-4 w-4" />
+          <RefreshCw className="h-4 w-4 icon-grad" />
         </Button>
       </div>
     </div>

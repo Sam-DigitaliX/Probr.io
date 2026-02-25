@@ -442,6 +442,17 @@ h1, h2, h3, h4 {
   background-clip: text;
 }
 
+/* ── Gradient Icon utilities ───────────────────────── */
+/* Brand gradient stroke — use on any Lucide / SVG icon */
+.icon-grad {
+  stroke: url(#icon-grad);
+  transition: stroke 0.3s ease;
+}
+/* Inside a .group parent, switch to white on hover */
+.group:hover .icon-grad-hover-white {
+  stroke: white;
+}
+
 /* ── Glow utilities ─────────────────────────────────── */
 .glow-primary {
   box-shadow: 0 0 60px hsl(276 51% 47% / 0.30);
