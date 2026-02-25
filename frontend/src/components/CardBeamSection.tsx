@@ -815,9 +815,9 @@ export default function CardBeamSection() {
         style={{ zIndex: 20 }}
       />
 
-      {/* Edge fades */}
+      {/* Edge fades — hidden on mobile */}
       <div
-        className="absolute inset-y-0 left-0 pointer-events-none w-[8%] md:w-[18%]"
+        className="absolute inset-y-0 left-0 pointer-events-none w-[18%] hidden md:block"
         style={{
           zIndex: 15,
           background:
@@ -825,7 +825,7 @@ export default function CardBeamSection() {
         }}
       />
       <div
-        className="absolute inset-y-0 right-0 pointer-events-none w-[8%] md:w-[18%]"
+        className="absolute inset-y-0 right-0 pointer-events-none w-[18%] hidden md:block"
         style={{
           zIndex: 15,
           background:
