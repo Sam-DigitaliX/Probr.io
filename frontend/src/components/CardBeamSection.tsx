@@ -48,8 +48,8 @@ interface MetalTheme {
    Constants
    ═══════════════════════════════════════════════════════════════════ */
 
-const MAX_PARTICLES = 120;
-const AMBIENT_COUNT = 25;
+const MAX_PARTICLES = 50;
+const AMBIENT_COUNT = 12;
 
 interface Dims {
   cardW: number;
@@ -426,6 +426,9 @@ export default function CardBeamSection() {
   const ambientRef = useRef<AmbientDot[]>([]);
   const beamIntensityRef = useRef(0);
 
+  /* Cached section dimensions — updated via ResizeObserver */
+  const cachedSizeRef = useRef({ w: 0, h: 0 });
+
   const metalLayerRefs = useRef<(HTMLDivElement | null)[]>([]);
   const codeLayerRefs = useRef<(HTMLDivElement | null)[]>([]);
 
@@ -446,7 +449,14 @@ export default function CardBeamSection() {
   /* ── Draw everything on canvas ──────────────────────── */
 
   const drawCanvas = useCallback(
-    (beamX: number, sW: number, sH: number, intensity: number) => {
+    (
+      beamX: number,
+      sW: number,
+      sH: number,
+      intensity: number,
+      cardTop: number,
+      cardBottom: number,
+    ) => {
       const canvas = canvasRef.current;
       if (!canvas) return;
       const ctx = canvas.getContext("2d");
@@ -492,13 +502,21 @@ export default function CardBeamSection() {
         ctx.fill();
       }
 
-      /* ── 2. Beam — Elliptical purple glow ──────────── */
+      /* ── 2. Beam — constrained to card region ──────── */
+
+      const beamMidY = (cardTop + cardBottom) / 2;
+      const beamH = cardBottom - cardTop;
+      /* Small taper margin above/below the card */
+      const taper = beamH * 0.15;
+      const beamYMin = cardTop - taper;
+      const beamYMax = cardBottom + taper;
 
       const idlePulse = 0.5 + 0.5 * Math.sin(now / 2200);
 
+      /* Elliptical glow — sized to card height */
       ctx.save();
-      ctx.translate(beamX, sH / 2);
-      ctx.scale(1, (sH * 0.6) / 100);
+      ctx.translate(beamX, beamMidY);
+      ctx.scale(1, (beamH * 0.65) / 100);
       const glowR = 60 + intensity * 50;
       const glowGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, glowR);
       const glowBase = 0.04 + idlePulse * 0.02;
@@ -519,35 +537,40 @@ export default function CardBeamSection() {
       ctx.fillRect(-glowR, -glowR, glowR * 2, glowR * 2);
       ctx.restore();
 
-      /* ── 3. Beam — Core line (tapered opacity) ─────── */
+      /* ── 3. Beam — Core line (card-height, tapered) ── */
 
       const coreAlpha = 0.12 + idlePulse * 0.08 + intensity * 0.8;
-      const lineGrad = ctx.createLinearGradient(0, 0, 0, sH);
+      const lineGrad = ctx.createLinearGradient(0, beamYMin, 0, beamYMax);
       lineGrad.addColorStop(0, "rgba(255,255,255,0)");
-      lineGrad.addColorStop(0.1, `rgba(255,255,255,${coreAlpha * 0.3})`);
+      lineGrad.addColorStop(0.12, `rgba(255,255,255,${coreAlpha * 0.3})`);
       lineGrad.addColorStop(0.3, `rgba(255,255,255,${coreAlpha})`);
       lineGrad.addColorStop(0.7, `rgba(255,255,255,${coreAlpha})`);
-      lineGrad.addColorStop(0.9, `rgba(255,255,255,${coreAlpha * 0.3})`);
+      lineGrad.addColorStop(0.88, `rgba(255,255,255,${coreAlpha * 0.3})`);
       lineGrad.addColorStop(1, "rgba(255,255,255,0)");
 
       ctx.strokeStyle = lineGrad;
       ctx.lineWidth = 1.2 + intensity * 0.8;
       ctx.beginPath();
-      ctx.moveTo(beamX, 0);
-      ctx.lineTo(beamX, sH);
+      ctx.moveTo(beamX, beamYMin);
+      ctx.lineTo(beamX, beamYMax);
       ctx.stroke();
 
-      /* Extra glow during scanning */
+      /* Soft extra glow during scanning — NO shadowBlur for perf */
       if (intensity > 0.15) {
         ctx.save();
         ctx.globalCompositeOperation = "lighter";
-        ctx.shadowColor = `rgba(${P_R},${P_G},${P_B},${intensity * 0.4})`;
-        ctx.shadowBlur = 15 + intensity * 20;
-        ctx.strokeStyle = `rgba(${P_R},${P_G},${P_B},${intensity * 0.06})`;
-        ctx.lineWidth = 6 + intensity * 8;
+        ctx.strokeStyle = `rgba(${P_R},${P_G},${P_B},${intensity * 0.08})`;
+        ctx.lineWidth = 6 + intensity * 6;
         ctx.beginPath();
-        ctx.moveTo(beamX, 0);
-        ctx.lineTo(beamX, sH);
+        ctx.moveTo(beamX, beamYMin);
+        ctx.lineTo(beamX, beamYMax);
+        ctx.stroke();
+        /* Wider soft pass */
+        ctx.strokeStyle = `rgba(${P_R},${P_G},${P_B},${intensity * 0.03})`;
+        ctx.lineWidth = 16 + intensity * 10;
+        ctx.beginPath();
+        ctx.moveTo(beamX, beamYMin);
+        ctx.lineTo(beamX, beamYMax);
         ctx.stroke();
         ctx.restore();
       }
@@ -584,10 +607,10 @@ export default function CardBeamSection() {
     (x: number, yMin: number, yMax: number) => {
       const pool = particlesRef.current;
       let emitted = 0;
-      for (let i = 0; i < pool.length && emitted < 4; i++) {
+      for (let i = 0; i < pool.length && emitted < 2; i++) {
         if (pool[i].life > 0) continue;
 
-        const maxLife = 25 + Math.random() * 40;
+        const maxLife = 20 + Math.random() * 30;
         pool[i] = {
           x: x + (Math.random() - 0.5) * 4,
           y: yMin + Math.random() * (yMax - yMin),
@@ -630,24 +653,26 @@ export default function CardBeamSection() {
 
     trackRef.current.style.transform = `translateX(${-scrollXRef.current}px)`;
 
-    const sectionEl = sectionRef.current;
-    const sW = sectionEl.offsetWidth;
-    const sH = sectionEl.offsetHeight;
+    /* Use cached dimensions (updated by ResizeObserver) */
+    const sW = cachedSizeRef.current.w;
+    const sH = cachedSizeRef.current.h;
+    if (sW === 0 || sH === 0) {
+      rafRef.current = requestAnimationFrame(animate);
+      return;
+    }
+
     const beamX = sW / 2;
 
-    /* Canvas resize */
+    /* Canvas resize — only when dimensions change */
     const canvas = canvasRef.current;
-    if (canvas) {
-      const w = Math.round(sW);
-      const h = Math.round(sH);
-      if (canvas.width !== w || canvas.height !== h) {
-        canvas.width = w;
-        canvas.height = h;
-      }
+    if (canvas && (canvas.width !== sW || canvas.height !== sH)) {
+      canvas.width = sW;
+      canvas.height = sH;
     }
 
     const trackLeft = -scrollXRef.current;
     const cardTop = (sH - cardH) / 2;
+    const cardBottom = cardTop + cardH;
     let isScanning = false;
 
     /* ── Per-card scan ─────────────────────────────────── */
@@ -688,7 +713,7 @@ export default function CardBeamSection() {
         metalLayer.style.opacity = "1";
         codeLayer.style.clipPath = `inset(0 ${100 - pct}% 0 0)`;
         codeLayer.style.opacity = "1";
-        emitParticles(beamX, cardTop, cardTop + cardH);
+        emitParticles(beamX, cardTop, cardBottom);
       }
     }
 
@@ -698,7 +723,7 @@ export default function CardBeamSection() {
     beamIntensityRef.current +=
       (target - beamIntensityRef.current) * lerpRate;
 
-    drawCanvas(beamX, sW, sH, beamIntensityRef.current);
+    drawCanvas(beamX, sW, sH, beamIntensityRef.current, cardTop, cardBottom);
     rafRef.current = requestAnimationFrame(animate);
   }, [drawCanvas, emitParticles]);
 
@@ -716,17 +741,36 @@ export default function CardBeamSection() {
       maxLife: 1,
     }));
 
-    const observer = new IntersectionObserver(
+    const ioObserver = new IntersectionObserver(
       ([entry]) => {
         isVisibleRef.current = entry.isIntersecting;
       },
       { threshold: 0.1 },
     );
-    if (sectionRef.current) observer.observe(sectionRef.current);
+
+    /* Cache dimensions via ResizeObserver to avoid layout thrashing */
+    const roObserver = new ResizeObserver(([entry]) => {
+      const { width, height } = entry.contentRect;
+      cachedSizeRef.current = {
+        w: Math.round(width),
+        h: Math.round(height),
+      };
+    });
+
+    if (sectionRef.current) {
+      ioObserver.observe(sectionRef.current);
+      roObserver.observe(sectionRef.current);
+      /* Seed initial size */
+      cachedSizeRef.current = {
+        w: Math.round(sectionRef.current.offsetWidth),
+        h: Math.round(sectionRef.current.offsetHeight),
+      };
+    }
     rafRef.current = requestAnimationFrame(animate);
 
     return () => {
-      observer.disconnect();
+      ioObserver.disconnect();
+      roObserver.disconnect();
       cancelAnimationFrame(rafRef.current);
     };
   }, [animate]);

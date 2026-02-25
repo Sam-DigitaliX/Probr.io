@@ -40,7 +40,7 @@ function ecgWaveform(t: number): number {
 /* How many heartbeat cycles fit across the screen */
 const BEATS_PER_SCREEN = 2.5;
 /* Time for the dot to cross the full screen (ms) */
-const CYCLE_MS = 4500;
+const CYCLE_MS = 7000;
 /* Visible trail length as fraction of screen width */
 const TRAIL_RATIO = 0.55;
 
@@ -81,7 +81,8 @@ export default function HeartbeatCanvas() {
     ctx.clearRect(0, 0, w, h);
 
     const now = Date.now();
-    const centerY = h * 0.52;
+    const isMobile = w < 640;
+    const centerY = isMobile ? h * 0.32 : h * 0.52;
     const amplitude = h * 0.22;
 
     /* Y position for any X on the waveform */
