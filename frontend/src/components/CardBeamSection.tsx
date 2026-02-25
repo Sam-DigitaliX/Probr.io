@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 
 /* ═══════════════════════════════════════════════════════════════════
    Types
@@ -48,12 +48,27 @@ interface MetalTheme {
    Constants
    ═══════════════════════════════════════════════════════════════════ */
 
-const CARD_W = 260;
-const CARD_H = 150;
-const GAP = 100;
-const SCROLL_SPEED = 0.8;
 const MAX_PARTICLES = 180;
 const AMBIENT_COUNT = 35;
+
+/* ── Responsive breakpoints ──────────────────────────── */
+
+interface Dims {
+  cardW: number;
+  cardH: number;
+  gap: number;
+  speed: number;
+}
+
+const DESKTOP: Dims = { cardW: 260, cardH: 150, gap: 100, speed: 0.8 };
+const TABLET: Dims = { cardW: 230, cardH: 130, gap: 60, speed: 0.65 };
+const MOBILE: Dims = { cardW: 200, cardH: 110, gap: 40, speed: 0.5 };
+
+function getDims(w: number): Dims {
+  if (w < 640) return MOBILE;
+  if (w < 1024) return TABLET;
+  return DESKTOP;
+}
 
 /* Particle colour — soft purple-white */
 const P_R = 190;
@@ -264,13 +279,18 @@ function MetalCard({
   card,
   themeKey,
   index,
+  compact,
 }: {
   card: ExpertiseCard;
   themeKey: string;
   index: number;
+  compact?: boolean;
 }) {
   const theme = THEMES[themeKey];
   const cardNum = String(index + 1).padStart(2, "0");
+
+  const iconSize = compact ? 32 : 40;
+  const svgSize = compact ? 16 : 20;
 
   return (
     <div
@@ -278,15 +298,15 @@ function MetalCard({
         position: "absolute",
         inset: 0,
         background: theme.gradient,
-        borderRadius: 14,
+        borderRadius: compact ? 12 : 14,
         border: `1px solid ${theme.border}`,
         boxShadow: theme.shadow,
         overflow: "hidden",
         display: "flex",
         flexDirection: "row",
         alignItems: "center",
-        padding: "0 16px",
-        gap: 14,
+        padding: compact ? "0 10px" : "0 16px",
+        gap: compact ? 10 : 14,
       }}
     >
       {/* Metallic sheen */}
@@ -314,10 +334,10 @@ function MetalCard({
       {/* Icon */}
       <div
         style={{
-          width: 40,
-          height: 40,
-          minWidth: 40,
-          borderRadius: 12,
+          width: iconSize,
+          height: iconSize,
+          minWidth: iconSize,
+          borderRadius: compact ? 10 : 12,
           background: "rgba(255,255,255,0.04)",
           border: "1px solid rgba(255,255,255,0.06)",
           display: "flex",
@@ -327,8 +347,8 @@ function MetalCard({
         }}
       >
         <svg
-          width={20}
-          height={20}
+          width={svgSize}
+          height={svgSize}
           viewBox={card.viewBox}
           fill="none"
           stroke={theme.iconFill}
@@ -344,7 +364,7 @@ function MetalCard({
       <div style={{ position: "relative", flex: 1, minWidth: 0 }}>
         <h3
           style={{
-            fontSize: 13,
+            fontSize: compact ? 11 : 13,
             fontWeight: 700,
             color: theme.textColor,
             margin: 0,
@@ -356,7 +376,7 @@ function MetalCard({
         </h3>
         <p
           style={{
-            fontSize: 10,
+            fontSize: compact ? 9 : 10,
             color: theme.subtitleColor,
             margin: "3px 0 0",
             letterSpacing: "0.01em",
@@ -382,7 +402,7 @@ function MetalCard({
       >
         <span
           style={{
-            fontSize: 9,
+            fontSize: compact ? 8 : 9,
             fontWeight: 700,
             letterSpacing: "0.06em",
             background:
@@ -396,7 +416,7 @@ function MetalCard({
         </span>
         <span
           style={{
-            fontSize: 7,
+            fontSize: compact ? 6 : 7,
             color: theme.subtitleColor,
             letterSpacing: "0.06em",
             textTransform: "uppercase",
@@ -413,9 +433,10 @@ function MetalCard({
    Main — CardBeamSection
    ═══════════════════════════════════════════════════════════════════ */
 
-const SECTION_H = CARD_H + 80;
-
 export default function CardBeamSection() {
+  const [dims, setDims] = useState<Dims>(DESKTOP);
+  const dimsRef = useRef<Dims>(DESKTOP);
+
   const sectionRef = useRef<HTMLElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
@@ -434,7 +455,21 @@ export default function CardBeamSection() {
   const codeLayerRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   const tripled = [...CARDS, ...CARDS, ...CARDS];
-  const singleWidth = CARDS.length * (CARD_W + GAP);
+
+  /* ── Responsive dimensions ──────────────────────────── */
+
+  useEffect(() => {
+    const update = () => {
+      const next = getDims(window.innerWidth);
+      dimsRef.current = next;
+      setDims((prev) => (prev === next ? prev : next));
+    };
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
+
+  const sectionH = dims.cardH + 80;
 
   /* ── Draw everything on canvas ──────────────────────── */
 
@@ -609,9 +644,12 @@ export default function CardBeamSection() {
       return;
     }
 
+    const { cardW, cardH, gap, speed } = dimsRef.current;
+    const singleWidth = CARDS.length * (cardW + gap);
+
     /* Auto-scroll */
     if (!isDraggingRef.current) {
-      scrollXRef.current += SCROLL_SPEED;
+      scrollXRef.current += speed;
     }
 
     /* Infinite loop */
@@ -638,7 +676,7 @@ export default function CardBeamSection() {
     }
 
     const trackLeft = -scrollXRef.current;
-    const cardTop = (sectionH - CARD_H) / 2;
+    const cardTop = (sectionH - cardH) / 2;
     let isScanning = false;
 
     /* ── Per-card scan ─────────────────────────────────── */
@@ -648,12 +686,12 @@ export default function CardBeamSection() {
       const codeLayer = codeLayerRefs.current[i];
       if (!metalLayer || !codeLayer) continue;
 
-      const cardLeft = trackLeft + i * (CARD_W + GAP);
-      const raw = (beamX - cardLeft) / CARD_W;
+      const cardLeft = trackLeft + i * (cardW + gap);
+      const raw = (beamX - cardLeft) / cardW;
       const scanProgress = Math.max(0, Math.min(1, raw));
 
       /* Fade out decoded cards */
-      const cardRight = cardLeft + CARD_W;
+      const cardRight = cardLeft + cardW;
       const pastBeam = beamX - cardRight;
       const FADE_START = 60;
       const FADE_DIST = 300;
@@ -679,19 +717,19 @@ export default function CardBeamSection() {
         metalLayer.style.opacity = "1";
         codeLayer.style.clipPath = `inset(0 ${100 - pct}% 0 0)`;
         codeLayer.style.opacity = "1";
-        emitParticles(beamX, cardTop, cardTop + CARD_H);
+        emitParticles(beamX, cardTop, cardTop + cardH);
       }
     }
 
     /* Beam intensity lerp */
     const target = isScanning ? 1 : 0;
-    const speed = isScanning ? 0.08 : 0.025;
+    const lerpRate = isScanning ? 0.08 : 0.025;
     beamIntensityRef.current +=
-      (target - beamIntensityRef.current) * speed;
+      (target - beamIntensityRef.current) * lerpRate;
 
     drawCanvas(beamX, sectionW, sectionH, beamIntensityRef.current);
     rafRef.current = requestAnimationFrame(animate);
-  }, [singleWidth, tripled.length, drawCanvas, emitParticles]);
+  }, [tripled.length, drawCanvas, emitParticles]);
 
   /* ── Lifecycle ──────────────────────────────────────── */
 
@@ -747,8 +785,8 @@ export default function CardBeamSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative overflow-hidden select-none"
-      style={{ height: SECTION_H, cursor: "grab" }}
+      className="relative overflow-hidden select-none touch-pan-y"
+      style={{ height: sectionH, cursor: "grab" }}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
@@ -783,7 +821,7 @@ export default function CardBeamSection() {
         <div
           ref={trackRef}
           className="absolute flex"
-          style={{ top: (SECTION_H - CARD_H) / 2, left: 0, gap: GAP, willChange: "transform" }}
+          style={{ top: (sectionH - dims.cardH) / 2, left: 0, gap: dims.gap, willChange: "transform" }}
         >
           {tripled.map((card, i) => {
             const themeKey = THEME_KEYS[i % THEME_KEYS.length];
@@ -791,7 +829,7 @@ export default function CardBeamSection() {
               <div
                 key={i}
                 className="relative shrink-0"
-                style={{ width: CARD_W, height: CARD_H }}
+                style={{ width: dims.cardW, height: dims.cardH }}
               >
                 {/* Code layer — fully transparent, no background */}
                 <div
@@ -820,6 +858,7 @@ export default function CardBeamSection() {
                     card={card}
                     themeKey={themeKey}
                     index={i % CARDS.length}
+                    compact={dims.cardW < 240}
                   />
                 </div>
               </div>

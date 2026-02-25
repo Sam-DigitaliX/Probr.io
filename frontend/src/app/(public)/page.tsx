@@ -74,13 +74,13 @@ const stats = [
   { value: "24/7", label: "Automated checks" },
 ];
 
-/* ──────────────────────── Ressources dropdown items ──────────────────────── */
+/* ──────────────────────── Resources dropdown items ──────────────────────── */
 
-const ressourcesItems = [
+const resourcesItems = [
   {
     icon: BookOpen,
     label: "Documentation",
-    description: "Guides d'installation & configuration Probr",
+    description: "Installation & configuration guides for Probr",
     href: "https://docs.probr.io",
     external: true,
   },
@@ -92,7 +92,7 @@ function MegaLink({
   item,
   onClick,
 }: {
-  item: (typeof ressourcesItems)[number];
+  item: (typeof resourcesItems)[number];
   onClick?: () => void;
 }) {
   const inner = (
@@ -207,7 +207,7 @@ export default function LandingPage() {
               How it works
             </Link>
 
-            {/* Ressources trigger */}
+            {/* Resources trigger */}
             <button
               type="button"
               className={`flex items-center gap-1 px-4 py-2 rounded-full text-sm font-medium transition-colors duration-200 ${
@@ -223,7 +223,7 @@ export default function LandingPage() {
                   : openNav("ressources")
               }
             >
-              Ressources
+              Resources
               <ChevronDown
                 className={`w-3.5 h-3.5 transition-transform duration-200 ${
                   openDropdown === "ressources" ? "rotate-180" : ""
@@ -275,10 +275,10 @@ export default function LandingPage() {
             {openDropdown === "ressources" && (
               <div className="p-4">
                 <p className="px-4 pb-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-widest">
-                  Ressources
+                  Resources
                 </p>
                 <div className="space-y-0.5">
-                  {ressourcesItems.map((item) => (
+                  {resourcesItems.map((item) => (
                     <MegaLink
                       key={item.label}
                       item={item}
@@ -317,7 +317,7 @@ export default function LandingPage() {
                 How it works
               </Link>
 
-              {/* Ressources accordion */}
+              {/* Resources accordion */}
               <div>
                 <button
                   type="button"
@@ -328,7 +328,7 @@ export default function LandingPage() {
                     )
                   }
                 >
-                  Ressources
+                  Resources
                   <ChevronDown
                     className={`w-4 h-4 transition-transform duration-200 ${
                       mobileAccordion === "ressources" ? "rotate-180" : ""
@@ -343,7 +343,7 @@ export default function LandingPage() {
                   }`}
                 >
                   <div className="pb-2 pl-2 space-y-1">
-                    {ressourcesItems.map((item) => (
+                    {resourcesItems.map((item) => (
                       <MegaLink
                         key={item.label}
                         item={item}
