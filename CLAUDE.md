@@ -50,8 +50,10 @@ probes/                     # Moteur de probes: base.py (ABC), http_health.py, r
 services/                   # alert_service.py (Slack webhook + SMTP)
 ```
 
-### Probes (7 types)
+### Probes (7 types implementes/prevus + 1 planifiee)
 `http_health`, `sgtm_infra`, `gtm_version`, `data_volume`, `bq_events`, `tag_check`, `cmp_check`
+
+Probe planifiee (spec validee, non implementee) : `revenue_triangulation` — voir `docs/internal/revenue-triangulation-probe.md`. Detecte les ecarts de valeur entre 3 sources (backend / GA4 / ad platforms). Feature strategique majeure.
 
 ### Base de donnees — 2 migrations Alembic
 1. `001_initial_schema` — tables clients, sites, probe_configs, probe_results, alerts + enums
@@ -100,6 +102,12 @@ services/                   # alert_service.py (Slack webhook + SMTP)
 6. **GTM Listener ingest** — endpoint `POST /api/ingest/{ingest_key}` recoit les donnees du tag GTM serveur
 7. **Animated borders** — `@property --ev-border-angle` + `mask-composite: exclude` pour l'effet conic-gradient animee
 
+## Specs internes
+
+Specs de features avant implementation, non destinees a BookStack. Distinct de `docs/{en,fr}/` qui contient la doc utilisateur.
+
+- `docs/internal/revenue-triangulation-probe.md` — probe `revenue_triangulation` (3-sources backend/GA4/ad platforms)
+
 ## Variables d'environnement
 
 ```
@@ -128,9 +136,11 @@ cd backend && uvicorn app.main:app --reload     # Dev server :8000
 ## Points ouverts
 
 - [ ] Implementation des 6 probes restants (sgtm_infra, gtm_version, data_volume, bq_events, tag_check, cmp_check)
+- [ ] Implementation probe `revenue_triangulation` (feature strategique, spec dans `docs/internal/revenue-triangulation-probe.md`)
 - [ ] Authentification backend (JWT ou session)
 - [ ] Tests unitaires et d'integration
 - [ ] CI/CD pipeline
 - [ ] Notifications alertes (Slack webhook + email sont cables mais non testes)
+- [ ] Setup email samuel@probr.io (Resend + Cloudflare Email Routing)
 - [ ] Role-based access (multi-tenant par client)
 - [ ] Deploiement production (Docker compose present mais non valide)
