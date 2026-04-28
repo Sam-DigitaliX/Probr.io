@@ -39,3 +39,6 @@ docker-compose.override.yml
 
 # Alembic
 alembic/versions/__pycache__/
+
+# Nested repos
+probr-sgtm-monitoring/

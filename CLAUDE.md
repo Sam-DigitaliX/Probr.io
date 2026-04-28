@@ -132,5 +132,6 @@ cd backend && uvicorn app.main:app --reload     # Dev server :8000
 - [ ] Tests unitaires et d'integration
 - [ ] CI/CD pipeline
 - [ ] Notifications alertes (Slack webhook + email sont cables mais non testes)
+- [ ] Setup email samuel@probr.io (Resend + Cloudflare Email Routing)
 - [ ] Role-based access (multi-tenant par client)
 - [ ] Deploiement production (Docker compose present mais non valide)
