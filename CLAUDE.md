@@ -145,3 +145,4 @@ cd backend && uvicorn app.main:app --reload     # Dev server :8000
 - [ ] Setup email samuel@probr.io (Resend + Cloudflare Email Routing)
 - [ ] Role-based access (multi-tenant par client)
 - [ ] Deploiement production (Docker compose present mais non valide)
+- [ ] Tag sGTM `probr-sgtm-monitoring` (repo lie, custom template GTM v1.0.0, non soumis) : decouple de revenue_triangulation Phase 1 (le tag alimente `MonitoringBatch`, pas les sources de la probe). Sequencement retenu : Phase 1 -> deploiement prod (endpoint ingest live) -> soumission Community Template Gallery. Prerequis avant soumission : endpoint ingest prod stable + doc `docs.probr.io/gtm-listener` en ligne (delai review Gallery 2-3j). Co-evolution avec la probe en Phase 3 (le tag devra envoyer les vraies valeurs ecommerce, pas juste leur presence).
