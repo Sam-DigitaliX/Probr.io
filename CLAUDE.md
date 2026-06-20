@@ -106,7 +106,7 @@ Probe planifiee (spec validee, non implementee) : `revenue_triangulation` — vo
 
 Specs de features avant implementation, non destinees a BookStack. Distinct de `docs/{en,fr}/` qui contient la doc utilisateur.
 
-- `docs/internal/revenue-triangulation-probe.md` — probe `revenue_triangulation` (3-sources backend/GA4/ad platforms)
+- `docs/internal/revenue-triangulation-probe.md` — probe `revenue_triangulation` (3-sources backend/GA4/ad platforms). **Plan Phase 1 validé (2026-06-20)** : voir §9.bis pour les décisions d'implémentation.
 
 ## Variables d'environnement
 
@@ -136,7 +136,8 @@ cd backend && uvicorn app.main:app --reload     # Dev server :8000
 ## Points ouverts
 
 - [ ] Implementation des 6 probes restants (sgtm_infra, gtm_version, data_volume, bq_events, tag_check, cmp_check)
-- [ ] Implementation probe `revenue_triangulation` (feature strategique, spec dans `docs/internal/revenue-triangulation-probe.md`)
+- [ ] Implementation probe `revenue_triangulation` — Phase 1 (plan valide 2026-06-20, dev a lancer) : service account GA4 + push backend (`POST /api/ingest/revenue`, table `backend_revenue`) + moteur `ratio_drift`. Approche test-first + CI. Voir spec §9.bis.
+- [ ] Trancher source GA4 : Data API (echantillonne) vs export BigQuery (raw, non echantillonne, par SKU) — pressenti Phase 3. Voir spec §9.bis.
 - [ ] Authentification backend (JWT ou session)
 - [ ] Tests unitaires et d'integration
 - [ ] CI/CD pipeline
