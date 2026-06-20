@@ -286,6 +286,37 @@ Les 6 probes listées dans `CLAUDE.md` ont des liens directs avec `revenue_trian
 - **Lead-gen / SaaS** : le brief mentionne ces extensions (CRM HubSpot/Salesforce, Stripe/Paddle). À traiter comme "Phase 6+" ou comme variante de la Phase 1 ? Probablement variante : la probe est generic sur ses sources, c'est juste le connecteur backend qui change.
 - **Privacy / consent** : la triangulation tape des APIs côté serveur, hors enjeu consent côté navigateur. Mais la donnée stockée (revenues + SKUs) est sensible — chiffrement at-rest à valider.
 
+## 9.bis Décisions d'implémentation Phase 1 (2026-06-20)
+
+Décisions actées lors de la session de cadrage Phase 1 (Sam × Claude). Elles **révisent** certains
+points du §4 et du §6 :
+
+- **Auth GA4 = service account** (et non OAuth). Le client ajoute l'email du SA en lecture sur sa
+  propriété GA4. 1 seul JSON en env (`GA4_SERVICE_ACCOUNT_JSON`), pas de table de tokens, pas de
+  chiffrement, pas d'UI Connections. → OAuth self-service repoussé en **Phase 2** (§4.2, §6 Phase 2 inchangés).
+- **Source backend = push générique** : nouvel endpoint `POST /api/ingest/revenue` (auth header
+  `X-Probr-Key`) où le backend client pousse ses totaux de commandes. Nouvelle table `backend_revenue`
+  (révise §4.1 "aucune nouvelle table" : la table est nécessaire car les montants ne sont pas captés
+  aujourd'hui). Interface interne `BackendRevenueSource` pour brancher les connecteurs natifs plus tard
+  sans toucher la probe.
+- **Site test = Magento 2** (cas de référence §2) → push, **pas de connecteur natif** en Phase 1.
+- **Approche test-first + CI** : harnais pytest + Postgres jetable + GitHub Actions (unitaires +
+  intégration à chaque PR) posés **avant** le code feature. Ordre de build = **logique pure d'abord**
+  (moteur de décision testé sur données fictives), plomberie ensuite.
+- **Périmètre net Phase 1** : 1 valeur d'enum + 1 table (`backend_revenue`). Détection limitée à
+  l'anomalie `ratio_drift` (`backend_ht / ga4_ttc` vs `expected_ht_ratio` 0.85).
+
+### Open question à trancher (réflexion Sam, 2026-06-20) — source GA4 : Data API vs BigQuery raw
+
+La donnée brute GA4 est "priceless". Le **GA4 Data API** renvoie de l'agrégé potentiellement
+**échantillonné** ; l'**export BigQuery** donne le brut **événementiel non échantillonné** (value, items,
+transaction_id par hit) → permet une triangulation bien plus précise (détection par SKU, pas seulement
+un ratio agrégé). C'est cohérent avec la probe `bq_events` déjà prévue et avec §7 ("BQ source backend
+alternative plus fiable"). **Décision pressentie** : BQ comme source GA4-side préférée *quand l'export
+est activé chez le client*, Data API en fallback. Coût/contrainte : l'export GA4→BQ doit être activé
+côté client, et les requêtes BQ ont un (petit) coût. À acter pour Phase 3 — Phase 1 reste sur Data API
+pour la simplicité.
+
 ## 9. Liens
 
 - Brief source : `iCloud/1 - PROJETS/Probr.io/probr-io-brief-revenue-triangulation.md`
