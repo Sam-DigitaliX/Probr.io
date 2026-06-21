@@ -41,6 +41,18 @@ class AlertSeverity(str, enum.Enum):
     CRITICAL = "critical"
 
 
+def _pg_enum(enum_cls: type[enum.Enum]) -> Enum:
+    """Postgres enum column that persists the member *values* (lowercase strings),
+    matching what the Alembic migrations create — not the member names, which is
+    SQLAlchemy's surprising default.
+    """
+    return Enum(
+        enum_cls,
+        name=enum_cls.__name__.lower(),
+        values_callable=lambda e: [m.value for m in e],
+    )
+
+
 # ---------- Models ----------
 
 class Client(Base):
@@ -96,7 +108,7 @@ class ProbeConfig(Base):
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     site_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("sites.id", ondelete="CASCADE"), nullable=False)
-    probe_type: Mapped[ProbeType] = mapped_column(Enum(ProbeType), nullable=False)
+    probe_type: Mapped[ProbeType] = mapped_column(_pg_enum(ProbeType), nullable=False)
     config: Mapped[dict] = mapped_column(JSON, default=dict)  # Probe-specific settings
     interval_seconds: Mapped[int] = mapped_column(Integer, default=300)  # 5 min default
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
@@ -112,7 +124,7 @@ class ProbeResult(Base):
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     probe_config_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("probe_configs.id", ondelete="CASCADE"), nullable=False)
-    status: Mapped[ProbeStatus] = mapped_column(Enum(ProbeStatus), nullable=False)
+    status: Mapped[ProbeStatus] = mapped_column(_pg_enum(ProbeStatus), nullable=False)
     response_time_ms: Mapped[float | None] = mapped_column(Float)
     message: Mapped[str] = mapped_column(Text, default="")
     details: Mapped[dict | None] = mapped_column(JSON)
@@ -128,8 +140,8 @@ class Alert(Base):
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     site_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("sites.id", ondelete="CASCADE"), nullable=False)
     probe_config_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("probe_configs.id", ondelete="CASCADE"), nullable=False)
-    severity: Mapped[AlertSeverity] = mapped_column(Enum(AlertSeverity), nullable=False)
-    probe_type: Mapped[ProbeType] = mapped_column(Enum(ProbeType), nullable=False)
+    severity: Mapped[AlertSeverity] = mapped_column(_pg_enum(AlertSeverity), nullable=False)
+    probe_type: Mapped[ProbeType] = mapped_column(_pg_enum(ProbeType), nullable=False)
     title: Mapped[str] = mapped_column(String(500), nullable=False)
     message: Mapped[str] = mapped_column(Text, default="")
     is_resolved: Mapped[bool] = mapped_column(Boolean, default=False)
