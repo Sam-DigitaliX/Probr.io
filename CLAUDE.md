@@ -61,12 +61,25 @@ Probe planifiee (spec validee, non implementee) : `revenue_triangulation` — vo
 
 ## Etat actuel
 
-- Frontend : complet (landing, auth pages, dashboard CRUD, demo dashboard)
-- Backend : structure en place, seul `http_health` probe est implemente
+- Frontend : complet (landing, auth pages, dashboard CRUD, demo dashboard) — **deploye sur Vercel, domaine `https://probr.io`**
+- Backend : structure en place, seul `http_health` probe est implemente — **deploye sur Coolify (`running:healthy`), URL sslip.io, healthcheck off**
 - Pas de tests (ni frontend ni backend)
 - Pas de CI/CD
 - Page `/demo` fonctionnelle avec donnees mock (5 clients, 8 sites, 20 probes)
 - Auth : pages login/signup presentes, pas de logique d'authentification backend
+
+## Infrastructure / Deploiement
+
+Verifie via MCP Vercel + Hostinger + Coolify le 2026-06-21.
+
+- **Frontend** : Vercel (projet `probr.io`, team DigitaliX), domaine prod **https://probr.io**, Next.js, Node 24.x, **auto-deploy sur push `main`** (chaque merge declenche un deploiement prod).
+- **Backend** : Coolify (app `tracking-monitoring`, repo `Sam-DigitaliX/Probr.io`, build dockercompose), statut `running:healthy`. **URL = sslip.io** (pas encore de sous-domaine type `api.probr.io`), **healthcheck desactive**.
+- **DB** : PostgreSQL standalone gere par Coolify (le `docker-compose.yml` backend ne contient que le service `backend` et pointe vers `${DATABASE_URL}` externe). 2 instances Postgres sur le VPS — a confirmer laquelle sert Probr.
+- **DNS** : `probr.io` est gere **chez Vercel** (`ns1/ns2.vercel-dns.com`). ⚠️ Cloudflare gere le NDD **DigitaliX (`digitalix.xyz`)**, PAS `probr.io`. `docs.probr.io` -> VPS. `api.probr.io` -> VPS, **live le 2026-06-22** (declare dans Coolify, cert Traefik OK, `https://api.probr.io/health` => 200). Reste : `NEXT_PUBLIC_API_URL` (Vercel) + `ALLOWED_ORIGINS` (Coolify) quand le front doit taper ce backend.
+- **Email** : `samuel@probr.io` = **alias de domaine sur le Google Workspace DigitaliX** (boite reelle = `samuel@digitalix.xyz`, send-as actif). Records dans le DNS Vercel : MX (`smtp.google.com`), SPF (`v=spf1 include:_spf.google.com ~all`), DKIM (`google._domainkey`), DMARC. DMARC en `p=none` (montee quarantine->reject prevue), rapports via **Postmark** (gratuit). ⚠️ Envoi applicatif (Resend) a part : sous-domaine `send.probr.io`, non configure.
+- **Docs** : BookStack sur Coolify (`bookstack-probr.io`, `docs.probr.io` -> VPS).
+- **VPS** : 1 seul VPS Hostinger (KVM1 : 1 vCPU / 4 Go RAM / 50 Go, Ubuntu 24.04). Tout co-localise : Coolify + proxy Traefik + API Launchpad (`api.digitalix.xyz`) + 2 Postgres + BookStack + backend Probr + n8n (queue mode, hors Coolify). Charge (2026-06-21) : CPU ~21%, RAM ~45%, disque ~19% — confortable.
+- **Maintenance a planifier** : Coolify v4.0.0 (en retard), uptime VPS ~33j → snapshot + `apt upgrade` + reboot + Coolify self-update.
 
 ## Conventions de code
 
@@ -142,7 +155,8 @@ cd backend && uvicorn app.main:app --reload     # Dev server :8000
 - [ ] Tests unitaires et d'integration
 - [ ] CI/CD pipeline
 - [ ] Notifications alertes (Slack webhook + email sont cables mais non testes)
-- [ ] Setup email samuel@probr.io (Resend + Cloudflare Email Routing)
+- [x] Email `samuel@probr.io` — FAIT 2026-06-22 via alias de domaine Google Workspace (MX/SPF/DKIM/DMARC dans DNS Vercel, DMARC p=none + rapports Postmark). Voir section Infrastructure. (L'ancienne note "Resend + Cloudflare Email Routing" etait fausse : DNS sur Vercel, pas Cloudflare.)
+- [ ] Resend pour l'envoi applicatif (alertes) : sous-domaine `send.probr.io` (SPF + DKIM Resend), distinct de la boite humaine `samuel@probr.io`
 - [ ] Role-based access (multi-tenant par client)
-- [ ] Deploiement production (Docker compose present mais non valide)
+- [ ] Finaliser deploiement backend : sous-domaine dedie (ex. `api.probr.io` / `ingest.probr.io`) au lieu de l'URL sslip.io + activer le healthcheck Coolify. Prerequis pour endpoint ingest stable + soumission Gallery du tag sGTM. (Frontend Vercel + backend Coolify deja deployes — voir section Infrastructure.)
 - [ ] Tag sGTM `probr-sgtm-monitoring` (repo lie, custom template GTM v1.0.0, non soumis) : decouple de revenue_triangulation Phase 1 (le tag alimente `MonitoringBatch`, pas les sources de la probe). Sequencement retenu : Phase 1 -> deploiement prod (endpoint ingest live) -> soumission Community Template Gallery. Prerequis avant soumission : endpoint ingest prod stable + doc `docs.probr.io/gtm-listener` en ligne (delai review Gallery 2-3j). Co-evolution avec la probe en Phase 3 (le tag devra envoyer les vraies valeurs ecommerce, pas juste leur presence).
