@@ -1,4 +1,5 @@
 import asyncio
+import os
 from logging.config import fileConfig
 
 from alembic import context
@@ -15,8 +16,9 @@ if config.config_file_name is not None:
 
 target_metadata = Base.metadata
 
-# Override sqlalchemy.url with the app settings
-config.set_main_option("sqlalchemy.url", settings.database_url)
+# Override sqlalchemy.url: prefer the DATABASE_URL env var (set by Coolify in
+# prod and by the test harness), fall back to app settings.
+config.set_main_option("sqlalchemy.url", os.environ.get("DATABASE_URL", settings.database_url))
 
 
 def run_migrations_offline() -> None:
