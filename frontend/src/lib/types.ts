@@ -6,7 +6,8 @@ export type ProbeType =
   | "data_volume"
   | "bq_events"
   | "tag_check"
-  | "cmp_check";
+  | "cmp_check"
+  | "revenue_triangulation";
 
 export type ProbeStatus = "ok" | "warning" | "critical" | "error";
 export type AlertSeverity = "warning" | "critical";

@@ -26,6 +26,7 @@ class ProbeType(str, enum.Enum):
     BQ_EVENTS = "bq_events"
     TAG_CHECK = "tag_check"
     CMP_CHECK = "cmp_check"
+    REVENUE_TRIANGULATION = "revenue_triangulation"
 
 
 class ProbeStatus(str, enum.Enum):
