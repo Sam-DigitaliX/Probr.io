@@ -75,7 +75,7 @@ services/                   # alert_service.py (Slack webhook + SMTP)
 Verifie via MCP Vercel + Hostinger + Coolify le 2026-06-21.
 
 - **Frontend** : Vercel (projet `probr.io`, team DigitaliX), domaine prod **https://probr.io**, Next.js, Node 24.x, **auto-deploy sur push `main`** (chaque merge declenche un deploiement prod).
-- **Backend** : Coolify (app `tracking-monitoring`, repo `Sam-DigitaliX/Probr.io`, build dockercompose), statut `running:healthy`. **URL = sslip.io** (pas encore de sous-domaine type `api.probr.io`), **healthcheck desactive**.
+- **Backend** : Coolify (app `tracking-monitoring`, repo `Sam-DigitaliX/Probr.io`, build dockercompose), statut `running:healthy`. **URL = `https://api.probr.io`** (cert Traefik OK, `/health` 200). Healthcheck : defini dans `docker-compose.yml` (compose) ; l'option app-level Coolify est off (sans impact). `NEXT_PUBLIC_API_URL` (Vercel) pointe sur `https://api.probr.io/api` + CORS `ALLOWED_ORIGINS` inclut `https://probr.io` → dashboard connecte (verifie 2026-06-22).
 - **DB** : PostgreSQL standalone gere par Coolify (le `docker-compose.yml` backend ne contient que le service `backend` et pointe vers `${DATABASE_URL}` externe). 2 instances Postgres sur le VPS — a confirmer laquelle sert Probr.
 - **DNS** : `probr.io` est gere **chez Vercel** (`ns1/ns2.vercel-dns.com`). ⚠️ Cloudflare gere le NDD **DigitaliX (`digitalix.xyz`)**, PAS `probr.io`. `docs.probr.io` -> VPS. `api.probr.io` -> VPS, **live le 2026-06-22** (declare dans Coolify, cert Traefik OK, `https://api.probr.io/health` => 200). Reste : `NEXT_PUBLIC_API_URL` (Vercel) + `ALLOWED_ORIGINS` (Coolify) quand le front doit taper ce backend.
 - **Email** : `samuel@probr.io` = **alias de domaine sur le Google Workspace DigitaliX** (boite reelle = `samuel@digitalix.xyz`, send-as actif). Records dans le DNS Vercel : MX (`smtp.google.com`), SPF (`v=spf1 include:_spf.google.com ~all`), DKIM (`google._domainkey`), DMARC. DMARC en `p=none` (montee quarantine->reject prevue), rapports via **Postmark** (gratuit). ⚠️ Envoi applicatif (Resend) a part : sous-domaine `send.probr.io`, non configure.
@@ -148,6 +148,20 @@ cd frontend && npm run lint     # ESLint
 cd backend && alembic upgrade head              # Migrations
 cd backend && uvicorn app.main:app --reload     # Dev server :8000
 ```
+
+## Prochaines etapes (reprise — derniere session 2026-06-22)
+
+Phase 1 `revenue_triangulation` **code-complete, deployee, dashboard connecte a la prod**. Au prochain demarrage, reprendre dans cet ordre :
+
+1. **WS6 — mettre la probe en service (E2E reel)** — le prochain blocage concret :
+   - (a) creer un **projet Google Cloud + service account**, mettre le JSON dans `GA4_SERVICE_ACCOUNT_JSON` (env Coolify backend) ;
+   - (b) le client ajoute l'email du SA **en lecture** sur sa propriete GA4 + renseigner `ga4_property_id` sur le Site ;
+   - (c) creer client+site (via le dashboard `probr.io/dashboard`, desormais branche), pousser de vrais totaux Magento via `POST https://api.probr.io/api/ingest/revenue` (header `X-Probr-Key` = `ingest_key` du Site), creer un `ProbeConfig` `revenue_triangulation`, declencher, verifier `ProbeResult` + `Alert`.
+2. **Auth backend** — l'API admin (`/api/clients`, `/api/sites`) est **publique** sur api.probr.io. Bloquant avant d'ouvrir a des clients.
+3. **Doc utilisateur** `revenue_triangulation` (niveau SaaS) + recheck perimetre doc global.
+4. **Maintenance infra** (voir workspace `infra-vps`) : Coolify v4.0.0 + uptime VPS ~33j → snapshot + apt upgrade + reboot + Coolify self-update.
+5. **Tag sGTM** `probr-sgtm-monitoring` : soumission Community Template Gallery (prerequis : endpoint ingest prod stable — OK maintenant — + doc `docs.probr.io/gtm-listener` en ligne).
+6. Decisions differees : source GA4 **BigQuery vs Data API** (Phase 3) ; `app.probr.io` (separation marketing/app, non urgent) ; **Resend** pour envoi applicatif (`send.probr.io`).
 
 ## Points ouverts
 
