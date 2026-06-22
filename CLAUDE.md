@@ -154,6 +154,7 @@ cd backend && uvicorn app.main:app --reload     # Dev server :8000
 - [ ] Implementation des 6 probes restants (sgtm_infra, gtm_version, data_volume, bq_events, tag_check, cmp_check)
 - [x] `revenue_triangulation` **Phase 1 FAITE (2026-06-22)** — WS0-WS5, 35 tests verts en CI. Reste : **WS6 validation E2E sur vrai client** (projet GCP + service account, SA ajoute en lecture sur GA4 client, push vrais totaux Magento). Phases 2-5 (OAuth self-service, connecteurs natifs, 3 sources, frontend dedie, doc) : voir spec.
 - [ ] Trancher source GA4 : Data API (echantillonne) vs export BigQuery (raw, non echantillonne, par SKU) — pressenti Phase 3. Voir spec §9.bis.
+- [ ] **Documentation utilisateur `revenue_triangulation`** (docs.probr.io / BookStack) — niveau doc SaaS : guide d'installation complet (creation service account GA4 + ajout du SA en lecture sur la propriete GA4 du client, alimentation de la source backend / push Magento, configuration des seuils de la probe), lecture/interpretation des resultats, troubleshooting, prerequis. = Phase 5 de la spec. **Rechecker le perimetre doc global du SaaS** (onboarding, comptes, alerting, etc.) a cette occasion.
 - [ ] Authentification backend (JWT ou session)
 - [~] Tests : backend en place (pytest + pytest-asyncio + CI) ; tests frontend a faire
 - [x] CI backend (GitHub Actions, postgres service container, rejoue migrations). CD = auto-deploy Vercel + Coolify sur merge `main`.
