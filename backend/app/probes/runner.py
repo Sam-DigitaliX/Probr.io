@@ -6,12 +6,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.models import Alert, AlertSeverity, ProbeConfig, ProbeResult, ProbeStatus, ProbeType, Site
 from app.probes.base import BaseProbe, ProbeResultData
 from app.probes.http_health import HttpHealthProbe
+from app.probes.revenue_triangulation import RevenueTriangulationProbe
 
 logger = logging.getLogger("probr.runner")
 
 # Registry mapping probe types to their implementation
 PROBE_REGISTRY: dict[ProbeType, BaseProbe] = {
     ProbeType.HTTP_HEALTH: HttpHealthProbe(),
+    ProbeType.REVENUE_TRIANGULATION: RevenueTriangulationProbe(),
     # Future probes will be registered here:
     # ProbeType.GTM_VERSION: GtmVersionProbe(),
     # ProbeType.DATA_VOLUME: DataVolumeProbe(),
@@ -25,6 +27,7 @@ PROBE_REGISTRY: dict[ProbeType, BaseProbe] = {
 def _site_to_config(site: Site) -> dict:
     """Extract site fields into a dict for probe execution."""
     return {
+        "site_id": site.id,
         "url": site.url,
         "sgtm_url": site.sgtm_url,
         "gtm_web_container_id": site.gtm_web_container_id,

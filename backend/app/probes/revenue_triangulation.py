@@ -13,10 +13,14 @@ Spec: docs/internal/revenue-triangulation-probe.md (§4.1, §4.3, §4.4).
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 
-from app.models import ProbeStatus
-from app.probes.base import ProbeResultData
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.database import async_session
+from app.models import BackendRevenue, ProbeStatus
+from app.probes.base import BaseProbe, ProbeResultData
 
 DEFAULT_CONFIG: dict = {
     "warning_threshold_pct": 10.0,   # |deviation| >= this -> WARNING
@@ -128,3 +132,82 @@ def evaluate_triangulation(
 
     details = {"window": window, "sources": sources, "ratios": ratios, "anomalies": anomalies}
     return ProbeResultData(status=status, message=message, details=details)
+
+
+# ── Probe class (Workstream 5: wires the sources to the brain) ──────────────
+
+
+class RevenueTriangulationProbe(BaseProbe):
+    """Fetches backend (push table) + GA4 revenue over the window and triangulates.
+
+    Keeps the BaseProbe contract unchanged: execute() opens its own DB session and
+    resolves the GA4 client, then delegates to the testable `_run` (which takes the
+    session, the reference time and the GA4 fetcher as injectable parameters).
+    """
+
+    async def execute(self, site_config: dict, probe_config: dict) -> ProbeResultData:
+        from app.services.ga4_client import fetch_ga4_revenue  # lazy: avoids import cycle
+
+        async with async_session() as session:
+            return await self._run(
+                session,
+                site_config,
+                probe_config,
+                now=datetime.now(timezone.utc),
+                ga4_fetch=fetch_ga4_revenue,
+            )
+
+    async def _run(
+        self,
+        session: AsyncSession,
+        site_config: dict,
+        probe_config: dict,
+        *,
+        now: datetime,
+        ga4_fetch,
+    ) -> ProbeResultData:
+        cfg = {**DEFAULT_CONFIG, **(probe_config or {})}
+        window_days = int(cfg.get("window_days", 7))
+        currency = str(cfg.get("currency", "EUR"))
+        start, end = now - timedelta(days=window_days), now
+        window = {"start": start.isoformat(), "end": end.isoformat()}
+
+        # --- Backend source (push table) ---
+        rows = (
+            await session.execute(
+                select(BackendRevenue).where(
+                    BackendRevenue.site_id == site_config.get("site_id"),
+                    BackendRevenue.window_start >= start,
+                    BackendRevenue.window_end <= end,
+                )
+            )
+        ).scalars().all()
+        backend = None
+        if rows:
+            backend = SourceRevenue(
+                revenue=sum(float(r.revenue) for r in rows),
+                currency=rows[0].currency,
+                conversions=sum(r.order_count for r in rows),
+                basis=rows[0].basis,
+            )
+
+        # --- GA4 source ---
+        property_id = site_config.get("ga4_property_id")
+        if not property_id:
+            return ProbeResultData(
+                status=ProbeStatus.ERROR,
+                message="Aucune propriété GA4 configurée pour ce site",
+                details={"window": window},
+            )
+        try:
+            ga4 = await ga4_fetch(property_id, start, end, currency=currency)
+        except Exception as exc:  # noqa: BLE001 — surface any GA4/API failure as ERROR
+            return ProbeResultData(
+                status=ProbeStatus.ERROR,
+                message=f"Échec récupération GA4 : {exc}",
+                details={"window": window},
+            )
+
+        return evaluate_triangulation(
+            backend=backend, ga4=ga4, window_start=start, window_end=end, config=probe_config
+        )
