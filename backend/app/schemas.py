@@ -1,7 +1,8 @@
 import uuid
 from datetime import datetime
+from typing import Literal
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from app.models import AlertSeverity, ProbeStatus, ProbeType
 
@@ -264,6 +265,25 @@ class IngestBatchPayload(BaseModel):
     tag_metrics: dict[str, IngestBatchTagMetrics] = {}
     user_data_quality: IngestBatchUserData = IngestBatchUserData()
     ecommerce_quality: IngestBatchEcommerce = IngestBatchEcommerce()
+
+
+# ---------- Backend revenue ingest (revenue_triangulation source) ----------
+
+class BackendRevenuePayload(BaseModel):
+    """Real order totals pushed by a site's e-commerce backend for one window."""
+    window_start: datetime
+    window_end: datetime
+    revenue: float = Field(ge=0)
+    currency: str = Field(default="EUR", min_length=3, max_length=3)
+    order_count: int = Field(default=0, ge=0)
+    basis: Literal["ht", "ttc"] = "ht"
+    source: str = Field(default="manual", max_length=50)
+
+    @model_validator(mode="after")
+    def _window_order(self) -> "BackendRevenuePayload":
+        if self.window_end <= self.window_start:
+            raise ValueError("window_end must be after window_start")
+        return self
 
 
 # ---------- Monitoring Dashboard ----------

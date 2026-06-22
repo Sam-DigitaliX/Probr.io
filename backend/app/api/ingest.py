@@ -11,13 +11,14 @@ import uuid
 from datetime import datetime, timezone
 from typing import Any
 
-from fastapi import APIRouter, Header, HTTPException, Request
+from fastapi import APIRouter, Depends, Header, HTTPException, Request
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.database import async_session
+from app.database import async_session, get_db
 from app.models import MonitoringBatch, Site
-from app.schemas import IngestBatchPayload, IngestEventPayload
+from app.schemas import BackendRevenuePayload, IngestBatchPayload, IngestEventPayload
+from app.services.backend_revenue import upsert_backend_revenue
 
 logger = logging.getLogger("probr.ingest")
 
@@ -308,6 +309,30 @@ async def ingest_monitoring_data(
         await aggregator.ingest_event(site_id, payload)
 
     return {"status": "accepted"}
+
+
+@router.post("/revenue", status_code=201)
+async def ingest_backend_revenue(
+    payload: BackendRevenuePayload,
+    x_probr_key: str = Header(..., alias="X-Probr-Key"),
+    db: AsyncSession = Depends(get_db),
+):
+    """Receive real order revenue from a site's backend (push source).
+
+    Independent of GTM/GA4 — this is the reference truth for revenue_triangulation.
+    Idempotent on (site, window, source).
+    """
+    site_id = (
+        await db.execute(
+            select(Site.id).where(Site.ingest_key == x_probr_key, Site.is_active.is_(True))
+        )
+    ).scalar_one_or_none()
+    if not site_id:
+        raise HTTPException(status_code=401, detail="Invalid ingest key")
+
+    row = await upsert_backend_revenue(db, site_id, payload)
+    await db.commit()
+    return {"status": "accepted", "id": str(row.id), "source": payload.source}
 
 
 @router.post("/flush", status_code=200)

@@ -3,7 +3,7 @@ import secrets
 import uuid
 from datetime import datetime
 
-from sqlalchemy import Boolean, DateTime, Enum, Float, ForeignKey, Integer, String, Text, UniqueConstraint, func
+from sqlalchemy import Boolean, DateTime, Enum, Float, ForeignKey, Integer, Numeric, String, Text, UniqueConstraint, func
 from sqlalchemy.dialects.postgresql import JSON, UUID
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
@@ -187,3 +187,30 @@ class MonitoringBatch(Base):
     received_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
     site: Mapped["Site"] = relationship(back_populates="monitoring_batches")
+
+
+class BackendRevenue(Base):
+    """Real order revenue pushed from a site's e-commerce backend.
+
+    Independent source of truth for the revenue_triangulation probe — decoupled
+    from GTM/GA4. Phase 1 is fed by the generic push endpoint
+    (POST /api/ingest/revenue); native connectors (Shopify, etc.) will later
+    write rows here too, via the same upsert path.
+    """
+    __tablename__ = "backend_revenue"
+    __table_args__ = (
+        UniqueConstraint("site_id", "window_start", "window_end", "source", name="uq_backend_revenue_window"),
+    )
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    site_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("sites.id", ondelete="CASCADE"), nullable=False)
+    window_start: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    window_end: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    revenue: Mapped[float] = mapped_column(Numeric(14, 2), nullable=False)
+    currency: Mapped[str] = mapped_column(String(3), default="EUR")
+    order_count: Mapped[int] = mapped_column(Integer, default=0)
+    basis: Mapped[str] = mapped_column(String(8), default="ht")  # "ht" | "ttc"
+    source: Mapped[str] = mapped_column(String(50), default="manual")  # manual | shopify | magento | ...
+    received_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+    site: Mapped["Site"] = relationship()

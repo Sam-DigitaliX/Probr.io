@@ -45,7 +45,11 @@ async def db_session() -> AsyncSession:
     engine = create_async_engine(TEST_DATABASE_URL)
     conn = await engine.connect()
     trans = await conn.begin()
-    session = async_sessionmaker(bind=conn, expire_on_commit=False)()
+    # join_transaction_mode="create_savepoint": endpoints can call commit() and it
+    # only releases a savepoint, so the outer transaction below still rolls back.
+    session = async_sessionmaker(
+        bind=conn, expire_on_commit=False, join_transaction_mode="create_savepoint"
+    )()
     try:
         yield session
     finally:
