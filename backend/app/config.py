@@ -19,6 +19,9 @@ class Settings(BaseSettings):
     smtp_password: str = ""
     smtp_from: str = "alerts@probr.local"
 
+    # revenue_triangulation — GA4 service account (JSON key as a string)
+    ga4_service_account_json: str = ""
+
     model_config = {"env_file": ".env", "extra": "ignore"}
 
 

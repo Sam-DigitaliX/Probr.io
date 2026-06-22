@@ -53,18 +53,20 @@ services/                   # alert_service.py (Slack webhook + SMTP)
 ### Probes (7 types implementes/prevus + 1 planifiee)
 `http_health`, `sgtm_infra`, `gtm_version`, `data_volume`, `bq_events`, `tag_check`, `cmp_check`
 
-Probe planifiee (spec validee, non implementee) : `revenue_triangulation` — voir `docs/internal/revenue-triangulation-probe.md`. Detecte les ecarts de valeur entre 3 sources (backend / GA4 / ad platforms). Feature strategique majeure.
+`revenue_triangulation` — **Phase 1 implementee (2026-06-22)** : source backend (push `/api/ingest/revenue`) + source GA4 (service account) + detection `ratio_drift` (backend_HT / GA4_TTC vs 0.85). Code dans `probes/revenue_triangulation.py` (logique pure `evaluate_triangulation` + classe `RevenueTriangulationProbe`). Spec + roadmap (Phases 2-5) : `docs/internal/revenue-triangulation-probe.md`. Feature strategique majeure.
 
-### Base de donnees — 2 migrations Alembic
+### Base de donnees — 4 migrations Alembic
 1. `001_initial_schema` — tables clients, sites, probe_configs, probe_results, alerts + enums
 2. `002_monitoring_batches` — table monitoring_batches + colonne ingest_key sur sites
+3. `003` — ajoute la valeur `revenue_triangulation` a l'enum `probetype`
+4. `004` — table `backend_revenue` (source push de la probe revenue_triangulation)
 
 ## Etat actuel
 
 - Frontend : complet (landing, auth pages, dashboard CRUD, demo dashboard) — **deploye sur Vercel, domaine `https://probr.io`**
-- Backend : structure en place, seul `http_health` probe est implemente — **deploye sur Coolify (`running:healthy`), URL sslip.io, healthcheck off**
-- Pas de tests (ni frontend ni backend)
-- Pas de CI/CD
+- Backend : probes implementes = `http_health` + **`revenue_triangulation` (Phase 1)** — deploye sur Coolify (`running:healthy`), **`https://api.probr.io`** (cert Traefik OK)
+- Tests : **backend** (pytest + pytest-asyncio, 35 tests) ; pas de tests frontend
+- CI : **GitHub Actions** (`.github/workflows/ci.yml`) sur chaque PR/push, service container `postgres:18` (rejoue les migrations). CD = auto-deploy Vercel + Coolify sur merge `main`.
 - Page `/demo` fonctionnelle avec donnees mock (5 clients, 8 sites, 20 probes)
 - Auth : pages login/signup presentes, pas de logique d'authentification backend
 
@@ -131,6 +133,7 @@ ALLOWED_ORIGINS=http://localhost:3000
 NEXT_PUBLIC_API_URL=http://localhost:8000/api
 SLACK_WEBHOOK_URL=        # optionnel
 SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASSWORD, SMTP_FROM  # optionnel
+GA4_SERVICE_ACCOUNT_JSON= # JSON (string) du service account GA4 — probe revenue_triangulation. Le client ajoute l'email du SA en lecture sur sa propriete GA4.
 ```
 
 ## Commandes
@@ -149,14 +152,14 @@ cd backend && uvicorn app.main:app --reload     # Dev server :8000
 ## Points ouverts
 
 - [ ] Implementation des 6 probes restants (sgtm_infra, gtm_version, data_volume, bq_events, tag_check, cmp_check)
-- [ ] Implementation probe `revenue_triangulation` — Phase 1 (plan valide 2026-06-20, dev a lancer) : service account GA4 + push backend (`POST /api/ingest/revenue`, table `backend_revenue`) + moteur `ratio_drift`. Approche test-first + CI. Voir spec §9.bis.
+- [x] `revenue_triangulation` **Phase 1 FAITE (2026-06-22)** — WS0-WS5, 35 tests verts en CI. Reste : **WS6 validation E2E sur vrai client** (projet GCP + service account, SA ajoute en lecture sur GA4 client, push vrais totaux Magento). Phases 2-5 (OAuth self-service, connecteurs natifs, 3 sources, frontend dedie, doc) : voir spec.
 - [ ] Trancher source GA4 : Data API (echantillonne) vs export BigQuery (raw, non echantillonne, par SKU) — pressenti Phase 3. Voir spec §9.bis.
 - [ ] Authentification backend (JWT ou session)
-- [ ] Tests unitaires et d'integration
-- [ ] CI/CD pipeline
+- [~] Tests : backend en place (pytest + pytest-asyncio + CI) ; tests frontend a faire
+- [x] CI backend (GitHub Actions, postgres service container, rejoue migrations). CD = auto-deploy Vercel + Coolify sur merge `main`.
 - [ ] Notifications alertes (Slack webhook + email sont cables mais non testes)
 - [x] Email `samuel@probr.io` — FAIT 2026-06-22 via alias de domaine Google Workspace (MX/SPF/DKIM/DMARC dans DNS Vercel, DMARC p=none + rapports Postmark). Voir section Infrastructure. (L'ancienne note "Resend + Cloudflare Email Routing" etait fausse : DNS sur Vercel, pas Cloudflare.)
 - [ ] Resend pour l'envoi applicatif (alertes) : sous-domaine `send.probr.io` (SPF + DKIM Resend), distinct de la boite humaine `samuel@probr.io`
 - [ ] Role-based access (multi-tenant par client)
-- [ ] Finaliser deploiement backend : sous-domaine dedie (ex. `api.probr.io` / `ingest.probr.io`) au lieu de l'URL sslip.io + activer le healthcheck Coolify. Prerequis pour endpoint ingest stable + soumission Gallery du tag sGTM. (Frontend Vercel + backend Coolify deja deployes — voir section Infrastructure.)
+- [x] Backend sur domaine dedie **`https://api.probr.io`** (FAIT 2026-06-22, cert Traefik OK, `/health` 200). Reste (non bloquant) : `NEXT_PUBLIC_API_URL` (Vercel) + `ALLOWED_ORIGINS` (Coolify) quand le front doit taper ce backend.
 - [ ] Tag sGTM `probr-sgtm-monitoring` (repo lie, custom template GTM v1.0.0, non soumis) : decouple de revenue_triangulation Phase 1 (le tag alimente `MonitoringBatch`, pas les sources de la probe). Sequencement retenu : Phase 1 -> deploiement prod (endpoint ingest live) -> soumission Community Template Gallery. Prerequis avant soumission : endpoint ingest prod stable + doc `docs.probr.io/gtm-listener` en ligne (delai review Gallery 2-3j). Co-evolution avec la probe en Phase 3 (le tag devra envoyer les vraies valeurs ecommerce, pas juste leur presence).
