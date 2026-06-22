@@ -1,0 +1,14 @@
+repo: Probr.io
+last_reviewed: 2026-06-23
+roadmap:
+  - id: probr-auth-backend
+    title: "Auth backend (JWT/session) — API admin api.probr.io publique + validation E2E WS6"
+    tier: P2
+    status: todo
+    pointer: "CLAUDE.md Points ouverts"
+    note: "Bloquant avant d'ouvrir à des clients. revenue_triangulation Phase 1 + déploiement prod livrés 2026-06-22"
+    blocking: true
+runtime:
+  deploy_target: coolify
+  domains: [api.probr.io]
+  services: [postgres]
