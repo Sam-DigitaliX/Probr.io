@@ -8,3 +8,7 @@ pydantic-settings==2.7.1
 httpx==0.28.1
 apscheduler==3.10.4
 python-dotenv==1.0.1
+
+# revenue_triangulation — GA4 source (service account)
+google-analytics-data>=0.18,<1.0
+google-auth>=2.30,<3.0
